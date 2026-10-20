@@ -1,10 +1,10 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GENRES } from '../../../core/bible/genres.ts';
 import { SiteFooter } from '../../../shared/ui/SiteFooter.tsx';
 import { getTranslationManifest, TRANSLATION_MANIFESTS } from '../../../translations/registry.ts';
-import { createLinkFilter, DEFAULT_LINK_FILTER } from '../link-filter.ts';
+import { createLinkFilter, DEFAULT_LINK_FILTER, VOTE_THRESHOLDS } from '../link-filter.ts';
 import { Credits } from './Credits.tsx';
 import { FiltersMenu } from './FiltersMenu.tsx';
 import { GenreLegend } from './GenreLegend.tsx';
@@ -43,11 +43,13 @@ describe('FiltersMenu', () => {
     return onChange;
   }
 
-  it('offers every vote threshold once opened', async () => {
+  it('offers the weight as a slider that says where it stands, once opened', async () => {
     renderMenu();
     await openMenu(/Filters/);
-    expect(screen.getByRole('option', { name: /Everything/ })).toBeDefined();
-    expect(screen.getByRole('option', { name: 'Weight 100 and up' })).toBeDefined();
+    const slider = screen.getByRole('slider');
+    expect(slider.getAttribute('max')).toBe(String(VOTE_THRESHOLDS.length - 1));
+    expect(slider.getAttribute('aria-valuetext')).toBe('The surer links (weight 4 and up)');
+    expect(screen.getByText('The surer links (weight 4 and up)')).toBeDefined();
   });
 
   it('says what weight means, under the control that sets it', async () => {
@@ -56,10 +58,12 @@ describe('FiltersMenu', () => {
     expect(screen.getByText(/weight is how sure a link is/i)).toBeDefined();
   });
 
-  it('reports the threshold a reader picks', async () => {
+  it('reports the threshold a reader slides to', async () => {
     const onChange = renderMenu();
     await openMenu(/Filters/);
-    await userEvent.selectOptions(screen.getByRole('combobox'), '20');
+    fireEvent.change(screen.getByRole('slider'), {
+      target: { value: String(VOTE_THRESHOLDS.indexOf(20)) },
+    });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ minVotes: 20 }));
   });
 

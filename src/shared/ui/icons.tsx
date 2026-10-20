@@ -19,7 +19,6 @@ import {
   LuMouse,
   LuMousePointerClick,
   LuPalette,
-  LuRainbow,
   LuRefreshCw,
   LuRotateCcw,
   LuSearch,
@@ -29,6 +28,7 @@ import {
   LuX,
 } from 'react-icons/lu';
 import { MdOutlinePinch, MdOutlineSwipeVertical, MdOutlineTouchApp } from 'react-icons/md';
+import { Mark } from './Mark.tsx';
 import styles from './icons.module.css';
 
 interface IconProps {
@@ -57,8 +57,11 @@ function decorative(Glyph: IconType): IconComponent {
 // One icon family (Lucide) across the UI, with a single exception below. Names say what an icon
 // means, not what it depicts, so changing a glyph, or the whole family, touches only this file.
 
-// Visualizations: arcs over the whole Bible, and reading a chapter with its threads.
-export const ArcsIcon = decorative(LuRainbow);
+// Visualizations: the arcs over the whole Bible wear the site's own mark; reading a chapter
+// with its threads keeps the open book.
+export const ArcsIcon: IconComponent = ({ className }) => (
+  <Mark className={className === undefined ? styles.icon : `${styles.icon} ${className}`} />
+);
 export const ReadingIcon = decorative(LuBookOpenText);
 
 // Navigation

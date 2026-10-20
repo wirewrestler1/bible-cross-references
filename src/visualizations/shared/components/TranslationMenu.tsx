@@ -113,7 +113,11 @@ export function TranslationMenu({
           <div key={language} className={styles.group} lang={language}>
             {groups.length > 1 && <p className={styles.groupLabel}>{endonymOf(language)}</p>}
             {items.map((translation) => (
-              <label key={translation.id} className={styles.choice}>
+              <label
+                key={translation.id}
+                className={styles.option}
+                data-current={translation.id === current.id}
+              >
                 <input
                   type="radio"
                   name={group}
@@ -127,11 +131,11 @@ export function TranslationMenu({
                     onChange(translation.id);
                   }}
                 />
-                {translation.name}
-                {translation.deuterocanon && (
-                  <span className={styles.choiceNote}>{t('menu.translation.deuterocanon')}</span>
-                )}
-                <span className={styles.choiceAbbreviation}>{translation.abbreviation}</span>
+                <span className={styles.optionName}>{translation.name}</span>
+                <span className={styles.optionNote}>
+                  {t(`translation.note.${translation.id}`)}
+                  {translation.deuterocanon && ` · ${t('menu.translation.deuterocanon')}`}
+                </span>
               </label>
             ))}
           </div>

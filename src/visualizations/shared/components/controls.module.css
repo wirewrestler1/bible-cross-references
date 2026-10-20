@@ -238,6 +238,58 @@
   line-height: 1.4;
 }
 
+/* The weight slider: its name and the words for where it stands, then the slider itself. */
+.rangeHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+
+.rangeValue {
+  color: var(--color-accent);
+  font-size: 0.8125rem;
+  text-align: end;
+}
+
+.range {
+  inline-size: 100%;
+  margin: var(--space-1) 0;
+  accent-color: var(--color-accent);
+}
+
+/* One Bible in the picker: the radio, its name, and a line on what it is. */
+.option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) var(--space-2);
+  border-radius: calc(var(--radius) + 2px);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.option:hover,
+.option[data-current='true'] {
+  background: var(--color-surface-muted);
+}
+
+.option input {
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.optionName {
+  font-weight: 500;
+}
+
+.optionNote {
+  grid-column: 2;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
 /* A sentence under a control that says what the control’s words mean. */
 .fieldNote {
   margin: var(--space-1) 0 0;

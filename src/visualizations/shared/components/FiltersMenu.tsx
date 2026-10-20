@@ -59,20 +59,25 @@ export function FiltersMenu({
       indicator={!isDefault}
     >
       <label className={styles.field}>
-        {t('menu.filters.votes')}
-        <select
-          className={styles.select}
-          value={String(filter.minVotes)}
+        <span className={styles.rangeHead}>
+          {t('menu.filters.votes')}
+          <span className={styles.rangeValue}>{thresholdLabel(filter.minVotes)}</span>
+        </span>
+        <input
+          type="range"
+          className={styles.range}
+          min={0}
+          max={VOTE_THRESHOLDS.length - 1}
+          step={1}
+          value={Math.max(0, VOTE_THRESHOLDS.indexOf(filter.minVotes))}
+          aria-valuetext={thresholdLabel(filter.minVotes)}
           onChange={(event) => {
-            onChange({ ...filter, minVotes: Number(event.target.value) });
+            const minVotes = VOTE_THRESHOLDS[Number(event.target.value)];
+            if (minVotes !== undefined) {
+              onChange({ ...filter, minVotes });
+            }
           }}
-        >
-          {VOTE_THRESHOLDS.map((minVotes) => (
-            <option key={minVotes} value={String(minVotes)}>
-              {thresholdLabel(minVotes)}
-            </option>
-          ))}
-        </select>
+        />
         <span className={styles.fieldNote}>{t('menu.filters.weight')}</span>
       </label>
       <fieldset className={styles.field}>
