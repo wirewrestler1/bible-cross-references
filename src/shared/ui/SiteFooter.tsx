@@ -26,7 +26,7 @@ export function SiteFooter({ children, className }: SiteFooterProps) {
     <footer className={className ? `${styles.footer} ${className}` : styles.footer}>
       <span className={styles.owner}>
         <span className={styles.copyright}>© {YEAR} · </span>
-        <a href="https://github.com/wirewrestler1">Andrew Battaglia</a> ·{' '}
+        <a href="https://github.com/wirewrestler1">wirewrestler1</a> ·{' '}
         <a
           className={styles.source}
           href={REPOSITORY_URL}

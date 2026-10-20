@@ -364,7 +364,7 @@ describe('Credits', () => {
 describe('SiteFooter', () => {
   it('points at the author’s site and the source code', () => {
     render(<SiteFooter />);
-    expect(screen.getByRole('link', { name: 'Andrew Battaglia' })).toBeDefined();
+    expect(screen.getByRole('link', { name: 'wirewrestler1' })).toBeDefined();
     expect(screen.getByRole('link', { name: /Source code on GitHub/ })).toBeDefined();
   });
 
