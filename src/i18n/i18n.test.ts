@@ -20,17 +20,21 @@ import { message } from './translate.ts';
 describe('locale ids', () => {
   it('recognises the languages the app speaks, and nothing else', () => {
     expect(isLocaleId('en')).toBe(true);
-    expect(isLocaleId('pt')).toBe(true);
+    // Portuguese is a language the app has words for, offered only while it is published.
+    expect(isLocaleId('pt')).toBe(LOCALE_IDS.includes('pt'));
     expect(isLocaleId('pt-BR')).toBe(false);
     expect(isLocaleId('klingon')).toBe(false);
   });
 
-  it('matches a browser’s list on the base language, most preferred first', () => {
-    expect(matchLocale(['pt-BR', 'en-US'])).toBe('pt');
-    expect(matchLocale(['pt-PT'])).toBe('pt');
-    expect(matchLocale(['en-GB', 'pt'])).toBe('en');
-    expect(matchLocale(['PT'])).toBe('pt');
-  });
+  it.runIf(LOCALE_IDS.includes('pt'))(
+    'matches a browser’s list on the base language, most preferred first',
+    () => {
+      expect(matchLocale(['pt-BR', 'en-US'])).toBe('pt');
+      expect(matchLocale(['pt-PT'])).toBe('pt');
+      expect(matchLocale(['en-GB', 'pt'])).toBe('en');
+      expect(matchLocale(['PT'])).toBe('pt');
+    },
+  );
 
   it('matches nothing for a language it does not have', () => {
     expect(matchLocale(['ja', 'ko'])).toBeNull();

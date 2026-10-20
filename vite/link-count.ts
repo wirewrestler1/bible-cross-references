@@ -10,10 +10,10 @@ import { ROOT_DIR } from './site.ts';
  * has arrived, without anyone typing the number. Zero when the lock file has no entry yet, as
  * on a fresh clone before the first `npm run data:build`.
  */
-export function mergedLinkCount(): number {
+export function mergedLinkCount(root: string = ROOT_DIR): number {
   try {
     const lock = JSON.parse(
-      readFileSync(resolve(ROOT_DIR, 'data/datasets.lock.json'), 'utf8'),
+      readFileSync(resolve(root, 'data/datasets.lock.json'), 'utf8'),
     ) as Record<string, { shape?: Record<string, number> }>;
     return lock[crossReferencesDatasetPath(vizCrossReferenceSource().id)]?.shape?.['links'] ?? 0;
   } catch {

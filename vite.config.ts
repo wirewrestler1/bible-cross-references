@@ -66,6 +66,9 @@ export default defineConfig(({ command, isPreview = false }) => ({
       thresholds: { statements: 98, lines: 98, functions: 98, branches: 88 },
       exclude: [
         '**/*.test.{ts,tsx}',
+        // Languages kept in the repository but off the published list (`LOCALE_IDS`): their
+        // words are not offered, so nothing exercises them until they are listed again.
+        'src/i18n/messages/{pt,de,it,es,uk}.ts',
         'src/test-utils/**',
         'src/env.d.ts',
         // Entry points: they run on import, so importing them is running them.

@@ -11,10 +11,25 @@
  * São Paulo, and filing them under `pt-BR` would leave European readers on English for the sake
  * of a handful of words.
  */
-export const LOCALE_IDS = ['en', 'pt', 'de', 'it', 'es', 'uk'] as const;
-export type LocaleId = (typeof LOCALE_IDS)[number];
+/**
+ * Every language the interface has words for. The catalogues for all of them stay in the
+ * repository and keep compiling; which of them readers are offered is `LOCALE_IDS` below.
+ */
+export const KNOWN_LOCALE_IDS = ['en', 'pt', 'de', 'it', 'es', 'uk'] as const;
+export type LocaleId = (typeof KNOWN_LOCALE_IDS)[number];
 
-/** Whether a string from outside (a URL, a stored preference) names a locale. */
+/**
+ * The languages readers are offered: the pages built, the picker's choices, what a browser's
+ * language list can match, and what the completeness gate holds to the standard.
+ *
+ * English alone for this release. The redesign added wording that the five other catalogues do
+ * not yet have, and offering a language half in English serves nobody; they come back one at a
+ * time as each is brought up to date, by adding its id here and working until `npm run check`
+ * is green.
+ */
+export const LOCALE_IDS: readonly LocaleId[] = ['en'];
+
+/** Whether a string from outside (a URL, a stored preference) names a locale readers are offered. */
 export function isLocaleId(value: string): value is LocaleId {
   return LOCALE_IDS.some((id) => id === value);
 }

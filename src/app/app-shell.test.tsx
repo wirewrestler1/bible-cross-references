@@ -179,6 +179,22 @@ describe('VizPage', () => {
   });
 });
 
+describe('VizPage on a phone', () => {
+  it('closes an open sheet when the dimmed stage behind it is tapped', async () => {
+    const { container } = render(
+      <VizPage credits={<span>Credits</span>} panel={<p>About this verse</p>}>
+        <canvas />
+      </VizPage>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: /expand/i }));
+    expect(screen.getByRole('button', { name: /collapse/i })).toBeDefined();
+    const scrim = container.querySelector('[class*="sheetScrim"]');
+    expect(scrim).not.toBeNull();
+    await userEvent.click(scrim ?? container);
+    expect(screen.getByRole('button', { name: /expand/i })).toBeDefined();
+  });
+});
+
 describe('ViewSwitch', () => {
   it('offers every visualization, marking the one on screen', () => {
     render(

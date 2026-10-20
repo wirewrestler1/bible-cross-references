@@ -1,6 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, openPanel, PANEL, VERSE_COUNT, waitForApp } from './helpers.ts';
+import { ACTIVE, GUIDE_SEEN, openPanel, PANEL, VERSE_COUNT, waitForApp } from './helpers.ts';
 import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
+
+/**
+ * English only in this release: the other languages' words are kept in the repository, off the
+ * published list, so everything below that opens a page in one of them waits for it to be listed
+ * again.
+ */
+const OTHERS = LOCALE_IDS.length > 1;
 
 /** Opens the app in a language, with the details of a passage in view. */
 async function open(page: Page, query: string): Promise<void> {
@@ -10,6 +17,8 @@ async function open(page: Page, query: string): Promise<void> {
 }
 
 test.describe('reading in Portuguese', () => {
+  test.skip(!OTHERS, 'only English is published in this release');
+
   test('a link that names the language opens the app in it', async ({ page }) => {
     await open(page, '?lang=pt');
     await expect(page.locator(ACTIVE).getByRole('button', { name: /Filtros/ })).toBeVisible();
@@ -19,7 +28,7 @@ test.describe('reading in Portuguese', () => {
   test('a browser that asks for Portuguese gets it, and its Bible, without being asked', async ({
     browser,
   }) => {
-    const context = await browser.newContext({ locale: 'pt-BR' });
+    const context = await browser.newContext({ locale: 'pt-BR', storageState: GUIDE_SEEN });
     const page = await context.newPage();
     await page.goto('./');
     await waitForApp(page);
@@ -73,6 +82,8 @@ test.describe('reading in Portuguese', () => {
 });
 
 test.describe('choosing a language', () => {
+  test.skip(!OTHERS, 'only English is published in this release');
+
   test('the picker groups the translations under their language', async ({ page }) => {
     await open(page, '');
     await page
@@ -141,6 +152,8 @@ test.describe('choosing a language', () => {
  * check both halves of that: the file a crawler is served, and the app a reader gets.
  */
 test.describe('the Portuguese pages', () => {
+  test.skip(!OTHERS, 'only English is published in this release');
+
   test('open in Portuguese with nothing in the query', async ({ page }) => {
     await page.goto('./pt/');
     await waitForApp(page);
@@ -163,7 +176,7 @@ test.describe('the Portuguese pages', () => {
   });
 
   test('keep working for a reader whose browser asks for English', async ({ browser }) => {
-    const context = await browser.newContext({ locale: 'en-US' });
+    const context = await browser.newContext({ locale: 'en-US', storageState: GUIDE_SEEN });
     const page = await context.newPage();
     await page.goto('./pt/');
     await waitForApp(page);
@@ -214,6 +227,8 @@ test.describe('the Portuguese pages', () => {
  * the reader copies next previews correctly.
  */
 test.describe('a link shared the old way', () => {
+  test.skip(!OTHERS, 'only English is published in this release');
+
   test('still opens in Portuguese', async ({ page }) => {
     await open(page, '?lang=pt&ref=John.3.16');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'João 3:16' })).toBeVisible();
@@ -255,6 +270,8 @@ test.describe('a link shared the old way', () => {
  * because every path that chooses a Bible is keyed on the interface language.
  */
 test.describe('a language with no Bible of its own', () => {
+  test.skip(!OTHERS, 'only English is published in this release');
+
   test('serves its own page, in its own language, before any script runs', async ({ request }) => {
     const response = await request.get('./uk/');
     expect(response.ok()).toBe(true);

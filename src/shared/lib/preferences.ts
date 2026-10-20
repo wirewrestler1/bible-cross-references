@@ -80,11 +80,7 @@ export function useStringPreference(
   key: string,
   fallback: string,
 ): readonly [string, (value: string) => void] {
-  const stored = useSyncExternalStore(
-    subscribe,
-    () => read(key),
-    () => null,
-  );
+  const stored = useSyncExternalStore(subscribe, () => read(key));
   const set = useCallback(
     (value: string) => {
       write(key, value);
@@ -99,11 +95,7 @@ export function useBooleanPreference(
   key: string,
   fallback: boolean,
 ): readonly [boolean, (value: boolean) => void] {
-  const stored = useSyncExternalStore(
-    subscribe,
-    () => read(key),
-    () => null,
-  );
+  const stored = useSyncExternalStore(subscribe, () => read(key));
   const set = useCallback(
     (value: boolean) => {
       write(key, String(value));

@@ -177,6 +177,58 @@
   font-style: italic;
 }
 
+/* A kind of link to switch on or off: its checkbox, a sample of its line, its plain name, and
+   under the name a sentence on where it comes from. Stacked, because the sentence does not fit
+   beside the name on a phone. */
+.kindChoice {
+  display: grid;
+  grid-template-columns: auto 1.5rem 1fr;
+  column-gap: var(--space-2);
+  align-items: center;
+  padding-block: var(--space-1);
+  cursor: pointer;
+}
+
+.kindChoice input {
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+.kindSample {
+  height: 0;
+  border-top: 2px solid var(--color-text);
+  opacity: 0.9;
+}
+
+.kindSample[data-kind='imported'] {
+  opacity: 0.7;
+}
+
+.kindSample[data-kind='computed'] {
+  border-top-width: 1px;
+  border-top-style: dashed;
+  opacity: 0.6;
+}
+
+.kindName {
+  font-weight: 500;
+}
+
+.kindNote {
+  grid-column: 3;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+/* A sentence under a control that says what the control’s words mean. */
+.fieldNote {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
 .indicator {
   inline-size: 0.4rem;
   block-size: 0.4rem;

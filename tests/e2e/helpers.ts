@@ -1,9 +1,26 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { expect, type Page } from '@playwright/test';
+import { expect, type BrowserContextOptions, type Page } from '@playwright/test';
 import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
 import { crossReferencesDatasetPath } from '../../src/core/datasets/paths.ts';
+import { GUIDE_PREFERENCE, preferenceKey } from '../../src/shared/lib/preference-keys.ts';
 import { vizCrossReferenceSource } from '../../src/visualizations/shared/viz-datasets.ts';
+import { BASE_URL } from '../../playwright.config.ts';
+
+/**
+ * A reader who has already seen the first-visit guide. Every test starts here (see
+ * playwright.config.ts), because the guide is a dialog over everything else, and a context
+ * made by hand with `browser.newContext()` has to ask for it. guide.spec.ts starts without it.
+ */
+export const GUIDE_SEEN: NonNullable<BrowserContextOptions['storageState']> = {
+  cookies: [],
+  origins: [
+    {
+      origin: new URL(BASE_URL).origin,
+      localStorage: [{ name: preferenceKey(GUIDE_PREFERENCE), value: 'seen' }],
+    },
+  ],
+};
 
 /** The verse count as the app formats it, e.g. `37,128`. */
 export const VERSE_COUNT = CANONICAL_VERSIFICATION.verseCount.toLocaleString('en-US');

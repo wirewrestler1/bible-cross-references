@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { BOOKS } from './books.ts';
-import { GENRES, getBookGenre, getGenreBooks } from './genres.ts';
+import { GENRES, getBookGenre, getGenre, getGenreBooks } from './genres.ts';
+
+describe('getGenre', () => {
+  it('finds a genre by id and refuses one it does not have', () => {
+    expect(getGenre('deuterocanon').id).toBe('deuterocanon');
+    expect(() => getGenre('apocrypha' as never)).toThrow(RangeError);
+  });
+});
 
 describe('GENRES', () => {
   it('has the 10 standard groups and the deuterocanon, with the expected book counts', () => {

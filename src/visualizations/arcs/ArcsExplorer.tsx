@@ -8,6 +8,7 @@ import {
   TapIcon,
 } from '../../shared/ui/icons.tsx';
 import { Credits } from '../shared/components/Credits.tsx';
+import { GuideButton } from '../../shared/ui/FirstVisitGuide.tsx';
 import { FiltersMenu } from '../shared/components/FiltersMenu.tsx';
 import { useLocalization } from '../../i18n/use-locale.tsx';
 import { GenreLegend } from '../shared/components/GenreLegend.tsx';
@@ -77,6 +78,7 @@ export function ArcsExplorer({
             shownLinks={linkIds.length}
             totalLinks={index.linkCount}
           />
+          <GuideButton />
         </>
       }
       panel={

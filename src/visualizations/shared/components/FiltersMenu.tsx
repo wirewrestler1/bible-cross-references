@@ -73,11 +73,12 @@ export function FiltersMenu({
             </option>
           ))}
         </select>
+        <span className={styles.fieldNote}>{t('menu.filters.weight')}</span>
       </label>
       <fieldset className={styles.field}>
         <legend>{t('menu.filters.kinds')}</legend>
         {LINK_KIND_IDS.map((kind) => (
-          <label key={kind} className={styles.choice} title={t(`kind.${kind}.note`)}>
+          <label key={kind} className={styles.kindChoice}>
             <input
               type="checkbox"
               checked={!filter.hiddenKinds.has(kind)}
@@ -85,8 +86,9 @@ export function FiltersMenu({
                 toggleKind(kind);
               }}
             />
-            {t(`kind.${kind}`)}
-            <span className={styles.choiceNote}>{t(`kind.${kind}.note`)}</span>
+            <span className={styles.kindSample} data-kind={kind} aria-hidden="true" />
+            <span className={styles.kindName}>{t(`kind.${kind}`)}</span>
+            <span className={styles.kindNote}>{t(`kind.${kind}.note`)}</span>
           </label>
         ))}
       </fieldset>

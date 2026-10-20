@@ -10,6 +10,7 @@
  */
 import { resolve } from 'node:path';
 import { chromium, type Page } from '@playwright/test';
+import { GUIDE_PREFERENCE, preferenceKey } from '../src/shared/lib/preference-keys.ts';
 import { DEPLOY_BASE, SOCIAL_IMAGE_SIZE } from '../vite/site.ts';
 
 const BASE_URL = process.env['BASE_URL'] ?? `http://localhost:4173${DEPLOY_BASE}`;
@@ -44,6 +45,16 @@ try {
       viewport: { width: shot.width / scale, height: shot.height / scale },
       deviceScaleFactor: scale,
       colorScheme: 'dark',
+      // A reader who has seen the first-visit guide: the pictures are of the arcs, not of it.
+      storageState: {
+        cookies: [],
+        origins: [
+          {
+            origin: new URL(BASE_URL).origin,
+            localStorage: [{ name: preferenceKey(GUIDE_PREFERENCE), value: 'seen' }],
+          },
+        ],
+      },
     });
     const page = await context.newPage();
     await page.goto(`${BASE_URL}${shot.path}`);

@@ -306,7 +306,9 @@ describe('offline', () => {
     for (const page of PAGE_LIST.filter(({ app }) => app)) {
       expect(pages).toContain(page.entry.replace(/index\.html$/, ''));
     }
-    expect(pages).toContain('pt/');
+    if (LOCALE_IDS.includes('pt')) {
+      expect(pages).toContain('pt/');
+    }
   });
 });
 
@@ -396,6 +398,12 @@ describe('the committed English entries', () => {
 });
 
 describe('the inline preload script', () => {
+  interface PreloadOptions {
+    readonly search?: string;
+    readonly stored?: Readonly<Record<string, string>>;
+    readonly languages?: readonly string[];
+    readonly pageLocale?: LocaleId | null;
+  }
   /**
    * Runs the generated script the way a browser would, and reports what it preloaded.
    *
@@ -474,7 +482,7 @@ describe('the inline preload script', () => {
     return `/base/${translationDatasetPath(translation)}`;
   }
 
-  it.each([
+  const cases: readonly (readonly [string, PreloadOptions])[] = [
     ['a plain visit', {}],
     ['a link naming a translation', { search: '?t=kjv' }],
     ['a link naming a language', { search: '?lang=pt' }],
@@ -517,7 +525,17 @@ describe('the inline preload script', () => {
       'a Ukrainian page for a reader who stored a translation',
       { pageLocale: 'uk' as const, stored: { [TRANSLATION_STORAGE_KEY]: 'vbl' } },
     ],
-  ])('preloads what the app will load, for %s', (_name, options) => {
+  ];
+  it.each(
+    // A page in a language that is not published is not built, so there is nothing to preload
+    // for it.
+    cases.filter(
+      ([, options]) =>
+        options.pageLocale === undefined ||
+        options.pageLocale === null ||
+        LOCALE_IDS.includes(options.pageLocale),
+    ),
+  )('preloads what the app will load, for %s', (_name, options) => {
     expect(preloadedBy(options)).toEqual([PLAN.shared, appWouldLoad(options)]);
   });
 

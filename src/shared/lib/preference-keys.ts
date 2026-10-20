@@ -14,6 +14,8 @@ export function preferenceKey(name: string): string {
 
 export const LOCALE_PREFERENCE = 'locale';
 export const TRANSLATION_PREFERENCE = 'translation';
+/** Whether the reader has seen the first-visit guide; `'seen'` once they have dismissed it. */
+export const GUIDE_PREFERENCE = 'guide';
 
 export const LOCALE_STORAGE_KEY = preferenceKey(LOCALE_PREFERENCE);
 export const TRANSLATION_STORAGE_KEY = preferenceKey(TRANSLATION_PREFERENCE);

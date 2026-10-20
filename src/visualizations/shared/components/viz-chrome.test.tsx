@@ -46,8 +46,14 @@ describe('FiltersMenu', () => {
   it('offers every vote threshold once opened', async () => {
     renderMenu();
     await openMenu(/Filters/);
-    expect(screen.getByRole('option', { name: 'All' })).toBeDefined();
-    expect(screen.getByRole('option', { name: '≥ 100' })).toBeDefined();
+    expect(screen.getByRole('option', { name: /Everything/ })).toBeDefined();
+    expect(screen.getByRole('option', { name: 'Weight 100 and up' })).toBeDefined();
+  });
+
+  it('says what weight means, under the control that sets it', async () => {
+    renderMenu();
+    await openMenu(/filters/i);
+    expect(screen.getByText(/weight is how sure a link is/i)).toBeDefined();
   });
 
   it('reports the threshold a reader picks', async () => {
@@ -75,7 +81,7 @@ describe('FiltersMenu', () => {
     const boxes = screen.getAllByRole('checkbox');
     expect(boxes).toHaveLength(4);
     expect(boxes.every((box) => (box as HTMLInputElement).checked)).toBe(true);
-    await userEvent.click(screen.getByRole('checkbox', { name: /Computed/ }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /Similar wording/ }));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ hiddenKinds: new Set(['computed']) }),
     );
@@ -88,9 +94,12 @@ describe('FiltersMenu', () => {
       hiddenKinds: new Set(['computed', 'imported']),
     });
     await openMenu(/Filters/);
-    expect(screen.getByRole('checkbox', { name: /Computed/ })).toHaveProperty('checked', false);
+    expect(screen.getByRole('checkbox', { name: /Similar wording/ })).toHaveProperty(
+      'checked',
+      false,
+    );
     expect(screen.getByText(/2 kinds of link hidden/)).toBeDefined();
-    await userEvent.click(screen.getByRole('checkbox', { name: /Computed/ }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /Similar wording/ }));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ hiddenKinds: new Set(['imported']) }),
     );
@@ -288,9 +297,9 @@ describe('GenreLegend and GenreMenu', () => {
 
   it('keys the line kinds under the genres', () => {
     render(<GenreLegend hiddenGenres={new Set()} onToggle={vi.fn()} />);
-    const key = screen.getByLabelText('Lines');
-    expect(within(key).getByText('Computed')).toBeDefined();
-    expect(within(key).getByText('Curated')).toBeDefined();
+    const key = screen.getByLabelText('Kinds of link');
+    expect(within(key).getByText('Similar wording')).toBeDefined();
+    expect(within(key).getByText('Hand-picked')).toBeDefined();
   });
 
   it('folds the legend away on a phone, and brings it back', async () => {

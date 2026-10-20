@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { LOCALE_IDS } from './locale-id.ts';
 import { localeFromPath, localePathSegment, splitLocalePath } from './locale-path.ts';
+
+/** The language paths only exist while a second language is published. */
+const PT = LOCALE_IDS.includes('pt');
 
 const BASE = '/bible-cross-references/';
 
@@ -17,10 +21,6 @@ describe('splitLocalePath', () => {
   it.each([
     ['/bible-cross-references/', null, ''],
     ['/bible-cross-references/threads/', null, 'threads/'],
-    ['/bible-cross-references/pt/', 'pt', ''],
-    ['/bible-cross-references/pt', 'pt', ''],
-    ['/bible-cross-references/pt/threads/', 'pt', 'threads/'],
-    ['/bible-cross-references/pt/index.html', 'pt', 'index.html'],
     // `/en/` is not a language path: English is served from the bare base and no such file is
     // written, so this is just an unknown path.
     ['/bible-cross-references/en/', null, 'en/'],
@@ -29,6 +29,15 @@ describe('splitLocalePath', () => {
     // Outside the base entirely, e.g. another deployment.
     ['/somewhere-else/pt/', null, ''],
   ])('%s', (pathname, locale, rest) => {
+    expect(splitLocalePath(pathname, BASE)).toEqual({ locale, rest });
+  });
+
+  it.runIf(PT).each([
+    ['/bible-cross-references/pt/', 'pt', ''],
+    ['/bible-cross-references/pt', 'pt', ''],
+    ['/bible-cross-references/pt/threads/', 'pt', 'threads/'],
+    ['/bible-cross-references/pt/index.html', 'pt', 'index.html'],
+  ])('%s, in a published language', (pathname, locale, rest) => {
     expect(splitLocalePath(pathname, BASE)).toEqual({ locale, rest });
   });
 
@@ -41,7 +50,7 @@ describe('splitLocalePath', () => {
 });
 
 describe('localeFromPath', () => {
-  it('names the language a path is in', () => {
+  it.runIf(PT)('names the language a path is in', () => {
     expect(localeFromPath('/bible-cross-references/pt/', BASE)).toBe('pt');
     expect(localeFromPath('/bible-cross-references/pt/threads/', BASE)).toBe('pt');
   });

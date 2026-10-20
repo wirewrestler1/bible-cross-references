@@ -26,7 +26,7 @@ import { it } from './messages/it.ts';
 import { es } from './messages/es.ts';
 import { uk } from './messages/uk.ts';
 import type { LocaleMessages } from './messages/types.ts';
-import { DEFAULT_LOCALE_ID, type LocaleId } from './locale-id.ts';
+import { DEFAULT_LOCALE_ID, LOCALE_IDS, type LocaleId } from './locale-id.ts';
 import { LOCALE_TAGS } from './locale-tags.ts';
 
 export interface Locale {
@@ -94,8 +94,8 @@ const LOCALES: Readonly<Record<LocaleId, Locale>> = {
 
 export { DEFAULT_LOCALE_ID };
 
-/** Every locale, in the order a picker lists them. */
-export const LOCALE_LIST: readonly Locale[] = Object.values(LOCALES);
+/** Every locale readers are offered, in the order a picker lists them. */
+export const LOCALE_LIST: readonly Locale[] = LOCALE_IDS.map((id) => LOCALES[id]);
 
 export function getLocale(id: LocaleId): Locale {
   return LOCALES[id];

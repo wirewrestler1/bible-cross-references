@@ -41,34 +41,67 @@ export const en = {
 
   'menu.filtersChanged': 'Filters (changed)',
   'menu.filters': 'Filters',
-  'menu.filters.votes': 'Minimum weight',
-  'menu.filters.votes.all': 'All',
-  'menu.filters.votes.atLeast': (votes: number) => `≥ ${String(votes)}`,
+  'menu.filters.votes': 'Show links',
+  'menu.filters.votes.all': 'Everything, doubtful links too',
+  'menu.filters.votes.atLeast': (votes: number) =>
+    votes === 0
+      ? 'All but links readers voted down'
+      : votes === 4
+        ? 'The surer links (weight 4 and up)'
+        : `Weight ${String(votes)} and up`,
   // The parenthesis opens and closes inside the message: a sentence a translator cannot see the
   // end of is one they cannot punctuate, and not every language closes a clause the way English
   // does. `hidden` is the genre clause, or empty.
   'menu.filters.note': (shown: string, total: string, threshold: string, hidden: string) =>
-    `Weight ranks a link; it doesn’t prove it right or wrong. For a Treasury link it is the ` +
-    `votes of OpenBible.info’s readers, for a curated one how sure the connection is, for a ` +
-    `computed one how alike the words are. Showing ${shown} of ${total} links ` +
-    `(${threshold}${hidden}).`,
+    `Showing ${shown} of ${total} links (${threshold}${hidden}).`,
+  // What the weight is, in one breath: the slider above is meaningless without it.
+  'menu.filters.weight':
+    'Weight is how sure a link is, from 1 to 10. Classic references are weighted by readers’ ' +
+    'votes, hand-picked ones by how sure the connection is, similar wording by how alike the ' +
+    'words are. It ranks the links; it doesn’t prove them right.',
   'menu.filters.hiddenGenres': (count: number) =>
     count === 1 ? ', 1 genre hidden' : `, ${String(count)} genres hidden`,
-  'filter.allLinks': 'all links',
-  'filter.noDownvoted': 'links voted down are hidden',
-  'filter.atLeastVotes': (votes: string) => `weight ≥ ${votes}`,
+  'filter.allLinks': 'everything',
+  'filter.noDownvoted': 'all but links voted down',
+  'filter.atLeastVotes': (votes: string) => `weight ${votes} and up`,
   'menu.filters.hiddenKinds': (count: number) =>
     count === 1 ? ', 1 kind of link hidden' : `, ${String(count)} kinds of link hidden`,
   'menu.filters.kinds': 'Kinds of link',
-  'kind.tsk': 'Treasury (OpenBible.info)',
-  'kind.tsk.note': 'ranked by readers’ votes',
-  'kind.imported': 'Swedish Bible 1917',
-  'kind.imported.note': 'a printed apparatus of parallels',
-  'kind.curated': 'Curated',
-  'kind.curated.note': 'compiled for the deuterocanon, by confidence',
-  'kind.computed': 'Computed',
-  'kind.computed.note': 'alike in wording, not necessarily related',
-  'legend.kinds': 'Lines',
+  // Plain names: a reader should know what a line is without knowing where it came from.
+  'kind.tsk': 'Classic references',
+  'kind.tsk.note':
+    'the Treasury of Scripture Knowledge’s margin notes, as readers of OpenBible.info voted on them',
+  'kind.imported': 'Swedish Bible notes',
+  'kind.imported.note':
+    'the parallel passages printed in the Swedish Bible of 1917, which reach the deuterocanon',
+  'kind.curated': 'Hand-picked',
+  'kind.curated.note':
+    'compiled for this app for the deuterocanon, weighted by how sure the connection is',
+  'kind.computed': 'Similar wording',
+  'kind.computed.note':
+    'verses whose words are alike, found by comparing them; alike is not the same as related',
+  'legend.kinds': 'Kinds of link',
+
+  // The first-visit guide: what the lines are, what the weight means, which books are new.
+  'guide.open': 'How to read this',
+  'guide.title': 'How to read this',
+  'guide.arcs.title': 'Every line is a link',
+  'guide.arcs':
+    'Each arc joins two passages that echo, quote or explain each other. Touch a book on the ' +
+    'bar or a verse to see its links; follow any of them to travel there.',
+  'guide.kinds.title': 'Four kinds of line',
+  'guide.kinds': 'They come from different places and deserve different trust:',
+  'guide.weight.title': 'Weight',
+  'guide.weight':
+    'Every link has a weight from 1 to 10: how sure it is. Classic references are weighted by ' +
+    'readers’ votes, hand-picked links by how sure the connection is, similar wording by how ' +
+    'alike the words are. The Filters button sets how sure a link has to be to show.',
+  'guide.canon.title': 'The whole Orthodox Bible',
+  'guide.canon':
+    'The books between Malachi and Matthew — Tobit, Judith, Wisdom, Sirach, Baruch, the ' +
+    'Maccabees and the rest — are the deuterocanon. The World English Bible carries them; ' +
+    'the other translations here do not, and say so.',
+  'guide.done': 'Got it',
   'menu.filters.tip': 'Tip: tap a genre in the legend to hide or show it.',
   'menu.filters.reset': 'Reset filters',
 

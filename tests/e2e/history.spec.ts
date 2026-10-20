@@ -1,5 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, PANEL, waitForApp } from './helpers.ts';
+import { ACTIVE, GUIDE_SEEN, PANEL, waitForApp } from './helpers.ts';
+import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
+
+/** Portuguese pages exist only while the language is published; English only for now. */
+const PT = LOCALE_IDS.includes('pt');
 
 /**
  * Back and Forward, which readers press far more often than any button this app draws.
@@ -38,6 +42,7 @@ async function chooseLanguage(page: Page, value: string): Promise<void> {
 
 test.describe('browser history', () => {
   test('Back returns to the language the entry was made in', async ({ page }) => {
+    test.skip(!PT, 'Portuguese is not published in this release');
     // The regression this exists for: the language was dropped on the way back, and the entry
     // was rewritten so pressing Back again could never recover it either.
     await page.goto('./?lang=pt&ref=John.3.16');
@@ -63,6 +68,7 @@ test.describe('browser history', () => {
   });
 
   test('Forward returns to the language that followed it', async ({ page }) => {
+    test.skip(!PT, 'Portuguese is not published in this release');
     // Three full page loads, each fetching the merged links and a Bible: on a CI runner drawing
     // with a software renderer that is more than the usual budget allows.
     test.slow();
@@ -146,6 +152,7 @@ test.describe('browser history', () => {
   });
 
   test('a language chosen in the address survives a reload', async ({ page }) => {
+    test.skip(!PT, 'Portuguese is not published in this release');
     await page.goto('./?lang=pt');
     await waitForApp(page);
     await page.reload();
@@ -155,10 +162,13 @@ test.describe('browser history', () => {
   });
 
   test("an explicit language is not quietly replaced by the reader's own", async ({ browser }) => {
+    // With one language published, a Portuguese browser is answered in English anyway, so there
+    // is nothing for `lang=en` to hold on to: the address drops it as plain.
+    test.skip(!PT, 'needs a second published language');
     // A Portuguese browser follows an English link. Before `plainLocaleFor`, the first click
     // dropped `lang=en` from the address and the next read filled the gap from the reader's own
     // language, turning the interface Portuguese under them.
-    const context = await browser.newContext({ locale: 'pt-BR' });
+    const context = await browser.newContext({ locale: 'pt-BR', storageState: GUIDE_SEEN });
     const page = await context.newPage();
     await page.goto('./?lang=en&ref=John.3.16');
     await waitForApp(page);

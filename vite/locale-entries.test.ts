@@ -9,11 +9,13 @@ import {
   localeEntryHtml,
   writeLocaleEntries,
 } from './locale-entries.ts';
-import { DEFAULT_LOCALE_ID, LOCALE_IDS } from '../src/i18n/locale-id.ts';
+import { DEFAULT_LOCALE_ID, KNOWN_LOCALE_IDS, LOCALE_IDS } from '../src/i18n/locale-id.ts';
 import { LOCALE_TAGS } from '../src/i18n/locale-tags.ts';
 import { SITE_COPY, SITE_PAGE_IDS } from '../src/i18n/site-copy.ts';
 
-const OTHER_LOCALES = LOCALE_IDS.filter((id) => id !== DEFAULT_LOCALE_ID);
+// Every language the app has words for, so the pages stay right for the ones kept off the
+// published list too.
+const OTHER_LOCALES = KNOWN_LOCALE_IDS.filter((id) => id !== DEFAULT_LOCALE_ID);
 
 describe('the HTML written for a language', () => {
   it.each(OTHER_LOCALES.flatMap((id) => SITE_PAGE_IDS.map((page) => [id, page] as const)))(
@@ -59,7 +61,7 @@ describe('the HTML written for a language', () => {
 
 describe('the entries a build has to write', () => {
   it('covers every page of every language but the default one', () => {
-    const paths = localeEntries().map(({ path }) => path);
+    const paths = localeEntries(KNOWN_LOCALE_IDS).map(({ path }) => path);
     for (const id of OTHER_LOCALES) {
       for (const page of SITE_PAGE_IDS) {
         const suffix = page === 'main' ? '' : `${page}/`;
@@ -71,38 +73,46 @@ describe('the entries a build has to write', () => {
   });
 
   it('leaves the default language alone: its entries are committed, not generated', () => {
-    for (const { path } of localeEntries()) {
+    for (const { path } of localeEntries(KNOWN_LOCALE_IDS)) {
       expect(path.startsWith(`${DEFAULT_LOCALE_ID}/`)).toBe(false);
     }
-    expect(localeEntries().map(({ path }) => path)).not.toContain('index.html');
+    expect(localeEntries(KNOWN_LOCALE_IDS).map(({ path }) => path)).not.toContain('index.html');
+  });
+
+  it('writes only the published languages by default', () => {
+    const published = localeEntries().map(({ path }) => path);
+    for (const id of KNOWN_LOCALE_IDS) {
+      const listed = LOCALE_IDS.includes(id) && id !== DEFAULT_LOCALE_ID;
+      expect(published.some((path) => path.startsWith(`${id}/`))).toBe(listed);
+    }
   });
 });
 
 describe('writing them', () => {
   it('writes every entry into a directory of its own', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'locale-entries-'));
-    const written = writeLocaleEntries(dir);
-    expect(written.length).toBe(localeEntries().length);
-    for (const { path, html } of localeEntries()) {
+    const written = writeLocaleEntries(dir, KNOWN_LOCALE_IDS);
+    expect(written.length).toBe(localeEntries(KNOWN_LOCALE_IDS).length);
+    for (const { path, html } of localeEntries(KNOWN_LOCALE_IDS)) {
       expect(await readFile(join(dir, path), 'utf8')).toBe(html);
     }
   });
 
   it('writes nothing the second time, so a watching dev server does not loop', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'locale-entries-'));
-    writeLocaleEntries(dir);
-    expect(writeLocaleEntries(dir)).toEqual([]);
+    writeLocaleEntries(dir, KNOWN_LOCALE_IDS);
+    expect(writeLocaleEntries(dir, KNOWN_LOCALE_IDS)).toEqual([]);
   });
 
   it('puts back an entry somebody edited by hand', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'locale-entries-'));
-    writeLocaleEntries(dir);
-    const [first] = localeEntries();
+    writeLocaleEntries(dir, KNOWN_LOCALE_IDS);
+    const [first] = localeEntries(KNOWN_LOCALE_IDS);
     expect(first).toBeDefined();
     const file = join(dir, first?.path ?? '');
     await mkdir(join(file, '..'), { recursive: true });
     await writeFile(file, '<html>edited</html>');
-    expect(writeLocaleEntries(dir)).toEqual([first?.path]);
+    expect(writeLocaleEntries(dir, KNOWN_LOCALE_IDS)).toEqual([first?.path]);
     expect(await readFile(file, 'utf8')).toBe(first?.html);
   });
 });

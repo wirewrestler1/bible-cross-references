@@ -13,6 +13,10 @@ import {
   setPreferredLocale,
 } from './locale-choice.ts';
 import { localizationFor, useLocalization } from './use-locale.tsx';
+import { LOCALE_IDS } from './locale-id.ts';
+
+/** Portuguese is offered only while it is published; these cases wait for it. */
+const PT = LOCALE_IDS.includes('pt');
 
 /** The app runs in a browser; this gives it just enough of one to store a preference. */
 function withStoredLocale(value: string | null): void {
@@ -33,7 +37,7 @@ afterEach(() => {
 });
 
 describe('localeFromParams', () => {
-  it('reads the language a link names', () => {
+  it.runIf(PT)('reads the language a link names', () => {
     expect(localeFromParams(url('?lang=pt').searchParams)).toBe('pt');
   });
 
@@ -44,17 +48,17 @@ describe('localeFromParams', () => {
 });
 
 describe('initialLocaleId', () => {
-  it('prefers the address over everything else', () => {
+  it.runIf(PT)('prefers the address over everything else', () => {
     withStoredLocale('en');
     expect(initialLocaleId(url('?lang=pt'), ['en-US'])).toBe('pt');
   });
 
-  it('falls back to the reader’s stored choice', () => {
+  it.runIf(PT)('falls back to the reader’s stored choice', () => {
     withStoredLocale('pt');
     expect(initialLocaleId(url(''), ['en-US'])).toBe('pt');
   });
 
-  it('then to whatever their browser asks for', () => {
+  it.runIf(PT)('then to whatever their browser asks for', () => {
     withStoredLocale(null);
     expect(initialLocaleId(url(''), ['pt-BR', 'en'])).toBe('pt');
   });
@@ -149,7 +153,7 @@ describe('describeReferenceError', () => {
 });
 
 describe('choosing versus following a link', () => {
-  it('records a language the reader chose, so the next visit keeps it', async () => {
+  it.runIf(PT)('records a language the reader chose, so the next visit keeps it', async () => {
     withStoredLocale(null);
     setActiveLocale('en');
     function Choice() {
@@ -237,7 +241,7 @@ describe("the reader's own language, apart from the address", () => {
     expect(screen.getByText('pt')).toBeDefined();
   });
 
-  it('starts from the stored choice, over anything the browser asks for', () => {
+  it.runIf(PT)('starts from the stored choice, over anything the browser asks for', () => {
     // The browser-and-default branches are covered where `initialLocaleId` is, above: they have
     // to run before any test writes a preference, because `preferences.ts` keeps what was
     // written in module memory and consults that ahead of storage.

@@ -29,6 +29,111 @@ const ROUTES: readonly [ViewRoute<'arcs'>, ViewRoute<'threads'>] = [
   { id: 'threads', path: 'threads/' },
 ];
 
+/**
+ * The same, for the pages and links of the other languages. They are offered only while a
+ * language is published (see `LOCALE_IDS`); until then these rows wait, and the links name a
+ * language the app answers in English.
+ */
+const SAVED_IN_OTHER_LANGUAGES: readonly (readonly [string, Partial<UrlState>])[] = [
+  ['/bible-cross-references/?lang=pt', { locale: 'pt', translation: 'blivre' }],
+  // Ukrainian has an interface and no Bible of its own, so it keeps the default text. That is
+  // the whole point of the two being separate settings, and this is where it is pinned.
+  // The three languages that have both an interface and a Bible of their own: naming the
+  // language is enough, and the Bible follows.
+  ['/bible-cross-references/?lang=de', { locale: 'de', translation: 'luther1912' }],
+  ['/bible-cross-references/?lang=it', { locale: 'it', translation: 'riveduta1927' }],
+  ['/bible-cross-references/?lang=es', { locale: 'es', translation: 'vbl' }],
+  ['/bible-cross-references/?lang=uk', { locale: 'uk' }],
+  [
+    '/bible-cross-references/threads/?lang=pt&ref=John.3.16',
+    { view: 'threads', ref: 'John.3.16', locale: 'pt', translation: 'blivre' },
+  ],
+
+  // The language in the path, which is where a link shared from now on carries it: a static
+  // host serves one file per path, so this is the only shape whose title, description and
+  // preview card are Portuguese before any JavaScript has run.
+  ['/bible-cross-references/pt/', { locale: 'pt', translation: 'blivre' }],
+  ['/bible-cross-references/pt', { locale: 'pt', translation: 'blivre' }],
+  ['/bible-cross-references/pt/index.html', { locale: 'pt', translation: 'blivre' }],
+  ['/bible-cross-references/pt/threads/', { view: 'threads', locale: 'pt', translation: 'blivre' }],
+  [
+    '/bible-cross-references/pt/threads/index.html',
+    { view: 'threads', locale: 'pt', translation: 'blivre' },
+  ],
+  [
+    '/bible-cross-references/pt/?ref=John.3.16',
+    { ref: 'John.3.16', locale: 'pt', translation: 'blivre' },
+  ],
+  ['/bible-cross-references/pt/?t=kjv', { locale: 'pt', translation: 'kjv' }],
+  ['/bible-cross-references/de/', { locale: 'de', translation: 'luther1912' }],
+  ['/bible-cross-references/it/', { locale: 'it', translation: 'riveduta1927' }],
+  ['/bible-cross-references/es/', { locale: 'es', translation: 'vbl' }],
+  [
+    '/bible-cross-references/de/threads/',
+    { view: 'threads', locale: 'de', translation: 'luther1912' },
+  ],
+  [
+    '/bible-cross-references/es/?ref=John.3.16',
+    { ref: 'John.3.16', locale: 'es', translation: 'vbl' },
+  ],
+  ['/bible-cross-references/uk/', { locale: 'uk' }],
+  ['/bible-cross-references/uk', { locale: 'uk' }],
+  ['/bible-cross-references/uk/index.html', { locale: 'uk' }],
+  ['/bible-cross-references/uk/threads/', { view: 'threads', locale: 'uk' }],
+  ['/bible-cross-references/uk/threads/index.html', { view: 'threads', locale: 'uk' }],
+  // The path wins over a query that disagrees with it, exactly as it does for Portuguese.
+  ['/bible-cross-references/uk/?lang=en', { locale: 'uk' }],
+  ['/bible-cross-references/uk/?ref=John.3.16', { ref: 'John.3.16', locale: 'uk' }],
+  ['/bible-cross-references/uk/?t=luther1912', { locale: 'uk', translation: 'luther1912' }],
+  [
+    '/bible-cross-references/pt/threads/?ref=John.3.16&votes=10&hide=law,acts&t=kjv',
+    {
+      view: 'threads',
+      ref: 'John.3.16',
+      minVotes: 10,
+      hidden: ['acts', 'law'],
+      translation: 'kjv',
+      locale: 'pt',
+    },
+  ],
+  // The path wins over a query that disagrees with it. The file served at this path was
+  // written in Portuguese — its title, its description and its `lang` were settled before the
+  // app ran — and no parameter can change what a crawler or a preview already read. Nothing
+  // saved is affected: no link predates the paths, so none carries both.
+  ['/bible-cross-references/pt/?lang=en', { locale: 'pt', translation: 'blivre' }],
+  // `/en/` is not a language path: English is served from the bare base, and no such file is
+  // ever written. It reads as the home view, which is what the host would serve anyway.
+  ['/bible-cross-references/en/', {}],
+
+  // Everything at once, in both orders a URL can carry them.
+  [
+    '/bible-cross-references/threads/?ref=John.3.16&votes=10&hide=law,acts&t=kjv&lang=pt',
+    {
+      view: 'threads',
+      ref: 'John.3.16',
+      minVotes: 10,
+      hidden: ['acts', 'law'],
+      translation: 'kjv',
+      locale: 'pt',
+    },
+  ],
+  [
+    '/bible-cross-references/threads/?lang=pt&t=kjv&hide=acts,law&votes=10&ref=John.3.16',
+    {
+      view: 'threads',
+      ref: 'John.3.16',
+      minVotes: 10,
+      hidden: ['acts', 'law'],
+      translation: 'kjv',
+      locale: 'pt',
+    },
+  ],
+
+  // A link that picked up a tracking parameter on its way through a social network.
+  ['/bible-cross-references/?ref=John.3.16&utm_source=twitter', { ref: 'John.3.16' }],
+  ['/bible-cross-references/?ref=John.3.16#anything', { ref: 'John.3.16' }],
+];
+
 /** The deployed base path, which every real link carries. */
 const BASE = '/bible-cross-references/';
 
@@ -154,109 +259,18 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   // existed names it. These are the rows that must never change: they are in people's
   // bookmarks, in messages nobody can edit, and in a Brazilian reader's WhatsApp history.
   // The Portuguese Bible comes with the Portuguese interface for a reader who chose neither.
-  ['/bible-cross-references/?lang=pt', { locale: 'pt', translation: 'blivre' }],
   ['/bible-cross-references/?lang=en', { locale: 'en' }],
-  // Ukrainian has an interface and no Bible of its own, so it keeps the default text. That is
-  // the whole point of the two being separate settings, and this is where it is pinned.
-  // The three languages that have both an interface and a Bible of their own: naming the
-  // language is enough, and the Bible follows.
-  ['/bible-cross-references/?lang=de', { locale: 'de', translation: 'luther1912' }],
-  ['/bible-cross-references/?lang=it', { locale: 'it', translation: 'riveduta1927' }],
-  ['/bible-cross-references/?lang=es', { locale: 'es', translation: 'vbl' }],
-  ['/bible-cross-references/?lang=uk', { locale: 'uk' }],
-  [
-    '/bible-cross-references/threads/?lang=pt&ref=John.3.16',
-    { view: 'threads', ref: 'John.3.16', locale: 'pt', translation: 'blivre' },
-  ],
-
-  // The language in the path, which is where a link shared from now on carries it: a static
-  // host serves one file per path, so this is the only shape whose title, description and
-  // preview card are Portuguese before any JavaScript has run.
-  ['/bible-cross-references/pt/', { locale: 'pt', translation: 'blivre' }],
-  ['/bible-cross-references/pt', { locale: 'pt', translation: 'blivre' }],
-  ['/bible-cross-references/pt/index.html', { locale: 'pt', translation: 'blivre' }],
-  ['/bible-cross-references/pt/threads/', { view: 'threads', locale: 'pt', translation: 'blivre' }],
-  [
-    '/bible-cross-references/pt/threads/index.html',
-    { view: 'threads', locale: 'pt', translation: 'blivre' },
-  ],
-  [
-    '/bible-cross-references/pt/?ref=John.3.16',
-    { ref: 'John.3.16', locale: 'pt', translation: 'blivre' },
-  ],
-  ['/bible-cross-references/pt/?t=kjv', { locale: 'pt', translation: 'kjv' }],
-  ['/bible-cross-references/de/', { locale: 'de', translation: 'luther1912' }],
-  ['/bible-cross-references/it/', { locale: 'it', translation: 'riveduta1927' }],
-  ['/bible-cross-references/es/', { locale: 'es', translation: 'vbl' }],
-  [
-    '/bible-cross-references/de/threads/',
-    { view: 'threads', locale: 'de', translation: 'luther1912' },
-  ],
-  [
-    '/bible-cross-references/es/?ref=John.3.16',
-    { ref: 'John.3.16', locale: 'es', translation: 'vbl' },
-  ],
-  ['/bible-cross-references/uk/', { locale: 'uk' }],
-  ['/bible-cross-references/uk', { locale: 'uk' }],
-  ['/bible-cross-references/uk/index.html', { locale: 'uk' }],
-  ['/bible-cross-references/uk/threads/', { view: 'threads', locale: 'uk' }],
-  ['/bible-cross-references/uk/threads/index.html', { view: 'threads', locale: 'uk' }],
-  // The path wins over a query that disagrees with it, exactly as it does for Portuguese.
-  ['/bible-cross-references/uk/?lang=en', { locale: 'uk' }],
-  ['/bible-cross-references/uk/?ref=John.3.16', { ref: 'John.3.16', locale: 'uk' }],
-  ['/bible-cross-references/uk/?t=luther1912', { locale: 'uk', translation: 'luther1912' }],
-  [
-    '/bible-cross-references/pt/threads/?ref=John.3.16&votes=10&hide=law,acts&t=kjv',
-    {
-      view: 'threads',
-      ref: 'John.3.16',
-      minVotes: 10,
-      hidden: ['acts', 'law'],
-      translation: 'kjv',
-      locale: 'pt',
-    },
-  ],
-  // The path wins over a query that disagrees with it. The file served at this path was
-  // written in Portuguese — its title, its description and its `lang` were settled before the
-  // app ran — and no parameter can change what a crawler or a preview already read. Nothing
-  // saved is affected: no link predates the paths, so none carries both.
-  ['/bible-cross-references/pt/?lang=en', { locale: 'pt', translation: 'blivre' }],
-  // `/en/` is not a language path: English is served from the bare base, and no such file is
-  // ever written. It reads as the home view, which is what the host would serve anyway.
-  ['/bible-cross-references/en/', {}],
-
-  // Everything at once, in both orders a URL can carry them.
-  [
-    '/bible-cross-references/threads/?ref=John.3.16&votes=10&hide=law,acts&t=kjv&lang=pt',
-    {
-      view: 'threads',
-      ref: 'John.3.16',
-      minVotes: 10,
-      hidden: ['acts', 'law'],
-      translation: 'kjv',
-      locale: 'pt',
-    },
-  ],
-  [
-    '/bible-cross-references/threads/?lang=pt&t=kjv&hide=acts,law&votes=10&ref=John.3.16',
-    {
-      view: 'threads',
-      ref: 'John.3.16',
-      minVotes: 10,
-      hidden: ['acts', 'law'],
-      translation: 'kjv',
-      locale: 'pt',
-    },
-  ],
-
-  // A link that picked up a tracking parameter on its way through a social network.
-  ['/bible-cross-references/?ref=John.3.16&utm_source=twitter', { ref: 'John.3.16' }],
-  ['/bible-cross-references/?ref=John.3.16#anything', { ref: 'John.3.16' }],
 ];
 
 describe('saved URLs keep working', () => {
   it.each(SAVED)('%s', (url, expected) => {
     expect(read(url)).toEqual({ ...DEFAULTS, ...expected });
+  });
+
+  describe.runIf(LOCALE_IDS.length > 1)('in the other languages', () => {
+    it.each(SAVED_IN_OTHER_LANGUAGES)('%s', (url, expected) => {
+      expect(read(url)).toEqual({ ...DEFAULTS, ...expected });
+    });
   });
 
   it('covers every view, every vote threshold, every genre and every language', () => {
@@ -395,7 +409,7 @@ describe('the URLs the app emits', () => {
  * language and nothing else: a tracking parameter, a fragment and the order of everything else
  * survive, because the reader did not ask for their link to be tidied.
  */
-describe('an old link upgrades itself', () => {
+describe.runIf(LOCALE_IDS.includes('pt'))('an old link upgrades itself', () => {
   const upgrade = (url: string) =>
     localeUpgradeUrl(new URL(url, 'https://trekhleb.dev'), BASE, ROUTES);
 

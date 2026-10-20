@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { GUIDE_PREFERENCE, preferenceKey } from './src/shared/lib/preference-keys.ts';
 import { DEPLOY_BASE } from './vite/site.ts';
 
 /** Where `npm run preview` serves the built site, base path and all. */
@@ -43,6 +44,17 @@ export default defineConfig({
     : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: BASE_URL,
+    // Every test is a reader who has seen the first-visit guide, or its dialog would sit over
+    // every page. guide.spec.ts is the one that starts without it.
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: new URL(BASE_URL).origin,
+          localStorage: [{ name: preferenceKey(GUIDE_PREFERENCE), value: 'seen' }],
+        },
+      ],
+    },
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     // The software renderer: the arcs are WebGL, and CI machines have no GPU.
