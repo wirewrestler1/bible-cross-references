@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DebugPage } from '../features/debug/DebugPage.tsx';
 import { debugDataLoader } from '../features/debug/debug-data.ts';
 import { mount } from '../shared/lib/mount.tsx';
@@ -12,7 +12,12 @@ import {
   PROVENANCE,
   verseIndex,
 } from '../test-utils/fixtures.ts';
-import { VizDataBoundary } from '../visualizations/shared/components/VizDataBoundary.tsx';
+import {
+  HOLD_MS,
+  LEAVE_MS,
+  VizDataBoundary,
+} from '../visualizations/shared/components/VizDataBoundary.tsx';
+import { INTRO_SESSION_KEY } from '../shared/lib/preference-keys.ts';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
 import { PHONE_QUERY } from '../shared/lib/use-media-query.ts';
 import { vizCoreLoader, resetTranslations } from '../visualizations/shared/viz-data.ts';
@@ -93,6 +98,40 @@ describe('mount', () => {
 });
 
 describe('VizDataBoundary', () => {
+  // A return, not an arrival: the loading screen is not held (the arrival has its own test).
+  beforeEach(() => {
+    sessionStorage.setItem(INTRO_SESSION_KEY, 'arrived');
+  });
+  afterEach(() => {
+    sessionStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it('holds the loading screen on arrival until its picture is full, then lets it leave', async () => {
+    sessionStorage.clear();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    serve();
+    await renderSuspending(<VizDataBoundary>{() => <p>done</p>}</VizDataBoundary>);
+    await act(async () => {
+      await vizCoreLoader.load();
+    });
+    // The data is here, but the screen holds.
+    expect(screen.queryByText('done')).toBeNull();
+    expect(screen.getByRole('status')).toBeDefined();
+    await act(async () => {
+      vi.advanceTimersByTime(HOLD_MS);
+      await Promise.resolve();
+    });
+    // The page is in, under the leaving screen...
+    expect(screen.getByText('done')).toBeDefined();
+    expect(screen.getByRole('status')).toBeDefined();
+    act(() => {
+      vi.advanceTimersByTime(LEAVE_MS);
+    });
+    // ...and then on its own.
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
   it('shows the data once it has loaded', async () => {
     serve();
     await renderSuspending(

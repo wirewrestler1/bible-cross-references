@@ -55,6 +55,18 @@
   text-align: center;
 }
 
+/* Leaving: it fades over the arriving page, which takes the input from here on. */
+.leaving {
+  animation: leave 700ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes leave {
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes appear {
   from {
     opacity: 0;
@@ -68,5 +80,9 @@
 @media (prefers-reduced-motion: reduce) {
   .loader {
     animation: none;
+  }
+
+  .leaving {
+    opacity: 0;
   }
 }

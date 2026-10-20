@@ -12,6 +12,8 @@ import styles from './LoadingArcs.module.css';
 interface LoadingArcsProps {
   /** What is loading: the status line under the picture, also read by screen readers. */
   readonly label: string;
+  /** Fading out over the arriving page (see `VizDataBoundary`); it takes no more input. */
+  readonly leaving?: boolean;
 }
 
 /** An arc being drawn, or drawn and still glowing. */
@@ -24,12 +26,20 @@ interface Flight {
   readonly bright: boolean;
 }
 
-/** Arcs are launched faster and faster: the pause between them shrinks from the first to the last. */
-const PAUSE_MS = { first: 260, last: 28 };
-/** How long the picture takes to reach its full rate. */
-const RAMP_MS = 6000;
+/**
+ * Arcs are launched faster and faster, from a few a second to a flood: the rate rises
+ * exponentially from the first to the last over the ramp, which launches about `FULL` arcs
+ * in all (T · (r₁ − r₀) / ln(r₁ / r₀)).
+ */
+const RATE_PER_S = { first: 4, last: 900 };
+/** How long the picture takes to fill: a little under the hold on the screen (`HOLD_MS`). */
+export const RAMP_MS = 3200;
 /** After this many arcs the picture is full; it goes on sparsely so it never looks finished. */
 const FULL = 520;
+/** Once full, new arcs come at this rate. */
+const SPARSE_PER_S = 2.4;
+/** An arc's flight takes this long at the start of the ramp, and a third of it by the end. */
+const LIFE_MS = { min: 700, spread: 900 };
 /** One arc in this many is a bright one, drawn as a ribbon of light rather than a thread. */
 const BRIGHT_EVERY = 9;
 /** Pieces of the moving light along an arc, brighter toward its head. */
@@ -74,7 +84,7 @@ function arcPoint(a: number, b: number, rise: number, t: number): readonly [numb
  * canon's connections stands over the line. The picture never repeats and never quite settles.
  * A reader who prefers reduced motion gets the finished spectrum at once.
  */
-export function LoadingArcs({ label }: LoadingArcsProps) {
+export function LoadingArcs({ label, leaving = false }: LoadingArcsProps) {
   const { t } = useLocalization();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tracesRef = useRef<HTMLCanvasElement>(null);
@@ -104,7 +114,8 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
 
     const flights: Flight[] = [];
     let launched = 0;
-    let nextLaunch = 0;
+    let due = 0;
+    let last = 0;
     let frame = 0;
     const start = performance.now();
     const still = prefersReducedMotion();
@@ -124,7 +135,8 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
       target.strokeStyle = flight.color;
       target.lineWidth = lineWidth;
       target.beginPath();
-      const steps = 40;
+      // Enough segments for the span drawn: a whole arc takes 40, a head a handful.
+      const steps = Math.max(4, Math.round(40 * (to - from)));
       for (let step = 0; step <= steps; step += 1) {
         const t = from + ((to - from) * step) / steps;
         const [px, py] = arcPoint(x(a), x(b), rise, t);
@@ -134,15 +146,16 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
       target.stroke();
     };
 
-    const launch = (now: number) => {
+    const launch = (now: number, ramp: number) => {
       const from = somewhere();
       const to = somewhere();
+      const quickness = 1 - ramp * 0.67;
       flights.push({
         from,
         to,
         color: colorAt(to),
         born: now,
-        life: 700 + Math.random() * 900,
+        life: (LIFE_MS.min + Math.random() * LIFE_MS.spread) * quickness,
         bright: launched % BRIGHT_EVERY === 0,
       });
       launched += 1;
@@ -188,11 +201,15 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
       const elapsed = now - start;
       // Faster and faster, then sparse once the picture is full.
       const ramp = Math.min(elapsed / RAMP_MS, 1);
-      const pause =
-        launched < FULL ? PAUSE_MS.first + (PAUSE_MS.last - PAUSE_MS.first) * ramp : 420;
-      while (now >= nextLaunch) {
-        launch(now);
-        nextLaunch = (nextLaunch === 0 ? now : nextLaunch) + pause;
+      const rate =
+        launched < FULL
+          ? RATE_PER_S.first * (RATE_PER_S.last / RATE_PER_S.first) ** ramp
+          : SPARSE_PER_S;
+      due += (rate * Math.min(now - (last || now), 100)) / 1000;
+      last = now;
+      if (launched === 0) due = 1; // The first arc goes at once.
+      for (; due >= 1; due -= 1) {
+        launch(now, ramp);
       }
 
       context.clearRect(0, 0, width, height);
@@ -203,12 +220,13 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
         if (!flight) continue;
         const progress = Math.min((now - flight.born) / flight.life, 1);
         const eased = 1 - (1 - progress) ** 3;
-        // The head: a short run of pieces, brightest at the front.
-        for (let piece = 0; piece < HEAD_PIECES; piece += 1) {
+        // The head: a short run of pieces, brightest at the front (fewer on a plain thread).
+        const pieces = flight.bright ? HEAD_PIECES : 4;
+        for (let piece = 0; piece < pieces; piece += 1) {
           const tail = Math.max(eased - (piece + 1) * 0.045, 0);
           const head = Math.max(eased - piece * 0.045, 0);
           if (head <= tail) continue;
-          const alpha = (flight.bright ? 0.9 : 0.5) * (1 - piece / HEAD_PIECES);
+          const alpha = (flight.bright ? 0.9 : 0.5) * (1 - piece / pieces);
           drawArc(context, flight, tail, head, alpha, flight.bright ? 2.2 : 1.2);
         }
         if (progress >= 1) {
@@ -228,7 +246,11 @@ export function LoadingArcs({ label }: LoadingArcsProps) {
   }, []);
 
   return (
-    <div className={styles.loader} role="status" aria-live="polite">
+    <div
+      className={leaving ? `${styles.loader} ${styles.leaving}` : styles.loader}
+      role="status"
+      aria-live="polite"
+    >
       <div className={styles.stage}>
         <canvas ref={tracesRef} className={styles.hidden} aria-hidden="true" />
         <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
