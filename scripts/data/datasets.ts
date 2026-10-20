@@ -1,5 +1,6 @@
 import type {
   CrossReferencesFile,
+  DatasetProvenance,
   OriginalWordsFile,
   TranslationTextFile,
 } from '../../src/core/datasets/formats.ts';
@@ -18,6 +19,7 @@ import { importEbibleVerseLines } from './importers/ebible-vpl.ts';
 import { importOpenBibleCrossReferences } from './importers/openbible.ts';
 import { importSwe1917CrossReferences } from './importers/swe1917.ts';
 import { importCuratedCrossReferences } from './importers/curated.ts';
+import { importComputedCrossReferences } from './importers/computed.ts';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { REPO_ROOT } from './lib/paths.ts';
@@ -108,6 +110,11 @@ const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
   vbl: ebibleTranslation('vbl'),
 };
 
+/** The hand-compiled links, kept in the repository rather than fetched. */
+export const CURATED_FILE = 'data/curated/deuterocanon-cross-references.tsv';
+/** The similarity links `scripts/data/compute-similarity.ts` writes, committed likewise. */
+export const COMPUTED_FILE = 'data/computed/deuterocanon-similarity.tsv';
+
 /** One builder per cross-reference source. */
 const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetBuilder>> = {
   openbible: {
@@ -125,29 +132,40 @@ const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetB
       return importSwe1917CrossReferences(content, provenanceOf(source));
     },
   },
-  curated: {
-    outputPath: crossReferencesDatasetPath('curated'),
-    // Not a pinned download: the file is this repository's own, so it is read from the
-    // working tree and its digest recorded at build time. The date in its header is the
-    // edition's date, and bumped whenever the list changes.
+  curated: repositoryRowFile('curated', CURATED_FILE, importCuratedCrossReferences),
+  computed: repositoryRowFile('computed', COMPUTED_FILE, importComputedCrossReferences),
+};
+
+/**
+ * A row file that is this repository's own rather than a pinned download: read from the
+ * working tree, with its digest recorded at build time and the date in its header — the
+ * edition's date, bumped whenever the file changes — as the date it was made.
+ */
+function repositoryRowFile(
+  id: CrossReferenceSourceId,
+  path: string,
+  importRows: (
+    text: string,
+    provenance: Omit<DatasetProvenance, 'snapshotDate'>,
+  ) => CrossReferencesFile,
+): DatasetBuilder {
+  return {
+    outputPath: crossReferencesDatasetPath(id),
     build: async () => {
-      const content = await readFile(resolve(REPO_ROOT, CURATED_FILE));
+      const content = await readFile(resolve(REPO_ROOT, path));
       const text = content.toString('utf8');
       const edited = /\b(\d{4}-\d{2}-\d{2})\b/.exec(text.split('\n')[0] ?? '')?.[1];
       if (edited === undefined) {
-        throw new Error(`${CURATED_FILE}: the header carries no date.`);
+        throw new Error(`${path}: the header carries no date.`);
       }
-      return importCuratedCrossReferences(text, {
-        url: `https://github.com/wirewrestler1/bible-cross-references/blob/main/${CURATED_FILE}`,
+      return importRows(text, {
+        url: `https://github.com/wirewrestler1/bible-cross-references/blob/main/${path}`,
         sha256: sha256Hex(content),
         retrievedAt: edited,
       });
     },
-  },
-};
-
-/** The hand-compiled links, kept in the repository rather than fetched. */
-export const CURATED_FILE = 'data/curated/deuterocanon-cross-references.tsv';
+  };
+}
 
 /**
  * The tagged Hebrew and Greek: six files of words and two lexicons, from which only the

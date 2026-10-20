@@ -1,4 +1,12 @@
 {
+  "data/cross-references/computed.json": {
+    "sha256": "14d71d8e53f65aec4e7902cf5c2d7ff0c597484ba9112d413833ce210f318af4",
+    "bytes": 226638,
+    "shape": {
+      "links": 7986,
+      "sourceRows": 7986
+    }
+  },
   "data/cross-references/curated.json": {
     "sha256": "3fde529957ae4639a7ed029ec5c321148094d504f060cbaa023cc6afc428c80c",
     "bytes": 122910,

@@ -56,6 +56,23 @@ const CROSS_REFERENCE_SOURCES: Readonly<
     versification: 'kjv-dc',
     enabledByDefault: false,
   },
+  computed: {
+    id: 'computed',
+    name: 'Computed similarity links',
+    description:
+      'About 8,000 links from the verses of the deuterocanon to the verses whose words are most ' +
+      'like theirs, found by TF-IDF cosine similarity over the World English Bible (the best ' +
+      'five per verse scoring at least 0.5, less any link the other sources already have). The ' +
+      'weight is the score times ten. A computed link says the words are alike, not that the ' +
+      'passages are related.',
+    license: { name: 'CC0 1.0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+    attribution:
+      'Cross-reference data: similarity links computed from the World English Bible by ' +
+      'scripts/data/compute-similarity.ts, dedicated to the public domain (CC0).',
+    homepage: 'https://github.com/wirewrestler1/bible-cross-references',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
 };
 
 export const CROSS_REFERENCE_SOURCE_MANIFESTS: readonly CrossReferenceSourceManifest[] =
