@@ -1,7 +1,15 @@
 {
+  "data/cross-references/curated.json": {
+    "sha256": "3fde529957ae4639a7ed029ec5c321148094d504f060cbaa023cc6afc428c80c",
+    "bytes": 122910,
+    "shape": {
+      "links": 1188,
+      "sourceRows": 1188
+    }
+  },
   "data/cross-references/openbible.json": {
-    "sha256": "eba7376cb69e4f64efc168afabf148f9ed6f7eb5efa8371d4c10af656cedbb03",
-    "bytes": 4961758,
+    "sha256": "f1693db60f69558b93c5de7451b1bce1dff153ee7f682d9ea083cffd67e1f1a7",
+    "bytes": 4962091,
     "shape": {
       "links": 344799,
       "sourceRows": 344799

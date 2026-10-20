@@ -53,7 +53,10 @@ function serve({ failing = false } = {}) {
     // Every registered source is served the same links, under its own id.
     const url = String(input);
     const body = url.includes('cross-references')
-      ? { ...CROSS_REFERENCES, sourceId: url.includes('swe1917') ? 'swe1917' : 'openbible' }
+      ? {
+          ...CROSS_REFERENCES,
+          sourceId: CROSS_REFERENCE_SOURCE_MANIFESTS.find(({ id }) => url.includes(id))?.id,
+        }
       : { ...createTranslationFile(), translationId: DEFAULT_TRANSLATION_ID };
     return Promise.resolve(new Response(JSON.stringify(body)));
   });

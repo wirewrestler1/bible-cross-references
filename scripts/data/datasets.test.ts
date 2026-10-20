@@ -9,7 +9,7 @@ import { defectsFor, type DefectiveTranslationId } from './lib/source-defects.ts
 import { SOURCE_NUMBERING } from './lib/source-numbering.ts';
 import { WEB_NUMBERING_GAPS } from './lib/omitted-verses.ts';
 import { getTranslationManifest } from '../../src/translations/registry.ts';
-import { DATASET_BUILDERS, type RawSourceContent } from './datasets.ts';
+import { CURATED_FILE, DATASET_BUILDERS, type RawSourceContent } from './datasets.ts';
 import { BOOK_CODES as KJV_CODES } from './importers/ebible-vpl.ts';
 import { expectMember, findSource, readSources, type RawSource } from './lib/sources.ts';
 
@@ -179,6 +179,7 @@ describe('DATASET_BUILDERS', () => {
       'data/translations/vbl.json',
       'data/cross-references/openbible.json',
       'data/cross-references/swe1917.json',
+      'data/cross-references/curated.json',
       'data/words/stepbible.json',
     ]);
   });
@@ -197,7 +198,10 @@ describe('DATASET_BUILDERS', () => {
       expect(dataset.versification).toBe('kjv-dc');
       expect(dataset.schemaVersion).toBe(2);
       expect(dataset.provenance.sha256).toHaveLength(64);
-      expect(dataset.provenance.url).toContain('https://example.org/');
+      // The curated list is the repository's own file, read from disk rather than a fixture.
+      expect(dataset.provenance.url).toContain(
+        builder.outputPath.includes('curated') ? CURATED_FILE : 'https://example.org/',
+      );
       expect(Array.isArray(dataset.notices)).toBe(true);
       if (dataset.format === 'translation-text') {
         // The words have to be this translation's own. Everything above passes just as happily

@@ -39,6 +39,23 @@ const CROSS_REFERENCE_SOURCES: Readonly<
     versification: 'kjv-dc',
     enabledByDefault: false,
   },
+  curated: {
+    id: 'curated',
+    name: 'Curated deuterocanon cross-references',
+    description:
+      'About 1,200 links compiled for this app: New Testament quotations and allusions to ' +
+      'the deuterocanon, the deuterocanon’s own retellings and quotations of the Old Testament, ' +
+      'and the parallels between the deuterocanonical books. Each is weighted 10 (quotation or ' +
+      'unmistakable allusion), 5 (probable allusion) or 2 (thematic parallel), and every ' +
+      'address was checked against the World English Bible.',
+    license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+    attribution:
+      'Cross-reference data: curated deuterocanon cross-references, © 2026 Andrew Battaglia, ' +
+      'licensed under CC BY 4.0.',
+    homepage: 'https://github.com/wirewrestler1/bible-cross-references',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
 };
 
 export const CROSS_REFERENCE_SOURCE_MANIFESTS: readonly CrossReferenceSourceManifest[] =

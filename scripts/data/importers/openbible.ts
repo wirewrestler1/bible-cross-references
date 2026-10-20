@@ -1,21 +1,5 @@
-import { parseOsisId, type VerseIndex } from '../../../src/core/bible/verse-ref.ts';
-import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
-import {
-  DATASET_SCHEMA_VERSION,
-  type CrossReferencesFile,
-  type DatasetProvenance,
-  type ImportNotice,
-} from '../../../src/core/datasets/formats.ts';
-import { getCrossReferenceSourceManifest } from '../../../src/cross-references/registry.ts';
-import {
-  buildCrossReferenceColumns,
-  linkKey,
-  type VerseLink,
-} from '../lib/cross-reference-columns.ts';
-import { stripByteOrderMark } from '../lib/files.ts';
-import { createNotice } from '../lib/notices.ts';
-
-const OPENBIBLE = getCrossReferenceSourceManifest('openbible');
+import type { CrossReferencesFile, DatasetProvenance } from '../../../src/core/datasets/formats.ts';
+import { importVerseLinkRows } from './verse-link-rows.ts';
 
 /**
  * Importer for the OpenBible.info cross-reference dataset
@@ -23,11 +7,10 @@ const OPENBIBLE = getCrossReferenceSourceManifest('openbible');
  *
  * Format: a TSV file whose header is `From Verse<TAB>To Verse<TAB>Votes<TAB>#… CC-BY <date>`,
  * followed by rows like `Gen.1.1<TAB>Rom.1.19-Rom.1.20<TAB>59`. Sources are single verses;
- * targets are a verse or an inclusive range; votes are integers and may be negative.
+ * targets are a verse or an inclusive range; votes are integers and may be negative. The
+ * reading is shared with the other row files (see `verse-link-rows.ts`); what is OpenBible's own
+ * is the remap below and the tolerance for its few duplicate rows.
  */
-
-const HEADER_PREFIX = 'From Verse\tTo Verse\tVotes';
-const SNAPSHOT_DATE_PATTERN = /\b(\d{4}-\d{2}-\d{2})\b/;
 
 /** Verse IDs used by OpenBible that do not exist in the KJV versification. */
 const VERSE_REMAPS: ReadonlyMap<string, string> = new Map([
@@ -39,94 +22,11 @@ export function importOpenBibleCrossReferences(
   text: string,
   provenance: Omit<DatasetProvenance, 'snapshotDate'>,
 ): CrossReferencesFile {
-  const versification = CANONICAL_VERSIFICATION;
-  const [header = '', ...rows] = stripByteOrderMark(text).split(/\r?\n/);
-  if (!header.startsWith(HEADER_PREFIX)) {
-    throw new Error(`OpenBible: unexpected header "${header.slice(0, 80)}".`);
-  }
-  const snapshotDate = SNAPSHOT_DATE_PATTERN.exec(header)?.[1] ?? null;
-
-  const remapped: string[] = [];
-  const resolveVerse = (osisId: string, lineNumber: number): VerseIndex => {
-    const remappedId = VERSE_REMAPS.get(osisId);
-    if (remappedId !== undefined) {
-      remapped.push(`line ${lineNumber}: ${osisId} → ${remappedId}`);
-    }
-    const ref = parseOsisId(remappedId ?? osisId);
-    const index = ref && versification.indexOf(ref);
-    if (index === undefined) {
-      throw new Error(`OpenBible line ${lineNumber}: unknown verse "${osisId}".`);
-    }
-    return index;
-  };
-
-  const links: VerseLink[] = [];
-  const seen = new Set<string>();
-  const duplicates: string[] = [];
-  let sourceRowCount = 0;
-  rows.forEach((row, offset) => {
-    if (row.trim() === '') {
-      return;
-    }
-    sourceRowCount += 1;
-    const lineNumber = offset + 2;
-    const fields = row.split('\t');
-    const [fromId = '', targetId = '', votesText = ''] = fields;
-    const [targetStartId = '', targetEndId = targetStartId, ...extraRangeParts] =
-      targetId.split('-');
-    const votes = Number(votesText);
-    if (fields.length !== 3 || extraRangeParts.length > 0 || !Number.isInteger(votes)) {
-      throw new Error(`OpenBible line ${lineNumber}: malformed row "${row}".`);
-    }
-
-    const link: VerseLink = {
-      from: resolveVerse(fromId, lineNumber),
-      targetStart: resolveVerse(targetStartId, lineNumber),
-      targetEnd: resolveVerse(targetEndId, lineNumber),
-      votes,
-    };
-    if (link.targetStart > link.targetEnd) {
-      throw new Error(`OpenBible line ${lineNumber}: reversed range "${targetId}".`);
-    }
-    const key = linkKey(link);
-    if (seen.has(key)) {
-      duplicates.push(`line ${lineNumber}: ${fromId} → ${targetId}`);
-      return;
-    }
-    seen.add(key);
-    links.push(link);
-  });
-
-  const notices: ImportNotice[] = [];
-  if (snapshotDate === null) {
-    notices.push(createNotice('warning', 'The header has no snapshot date.', [header]));
-  }
-  if (remapped.length > 0) {
-    notices.push(
-      createNotice(
-        'info',
-        'Verse IDs remapped to the KJV versification (3 John 1:15 is part of 1:14 there).',
-        remapped,
-      ),
-    );
-  }
-  if (duplicates.length > 0) {
-    notices.push(createNotice('warning', 'Duplicate rows dropped (first kept).', duplicates));
-  }
-
-  return {
-    format: 'cross-references',
-    schemaVersion: DATASET_SCHEMA_VERSION,
-    versification: versification.id,
-    provenance: { ...provenance, snapshotDate },
-    notices,
+  return importVerseLinkRows(text, {
     sourceId: 'openbible',
-    sourceRowCount,
-    // The credit travels in the file: it is served on its own at a stable URL and kept on
-    // readers' devices by the offline cache, so a copy that travels without the app should still
-    // say whose data it is and under what licence.
-    license: OPENBIBLE.license,
-    attribution: OPENBIBLE.attribution,
-    links: buildCrossReferenceColumns(links, versification),
-  };
+    column: 'Votes',
+    remaps: VERSE_REMAPS,
+    strict: false,
+    provenance,
+  });
 }

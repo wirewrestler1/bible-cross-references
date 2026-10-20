@@ -17,6 +17,11 @@ import { importBsbText } from './importers/bsb.ts';
 import { importEbibleVerseLines } from './importers/ebible-vpl.ts';
 import { importOpenBibleCrossReferences } from './importers/openbible.ts';
 import { importSwe1917CrossReferences } from './importers/swe1917.ts';
+import { importCuratedCrossReferences } from './importers/curated.ts';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { REPO_ROOT } from './lib/paths.ts';
+import { sha256Hex } from './lib/files.ts';
 import { getWordSourceManifest } from '../../src/words/registry.ts';
 import { importStepBibleWords, type TaggedLanguage } from './importers/stepbible.ts';
 import { expectMember } from './lib/sources.ts';
@@ -120,7 +125,29 @@ const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetB
       return importSwe1917CrossReferences(content, provenanceOf(source));
     },
   },
+  curated: {
+    outputPath: crossReferencesDatasetPath('curated'),
+    // Not a pinned download: the file is this repository's own, so it is read from the
+    // working tree and its digest recorded at build time. The date in its header is the
+    // edition's date, and bumped whenever the list changes.
+    build: async () => {
+      const content = await readFile(resolve(REPO_ROOT, CURATED_FILE));
+      const text = content.toString('utf8');
+      const edited = /\b(\d{4}-\d{2}-\d{2})\b/.exec(text.split('\n')[0] ?? '')?.[1];
+      if (edited === undefined) {
+        throw new Error(`${CURATED_FILE}: the header carries no date.`);
+      }
+      return importCuratedCrossReferences(text, {
+        url: `https://github.com/wirewrestler1/bible-cross-references/blob/main/${CURATED_FILE}`,
+        sha256: sha256Hex(content),
+        retrievedAt: edited,
+      });
+    },
+  },
 };
+
+/** The hand-compiled links, kept in the repository rather than fetched. */
+export const CURATED_FILE = 'data/curated/deuterocanon-cross-references.tsv';
 
 /**
  * The tagged Hebrew and Greek: six files of words and two lexicons, from which only the
