@@ -23,6 +23,14 @@ export const en = {
 
   'search.label': 'Go to a Bible reference',
   'search.placeholder': 'Go to…  John 3:16, Ps 23',
+  /** The bar's button for the search, on phones. */
+  'search.short': 'Search',
+  /** The list under the box of what the typing could become. */
+  'search.suggestions': 'Suggestions',
+  /** The first offer once a chapter's verses are listed: the chapter itself. */
+  'search.wholeChapter': 'Whole chapter',
+  /** The bar along the bottom of a phone. */
+  'bar.label': 'Main controls',
 
   'reference.unreadable': 'Enter a reference like “John 3:16” or “Ps 23”.',
   'reference.unknownBook': (query: string) => `Unknown book “${query}”.`,
@@ -84,6 +92,8 @@ export const en = {
 
   // The first-visit guide: what the lines are, what the weight means, which books are new.
   'guide.open': 'How to read this',
+  /** Under the "?" in the bar. */
+  'guide.short': 'Guide',
   'guide.title': 'How to read this',
   'guide.arcs.title': 'Every line is a link',
   'guide.arcs':

@@ -1,18 +1,27 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { SiteFooter } from '../../../shared/ui/SiteFooter.tsx';
+import { SearchIcon } from '../../../shared/ui/icons.tsx';
+import { PHONE_QUERY, useMediaQuery } from '../../../shared/lib/use-media-query.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
 import { useBottomSheet } from '../use-bottom-sheet.ts';
+import controls from './controls.module.css';
 import styles from './VizPage.module.css';
 
 interface VizPageProps {
-  /** The header's leading part, provided by the host app: the site's name and navigation. */
+  /** The site's name, a link home, provided by the host app. */
   readonly masthead?: ReactNode;
-  /** Search box, filters and visualization-specific controls. */
-  readonly controls?: ReactNode;
+  /** The switch between visualizations: beside the name on wide screens, in the bar on phones. */
+  readonly viewSwitch?: ReactNode;
+  /** The reference search: in the header on wide screens, a sheet opened from the bar on phones. */
+  readonly search?: ReactNode;
+  /** The translation picker and the view's own controls: in the header at every width. */
+  readonly tools?: ReactNode;
+  /** The filters and the guide: in the header on wide screens, in the bar on phones. */
+  readonly menus?: ReactNode;
   /** The details panel: a side column on wide screens, a bottom sheet on phones; omit or pass
    * `null` / `false` for none. */
   readonly panel?: ReactNode;
-  /** Closes the panel; on phones, pulling its sheet down from the collapsed height calls it. */
+  /** Closes the panel; on phones, pulling its sheet down from its lowest point calls it. */
   readonly onPanelClose?: () => void;
   /** Data attribution and inspiration, shown in the footer. */
   readonly credits: ReactNode;
@@ -20,53 +29,83 @@ interface VizPageProps {
   readonly children: ReactNode;
 }
 
-/** The shared frame of every visualization page. */
+/**
+ * The shared frame of every visualization page.
+ *
+ * On wide screens: a header with the name, the switch and every control; the stage with the
+ * details beside it; a footer. On phones: a slim header with the name and the view's tools, the
+ * stage with the details as a sheet that rests at three heights, and a bar along the bottom —
+ * where a thumb is — with the views, the search, the filters and the guide. The footer's links
+ * live in the guide there.
+ */
 export function VizPage({
   masthead,
-  controls,
+  viewSwitch,
+  search,
+  tools,
+  menus,
   panel,
   onPanelClose,
   credits,
   children,
 }: VizPageProps) {
   const { t } = useLocalization();
+  const phone = useMediaQuery(PHONE_QUERY);
   const hasPanel = panel !== undefined && panel !== null && panel !== false;
-  const { expanded, setExpanded, containerRef, sheetRef, spaceRef, scrimRef } = useBottomSheet(
-    hasPanel,
-    onPanelClose,
-  );
+  const { position, setPosition, containerRef, sheetRef, spaceRef, peekRef, halfRef, scrimRef } =
+    useBottomSheet(hasPanel, onPanelClose);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // The search sheet opens with its box focused, so the keyboard comes up with it.
+  useEffect(() => {
+    if (searchOpen) {
+      searchRef.current?.querySelector('input')?.focus();
+    }
+  }, [searchOpen]);
+  if (searchOpen && !phone) {
+    setSearchOpen(false); // Widened past a phone: the box is in the header again.
+  }
+
+  const full = position === 'full';
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.masthead}>{masthead}</div>
-        <div className={styles.controls}>{controls}</div>
+        <div className={styles.masthead}>
+          {masthead}
+          {!phone && viewSwitch}
+        </div>
+        <div className={styles.controls}>
+          {!phone && search}
+          {tools}
+          {!phone && menus}
+        </div>
       </header>
-      <div
-        ref={containerRef}
-        className={styles.body}
-        data-sheet={hasPanel ? (expanded ? 'expanded' : 'collapsed') : undefined}
-      >
+      <div ref={containerRef} className={styles.body} data-sheet={hasPanel ? position : undefined}>
         <main className={styles.stage}>{children}</main>
         {hasPanel && (
           <>
-            {/* Phones: the collapsed sheet's room, so the visualization lays out above it. */}
+            {/* Phones: the room kept for the sheet, so the visualization lays out above it; and
+                the two heights it rests at, measured from the stylesheet. */}
             <div ref={spaceRef} className={styles.sheetSpace} aria-hidden="true" />
+            <div ref={peekRef} className={styles.sheetPeek} aria-hidden="true" />
+            <div ref={halfRef} className={styles.sheetHalf} aria-hidden="true" />
             <div
               ref={scrimRef}
               className={styles.sheetScrim}
               aria-hidden="true"
               onClick={() => {
-                setExpanded(false);
+                setPosition('half');
               }}
             />
             <aside ref={sheetRef} className={styles.panel} aria-label={t('panel.details')}>
               <button
                 type="button"
                 className={styles.sheetHandle}
-                aria-label={expanded ? t('panel.collapse') : t('panel.expand')}
-                aria-expanded={expanded}
+                aria-label={full ? t('panel.collapse') : t('panel.expand')}
+                aria-expanded={full}
                 onClick={() => {
-                  setExpanded(!expanded);
+                  setPosition(full ? 'half' : 'full');
                 }}
               />
               {panel}
@@ -74,7 +113,64 @@ export function VizPage({
           </>
         )}
       </div>
-      <SiteFooter className={styles.footer}>{credits}</SiteFooter>
+      {phone ? (
+        <>
+          {searchOpen && (
+            <>
+              <div
+                className={controls.menuScrim}
+                onClick={() => {
+                  setSearchOpen(false);
+                }}
+              />
+              <div
+                ref={searchRef}
+                role="dialog"
+                aria-label={t('search.label')}
+                className={controls.searchSheet}
+                onBlur={(event) => {
+                  // Focus leaving the sheet closes it: a found reference blurs the box itself, a
+                  // tap elsewhere takes the focus with it. A reference that could not be read
+                  // keeps the focus, and the sheet, so the message can be read.
+                  if (!(
+                    event.relatedTarget instanceof Node &&
+                    event.currentTarget.contains(event.relatedTarget)
+                  )) {
+                    setSearchOpen(false);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    setSearchOpen(false);
+                  }
+                }}
+              >
+                {search}
+              </div>
+            </>
+          )}
+          <nav className={controls.bar} aria-label={t('bar.label')}>
+            {viewSwitch}
+            {search !== undefined && (
+              <button
+                type="button"
+                className={`${controls.button} ${controls.menuButton}`}
+                aria-label={t('search.short')}
+                aria-expanded={searchOpen}
+                onClick={() => {
+                  setSearchOpen((open) => !open);
+                }}
+              >
+                <SearchIcon />
+                <span className={controls.menuLabel}>{t('search.short')}</span>
+              </button>
+            )}
+            {menus}
+          </nav>
+        </>
+      ) : (
+        <SiteFooter className={styles.footer}>{credits}</SiteFooter>
+      )}
     </div>
   );
 }

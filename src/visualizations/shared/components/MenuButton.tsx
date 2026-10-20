@@ -36,6 +36,9 @@ const VIEWPORT_MARGIN_PX = 12;
  */
 function keepInViewport(popover: HTMLElement): void {
   popover.style.translate = '';
+  if (getComputedStyle(popover).position === 'fixed') {
+    return; // A sheet on a phone: it is the width of the screen already.
+  }
   const { left, right } = popover.getBoundingClientRect();
   const maxRight = document.documentElement.clientWidth - VIEWPORT_MARGIN_PX;
   const shift =
@@ -129,9 +132,18 @@ export function MenuButton({
         {indicator && <span className={styles.indicator} />}
       </button>
       {open && (
-        <div ref={popoverRef} id={popoverId} className={styles.popover}>
-          {children}
-        </div>
+        <>
+          {/* Phones: dims the page behind the sheet; a tap on it closes the menu. */}
+          <div
+            className={styles.menuScrim}
+            onClick={() => {
+              setOpen(false);
+            }}
+          />
+          <div ref={popoverRef} id={popoverId} className={styles.popover}>
+            {children}
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,9 +1,35 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, PANEL, collectErrors, openPanel, waitForApp } from './helpers.ts';
+import { ACTIVE, BAR, PANEL, collectErrors, openPanel, waitForApp } from './helpers.ts';
 import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 /** Every width the layout has to survive, from the oldest phone to a wide desktop. */
 const WIDTHS = [320, 360, 375, 390, 412, 430, 768, 834, 1024, 1280, 1440, 1920];
+
+/** Below this a page has a bar along the bottom instead of a footer (VizPage.module.css). */
+const PHONE_BELOW = 768;
+
+/**
+ * The bar on a phone: its items in one row, each with its label under its icon, and nothing
+ * past the right edge. Measured, since five labels at 320px are the tightest text on the page.
+ */
+async function expectBarFits(page: Page, width: number, where: string): Promise<void> {
+  const measured = await page.locator(BAR).evaluate((bar) => {
+    const items = [...bar.querySelectorAll('a, button')];
+    return {
+      right: Math.round(bar.getBoundingClientRect().right),
+      height: Math.round(bar.getBoundingClientRect().height),
+      rows: new Set(items.map((item) => Math.round(item.getBoundingClientRect().top))).size,
+      widest: Math.round(Math.max(...items.map((item) => item.getBoundingClientRect().right))),
+      // A label wider than its item paints past it without the item growing.
+      overflowing: items.filter((item) => item.scrollWidth > item.clientWidth + 1).length,
+    };
+  });
+  expect(measured.rows, `${where}: bar rows`).toBe(1);
+  expect(measured.height, `${where}: bar height`).toBeLessThan(80);
+  expect(measured.right, `${where}: bar box`).toBeLessThanOrEqual(width);
+  expect(measured.widest, `${where}: bar items`).toBeLessThanOrEqual(width);
+  expect(measured.overflowing, `${where}: a bar label is wider than its item`).toBe(0);
+}
 
 test.describe('the layout holds at every width', () => {
   test.beforeEach(() => {
@@ -19,6 +45,10 @@ test.describe('the layout holds at every width', () => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('./');
       await waitForApp(page);
+      if (width < PHONE_BELOW) {
+        await expectBarFits(page, width, `${String(width)}px`);
+        return;
+      }
 
       const measured = await page.locator(`${ACTIVE} footer`).evaluate((footer) => {
         const rect = footer.getBoundingClientRect();
@@ -53,21 +83,24 @@ test.describe('the layout holds at every width', () => {
    * does not exist", which is a test no honest layout can pass.
    */
   for (const width of [320, 360, 375]) {
-    test(`${String(width)}px: the footer still holds with a tenth wider font`, async ({ page }) => {
+    test(`${String(width)}px: the bar still holds with a tenth wider font`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('./');
       await waitForApp(page);
-      const rows = await page.locator(`${ACTIVE} footer`).evaluate((footer) => {
-        const element = footer as HTMLElement;
+      const measured = await page.locator(BAR).evaluate((bar) => {
+        const element = bar as HTMLElement;
+        const items = [...bar.querySelectorAll('a, button')];
         const base = Number.parseFloat(getComputedStyle(element).fontSize);
         element.style.fontSize = `${String(base * 1.1)}px`;
-        const tops = [...footer.children].map((child) =>
-          Math.round(child.getBoundingClientRect().top),
-        );
+        const result = {
+          rows: new Set(items.map((item) => Math.round(item.getBoundingClientRect().top))).size,
+          overflowing: items.filter((item) => item.scrollWidth > item.clientWidth + 1).length,
+        };
         element.style.fontSize = '';
-        return new Set(tops).size;
+        return result;
       });
-      expect(rows).toBe(1);
+      expect(measured.rows).toBe(1);
+      expect(measured.overflowing).toBe(0);
     });
   }
 
@@ -105,14 +138,31 @@ test.describe('the layout holds at every width', () => {
       .toBeLessThan(Math.round(before?.y ?? 0));
   });
 
-  test('the header keeps its controls reachable on a phone', async ({ page }) => {
+  test('a phone keeps every control within a thumb: the bar, and the search as a sheet', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('./');
     await waitForApp(page);
-    for (const control of [/Filters/, /Translation/]) {
-      await expect(page.locator(ACTIVE).getByRole('button', { name: control })).toBeVisible();
+    const bar = page.locator(BAR);
+    for (const control of ['Filters', 'Search', 'How to read this']) {
+      await expect(bar.getByRole('button', { name: control, exact: true })).toBeVisible();
     }
-    await expect(page.locator(ACTIVE).getByRole('searchbox')).toBeVisible();
+    await expect(bar.getByRole('link', { name: /Threads/ })).toBeVisible();
+    // The translation stays by the name, at the top.
+    await expect(page.locator(ACTIVE).getByRole('button', { name: /Translation/ })).toBeVisible();
+    // The bar sits along the bottom edge.
+    const box = await bar.boundingBox();
+    expect(Math.round((box?.y ?? 0) + (box?.height ?? 0))).toBe(844);
+    // The search opens as a sheet above it, with the box ready to type into.
+    await bar.getByRole('button', { name: 'Search', exact: true }).click();
+    const search = page.locator(ACTIVE).getByRole('searchbox');
+    await expect(search).toBeVisible();
+    await expect(search).toBeFocused();
+    await search.fill('Sirach 24');
+    await search.press('Enter');
+    await expect(page.locator(PANEL).getByRole('heading', { name: 'Sirach 24' })).toBeVisible();
+    await expect(search).toBeHidden();
   });
 });
 
@@ -164,7 +214,11 @@ test.describe('the chrome holds in every language', () => {
         await openPanel(page);
 
         const where = `${language} at ${String(width)}px`;
-        await expectFooterFits(page, width, where);
+        if (width < PHONE_BELOW) {
+          await expectBarFits(page, width, where);
+        } else {
+          await expectFooterFits(page, width, where);
+        }
         await expectStatsFit(page, width, where);
         await expectPanelDoesNotScroll(page, where);
         if (width >= 1024) {

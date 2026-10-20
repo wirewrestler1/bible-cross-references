@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FiltersIcon } from '../../../shared/ui/icons.tsx';
 import { MenuButton } from './MenuButton.tsx';
 
@@ -13,6 +13,10 @@ function renderMenu(props: Partial<Parameters<typeof MenuButton>[0]> = {}) {
 }
 
 describe('MenuButton', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('starts closed', () => {
     renderMenu();
     expect(screen.queryByText('menu contents')).toBeNull();
@@ -41,6 +45,35 @@ describe('MenuButton', () => {
     expect(screen.getByText('menu contents')).toBeDefined();
     await userEvent.click(screen.getByRole('button', { name: 'elsewhere' }));
     expect(screen.queryByText('menu contents')).toBeNull();
+  });
+
+  it('closes when the dimmed page behind its sheet is tapped, as on a phone', async () => {
+    const { container } = renderMenu();
+    await userEvent.click(screen.getByRole('button'));
+    const scrim = container.querySelector('[class*="menuScrim"]');
+    expect(scrim).not.toBeNull();
+    await userEvent.click(scrim ?? container);
+    expect(screen.queryByText('menu contents')).toBeNull();
+  });
+
+  it('leaves a sheet where it is, since a sheet is already the width of the screen', async () => {
+    // On a phone the stylesheet makes the popover a fixed sheet; the nudge that keeps a popover
+    // inside the viewport would push a sheet sideways.
+    const real = window.getComputedStyle.bind(window);
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => {
+      const style = real(element, pseudo);
+      const isPopover = element instanceof HTMLElement && element.textContent === 'menu contents';
+      return isPopover
+        ? new Proxy(style, {
+            get: (target, key): unknown =>
+              key === 'position' ? 'fixed' : (Reflect.get(target, key) as unknown),
+          })
+        : style;
+    });
+    renderMenu();
+    await userEvent.click(screen.getByRole('button'));
+    const popover = screen.getByText('menu contents').parentElement;
+    expect(popover?.style.translate).toBe('');
   });
 
   it('stays open while the menu itself is used', async () => {

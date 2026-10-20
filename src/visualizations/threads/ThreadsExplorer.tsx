@@ -56,6 +56,7 @@ export function ThreadsExplorer({
   filter,
   onFilterChange,
   masthead,
+  viewSwitch,
   translationMenu,
   passageLinks,
   shareUrl,
@@ -88,11 +89,12 @@ export function ThreadsExplorer({
   return (
     <VizPage
       masthead={masthead}
+      viewSwitch={viewSwitch}
       credits={<Credits translation={data.translation.manifest} />}
       onPanelClose={closePanel}
-      controls={
+      search={<ReferenceSearch versification={data.versification} onSelect={onNavigate} />}
+      tools={
         <>
-          <ReferenceSearch versification={data.versification} onSelect={onNavigate} />
           {translationMenu}
           <SegmentedControl
             label={t('threads.direction')}
@@ -107,6 +109,10 @@ export function ThreadsExplorer({
               onFilterChange({ ...filter, hiddenGenres: toggleGenre(filter.hiddenGenres, genre) });
             }}
           />
+        </>
+      }
+      menus={
+        <>
           <FiltersMenu
             filter={filter}
             defaults={DEFAULT_LINK_FILTER}

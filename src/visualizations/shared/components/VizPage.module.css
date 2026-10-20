@@ -97,6 +97,8 @@
 
 .sheetHandle,
 .sheetSpace,
+.sheetPeek,
+.sheetHalf,
 .sheetScrim {
   display: none;
 }
@@ -117,18 +119,31 @@
     gap: var(--space-2);
   }
 
-  /* The controls join the header's own wrapping, so they share the second row. */
-  .controls {
-    display: contents;
+  /* One row: the name, then the view's own tools at the end. The rest is in the bar. */
+  .header {
+    flex-wrap: nowrap;
+    padding-block: calc(var(--space-2) + env(safe-area-inset-top, 0px)) var(--space-2);
   }
 
-  /* Phones: the details panel is a bottom sheet (see use-bottom-sheet.ts). The layout keeps room
-     for it collapsed, so the visualization lays itself out above it instead of hiding behind it;
-     expanded, it slides over the visualization, which stays as it is (no re-layout while it
-     moves). The sheet is always its expanded height; collapsing slides most of it out of view. */
+  .masthead {
+    flex: 0 1 auto;
+  }
+
+  .controls {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+  }
+
+  /* Phones: the details panel is a bottom sheet (see use-bottom-sheet.ts) resting at one of
+     three heights. The layout keeps room for it at its height, so the visualization lays itself
+     out above it instead of hiding behind it — at full it slides over the visualization, which
+     stays as it is (no re-layout while it moves). The sheet is always its full height; resting
+     lower slides most of it out of view. */
   .body {
-    /* Collapsed height; the visualization still showing above the expanded sheet. */
-    --sheet-peek: 42dvh;
+    /* The heading alone: the visualization has the screen. */
+    --sheet-peek: 6.75rem;
+    /* The text, with the visualization still above it. */
+    --sheet-half: 46dvh;
     --sheet-gap: 2.5rem;
     /* iOS's sheet spring, approximated. */
     --sheet-motion: 0.5s cubic-bezier(0.32, 0.72, 0, 1);
@@ -145,7 +160,30 @@
 
   .sheetSpace {
     display: block;
+    block-size: var(--sheet-half);
+  }
+
+  .body[data-sheet='peek'] .sheetSpace {
     block-size: var(--sheet-peek);
+  }
+
+  /* The two resting heights, for the script to measure: the numbers stay in this file. */
+  .sheetPeek,
+  .sheetHalf {
+    display: block;
+    position: absolute;
+    inset-block-end: 0;
+    inline-size: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .sheetPeek {
+    block-size: var(--sheet-peek);
+  }
+
+  .sheetHalf {
+    block-size: var(--sheet-half);
   }
 
   .sheetScrim {
@@ -159,7 +197,7 @@
     transition: opacity var(--sheet-motion);
   }
 
-  .body[data-sheet='expanded'] .sheetScrim {
+  .body[data-sheet='full'] .sheetScrim {
     opacity: 1;
     pointer-events: auto;
   }
@@ -177,8 +215,12 @@
     border-radius: 0.875rem 0.875rem 0 0;
     /* Fills in below the sheet when it's stretched past its top. */
     box-shadow: 0 3rem 0 var(--color-surface);
-    transform: translateY(calc(100% - var(--sheet-peek)));
+    transform: translateY(calc(100% - var(--sheet-half)));
     transition: transform var(--sheet-motion);
+  }
+
+  .body[data-sheet='peek'] .panel {
+    transform: translateY(calc(100% - var(--sheet-peek)));
   }
 
   /* Opening: it slides up from below. */
@@ -188,7 +230,7 @@
     }
   }
 
-  .body[data-sheet='expanded'] .panel {
+  .body[data-sheet='full'] .panel {
     transform: none;
   }
 
@@ -204,6 +246,10 @@
   .body[data-sheet-dragging] .panel,
   .body[data-sheet-dragging] .sheetScrim {
     transition: none;
+  }
+
+  .footer {
+    display: none;
   }
 
   .sheetHandle {

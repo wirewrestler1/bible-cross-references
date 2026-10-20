@@ -7,6 +7,12 @@ const DRAG_SLOP_PX = 4;
 const FLICK_PROJECTION_MS = 180;
 /** Pulled below its low point by this share of its visible height (or flicked as far), it closes. */
 const CLOSE_SHARE = 0.3;
+
+/**
+ * Where the sheet rests: `peek` shows its heading and leaves the stage to the visualization,
+ * `half` shows the text with the visualization still above it, `full` covers the stage.
+ */
+export type SheetPosition = 'peek' | 'half' | 'full';
 /** How far the sheet stretches, at most, past a point it can't go beyond. */
 const STRETCH_PX = 36;
 /** Only the last moments of a drag set the speed of its flick. */
@@ -21,8 +27,10 @@ interface Drag {
   readonly startY: number;
   /** The sheet's offset (px below its top position) when the drag took hold of it. */
   from: number;
-  /** The offset of its low (collapsed) point. */
+  /** The offset of its low (peek) point. */
   readonly lowest: number;
+  /** The offset of its half-way point. */
+  readonly half: number;
   /** The scrollable content under the finger, if any: it scrolls instead, where it can. */
   readonly scroller: HTMLElement | null;
   mode: 'pending' | 'sheet' | 'content';
@@ -68,30 +76,34 @@ function velocityOf(samples: Drag['samples']): number {
 }
 
 /**
- * A bottom sheet with two heights, collapsed and expanded, that follows the finger like a native
- * one: it can be dragged by any part, its content scrolls when it should instead (expanded, and
- * not at the top), it settles where a flick carries it, and it closes when pulled down from its
- * low point (if `onClose` is given). Taps on the handle and the scrim toggle it. Without touch, or
- * on wide screens (where `space` isn't displayed), it is a plain panel.
+ * A bottom sheet with three heights — peek, half and full — that follows the finger like a native
+ * one: it can be dragged by any part, its content scrolls when it should instead (full, and not
+ * at the top), it settles at whichever height a flick carries it nearest to, and it closes when
+ * pulled down from its lowest point (if `onClose` is given). It opens at half. Taps on the
+ * handle go between half and full; a tap on the scrim brings it down from full. Without touch,
+ * or on wide screens (where `space` isn't displayed), it is a plain panel.
  *
- * Positions and transitions are CSS, keyed on the container's `data-sheet` ("collapsed" or
- * "expanded"), `data-sheet-dragging` and `data-sheet-closing`. While dragged, the sheet and the
- * scrim are moved directly, with no re-renders.
+ * Positions and transitions are CSS, keyed on the container's `data-sheet` (the position),
+ * `data-sheet-dragging` and `data-sheet-closing`; the peek and half heights are read from two
+ * elements sized by the stylesheet, so the numbers live in one place. While dragged, the sheet
+ * and the scrim are moved directly, with no re-renders.
  */
 export function useBottomSheet(open: boolean, onClose: (() => void) | undefined) {
-  const [expanded, setExpanded] = useState(false);
+  const [position, setPosition] = useState<SheetPosition>('half');
   const [wasOpen, setWasOpen] = useState(open);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (!open) {
-      setExpanded(false); // A sheet always opens collapsed.
+      setPosition('half'); // A sheet always opens half-way.
     }
   }
   const containerRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLElement>(null);
   const spaceRef = useRef<HTMLDivElement>(null);
+  const peekRef = useRef<HTMLDivElement>(null);
+  const halfRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
-  const isExpanded = useEffectEvent(() => expanded);
+  const isFull = useEffectEvent(() => position === 'full');
   const canClose = useEffectEvent(() => onClose !== undefined);
   const close = useEffectEvent(() => {
     onClose?.();
@@ -101,17 +113,21 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
     const container = containerRef.current;
     const sheet = sheetRef.current;
     const space = spaceRef.current;
+    const peek = peekRef.current;
+    const half = halfRef.current;
     const scrim = scrimRef.current;
-    if (!open || !container || !sheet || !space || !scrim) {
+    if (!open || !container || !sheet || !space || !peek || !half || !scrim) {
       return undefined;
     }
     let drag: Drag | null = null;
     let clicksBlockedUntil = 0;
     let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const moveTo = (offset: number, lowest: number) => {
+    // The scrim comes with the last stretch, from half-way up to full: below that the
+    // visualization stays in reach.
+    const moveTo = (offset: number, halfOffset: number) => {
       sheet.style.transform = `translateY(${String(offset)}px)`;
-      scrim.style.opacity = String(Math.min(Math.max(1 - offset / lowest, 0), 1));
+      scrim.style.opacity = String(Math.min(Math.max(1 - offset / halfOffset, 0), 1));
     };
     /** Hands the position back to CSS, which animates to the current state's. */
     const letGo = () => {
@@ -119,9 +135,9 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
       sheet.style.transform = '';
       scrim.style.opacity = '';
     };
-    const settle = (expand: boolean) => {
+    const settle = (at: SheetPosition) => {
       flushSync(() => {
-        setExpanded(expand);
+        setPosition(at);
       });
       letGo();
     };
@@ -163,7 +179,8 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
         startX: touch.clientX,
         startY: touch.clientY,
         from: 0,
-        lowest: sheet.offsetHeight - space.offsetHeight,
+        lowest: sheet.offsetHeight - peek.offsetHeight,
+        half: sheet.offsetHeight - half.offsetHeight,
         scroller: scrollerOf(event.target, sheet),
         mode: 'pending',
         offset: 0,
@@ -182,11 +199,11 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
         if (Math.hypot(dx, dy) < DRAG_SLOP_PX) {
           return;
         }
-        // Content scrolls where it can: expanded and moving up, or away from its top. Everything
+        // Content scrolls where it can: at full and moving up, or away from its top. Everything
         // else (the header, the handle, content at its top or that doesn't scroll) moves the sheet.
         const movesSheet =
           Math.abs(dy) >= Math.abs(dx) &&
-          (!drag.scroller || (dy < 0 ? !isExpanded() : drag.scroller.scrollTop <= 0));
+          (!drag.scroller || (dy < 0 ? !isFull() : drag.scroller.scrollTop <= 0));
         if (!movesSheet) {
           drag.mode = 'content';
           return;
@@ -208,7 +225,7 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
       } else {
         drag.offset = raw;
       }
-      moveTo(drag.offset, drag.lowest);
+      moveTo(drag.offset, drag.half);
       drag.samples.push({ y: touch.clientY, time: event.timeStamp });
       if (drag.samples.length > 32) {
         drag.samples.splice(0, 16);
@@ -228,11 +245,20 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
       const flick = event.type === 'touchend' ? velocityOf(ended.samples) : 0;
       const projected = ended.offset + flick * FLICK_PROJECTION_MS;
       const startedLow = ended.from >= ended.lowest - 1;
-      if (canClose() && startedLow && projected > ended.lowest + space.offsetHeight * CLOSE_SHARE) {
+      if (canClose() && startedLow && projected > ended.lowest + peek.offsetHeight * CLOSE_SHARE) {
         slideOutAndClose();
         return;
       }
-      settle(projected < ended.lowest / 2);
+      // The nearest of the three heights to where the flick would carry it.
+      const stops: readonly (readonly [SheetPosition, number])[] = [
+        ['full', 0],
+        ['half', ended.half],
+        ['peek', ended.lowest],
+      ];
+      const nearest = stops.reduce((best, stop) =>
+        Math.abs(stop[1] - projected) < Math.abs(best[1] - projected) ? stop : best,
+      );
+      settle(nearest[0]);
     };
 
     const onClickCapture = (event: MouseEvent) => {
@@ -260,12 +286,14 @@ export function useBottomSheet(open: boolean, onClose: (() => void) | undefined)
   }, [open]);
 
   return {
-    /** Whether the sheet is at its full height (on phones). */
-    expanded,
-    setExpanded,
+    /** Where the sheet rests (on phones). */
+    position,
+    setPosition,
     containerRef,
     sheetRef,
     spaceRef,
+    peekRef,
+    halfRef,
     scrimRef,
   };
 }

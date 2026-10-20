@@ -23,9 +23,10 @@ export interface VisualizationProps {
    * hidden one should stop drawing (and start its intro once shown).
    */
   readonly active: boolean;
-  /** The header's leading part from the host: the site's name (a link home) and the switch
-   * between visualizations. */
+  /** The site's name, a link home, from the host. */
   readonly masthead: ReactNode;
+  /** The host's switch between visualizations, placed by the page frame. */
+  readonly viewSwitch: ReactNode;
   /** The host's translation picker, for the visualization to place among its own controls. */
   readonly translationMenu: ReactNode;
   /** Links that open a passage in the other visualizations, for the details panel. */

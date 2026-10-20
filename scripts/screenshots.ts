@@ -18,7 +18,10 @@ const PUBLIC = resolve(import.meta.dirname, '../public');
 
 async function settled(page: Page): Promise<void> {
   await page.locator('div[data-active="true"] canvas').first().waitFor({ state: 'attached' });
-  await page.locator('div[data-active="true"] footer').first().waitFor();
+  await page
+    .locator('div[data-active="true"] :is(footer, nav[aria-label="Main controls"])')
+    .first()
+    .waitFor();
   // The arcs reveal themselves over a moment; let the intro finish.
   await page.waitForTimeout(3000);
 }

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PANEL, openPassage } from './helpers.ts';
+import { PANEL, openPassage, waitForApp } from './helpers.ts';
 
 test.describe('the Hebrew and Greek behind a verse', () => {
   test('a Greek verse lists its words, with how they sound and what they mean', async ({
@@ -91,7 +91,7 @@ test.describe('the Hebrew and Greek behind a verse', () => {
       }
     });
     await page.goto('./');
-    await page.locator('div[data-active="true"] footer').first().waitFor();
+    await waitForApp(page);
     await page.waitForTimeout(1500);
     expect(requests).toHaveLength(0);
 

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, PANEL, openPanel, settle, waitForApp } from './helpers.ts';
+import { ACTIVE, goTo, openPanel, PANEL, settle, waitForApp } from './helpers.ts';
 import { DEFAULT_LOCALE_ID, LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 /**
@@ -164,8 +164,7 @@ test.describe('the controls', () => {
 
   test('a reference that is not one', async ({ page }) => {
     await show(page);
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Hesitations 4:4');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Hesitations 4:4');
     await settle(page);
     await expect(page).toHaveScreenshot('search-error.png', FULL);
   });

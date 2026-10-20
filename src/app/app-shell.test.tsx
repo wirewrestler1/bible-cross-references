@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DebugPage } from '../features/debug/DebugPage.tsx';
@@ -14,6 +14,7 @@ import {
 } from '../test-utils/fixtures.ts';
 import { VizDataBoundary } from '../visualizations/shared/components/VizDataBoundary.tsx';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
+import { PHONE_QUERY } from '../shared/lib/use-media-query.ts';
 import { vizCoreLoader, resetTranslations } from '../visualizations/shared/viz-data.ts';
 import { ViewSwitch } from './ViewSwitch.tsx';
 import { VIEWS } from './views.ts';
@@ -133,20 +134,29 @@ describe('VizDataBoundary', () => {
 });
 
 describe('VizPage', () => {
-  it('lays out the masthead, the controls, the stage and the credits', () => {
+  it('lays out the masthead, the switch, the controls, the stage and the credits', () => {
     render(
       <VizPage
         masthead={<h1>Title</h1>}
-        controls={<button type="button">Filter</button>}
+        viewSwitch={<nav aria-label="Views" />}
+        search={<input type="search" aria-label="Go to" />}
+        tools={<button type="button">Translation</button>}
+        menus={<button type="button">Filter</button>}
         credits={<span>Credits</span>}
       >
         <canvas />
       </VizPage>,
     );
     expect(screen.getByRole('heading', { name: 'Title' })).toBeDefined();
+    expect(screen.getByRole('navigation', { name: 'Views' })).toBeDefined();
+    expect(screen.getByRole('searchbox', { name: 'Go to' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Translation' })).toBeDefined();
     expect(screen.getByRole('button', { name: 'Filter' })).toBeDefined();
     expect(screen.getByText('Credits')).toBeDefined();
     expect(screen.getByRole('main')).toBeDefined();
+    // Wide: no bar, and no search button since the box is in the header.
+    expect(screen.queryByRole('navigation', { name: 'Main controls' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Search' })).toBeNull();
   });
 
   it('has no details panel until there is something to show', () => {
@@ -180,6 +190,115 @@ describe('VizPage', () => {
 });
 
 describe('VizPage on a phone', () => {
+  /**
+   * A window the width of a phone, as far as `matchMedia` is concerned. Returns a way to widen
+   * it: the page then hears the change the way it would from a real window.
+   */
+  function phoneWidth(): () => void {
+    const lists = new Map<string, MediaQueryList & { matches: boolean }>();
+    vi.spyOn(window, 'matchMedia').mockImplementation((query) => {
+      let list = lists.get(query);
+      if (!list) {
+        const target = new EventTarget();
+        list = Object.assign(target, {
+          media: query,
+          matches: query === PHONE_QUERY,
+          onchange: null,
+          addListener: () => undefined,
+          removeListener: () => undefined,
+        });
+        lists.set(query, list);
+      }
+      return list;
+    });
+    return () => {
+      for (const list of lists.values()) {
+        list.matches = false;
+        list.dispatchEvent(new Event('change'));
+      }
+    };
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('puts the switch, the search, the filters and the guide in a bar, and no footer', () => {
+    phoneWidth();
+    render(
+      <VizPage
+        masthead={<h1>Title</h1>}
+        viewSwitch={<nav aria-label="Views" />}
+        search={<input type="search" aria-label="Go to" />}
+        tools={<button type="button">Translation</button>}
+        menus={<button type="button">Filter</button>}
+        credits={<span>Credits</span>}
+      >
+        <canvas />
+      </VizPage>,
+    );
+    const bar = screen.getByRole('navigation', { name: 'Main controls' });
+    expect(within(bar).getByRole('navigation', { name: 'Views' })).toBeDefined();
+    expect(within(bar).getByRole('button', { name: 'Search' })).toBeDefined();
+    expect(within(bar).getByRole('button', { name: 'Filter' })).toBeDefined();
+    // The translation stays in the header, by the name.
+    expect(within(bar).queryByRole('button', { name: 'Translation' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Translation' })).toBeDefined();
+    // The search box waits in its sheet; the footer's links are in the guide instead.
+    expect(screen.queryByRole('searchbox')).toBeNull();
+    expect(screen.queryByText('Credits')).toBeNull();
+  });
+
+  it('opens the search as a sheet with the box focused, and closes it once the focus leaves', async () => {
+    phoneWidth();
+    render(
+      <VizPage
+        search={<input type="search" aria-label="Go to" />}
+        tools={<button type="button">Translation</button>}
+        credits={<span>Credits</span>}
+      >
+        <canvas />
+      </VizPage>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    const box = screen.getByRole('searchbox', { name: 'Go to' });
+    expect(document.activeElement).toBe(box);
+    expect(screen.getByRole('dialog', { name: 'Go to a Bible reference' })).toBeDefined();
+    // What the search does once it has found a reference: the box lets the focus go.
+    act(() => {
+      box.blur();
+    });
+    expect(screen.queryByRole('searchbox')).toBeNull();
+
+    // Escape closes it too.
+    await userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('searchbox')).toBeNull();
+  });
+
+  it('closes the search sheet from its dimmed background, and when the window widens', async () => {
+    const widen = phoneWidth();
+    const { container } = render(
+      <VizPage search={<input type="search" aria-label="Go to" />} credits={<span>Credits</span>}>
+        <canvas />
+      </VizPage>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    expect(screen.getByRole('searchbox')).toBeDefined();
+    const scrim = container.querySelector('[class*="menuScrim"]');
+    expect(scrim).not.toBeNull();
+    await userEvent.click(scrim ?? container);
+    expect(screen.queryByRole('searchbox')).toBeNull();
+
+    // Open again, then widen past a phone: the box is back in the header, and the sheet is gone.
+    await userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    expect(screen.getByRole('dialog')).toBeDefined();
+    act(widen);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('searchbox', { name: 'Go to' })).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'Search' })).toBeNull();
+  });
+
   it('closes an open sheet when the dimmed stage behind it is tapped', async () => {
     const { container } = render(
       <VizPage credits={<span>Credits</span>} panel={<p>About this verse</p>}>
@@ -192,6 +311,7 @@ describe('VizPage on a phone', () => {
     expect(scrim).not.toBeNull();
     await userEvent.click(scrim ?? container);
     expect(screen.getByRole('button', { name: /expand/i })).toBeDefined();
+    expect(container.querySelector('[data-sheet]')?.getAttribute('data-sheet')).toBe('half');
   });
 });
 

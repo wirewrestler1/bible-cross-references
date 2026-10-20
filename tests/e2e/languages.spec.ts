@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, GUIDE_SEEN, openPanel, PANEL, VERSE_COUNT, waitForApp } from './helpers.ts';
+import { ACTIVE, goTo, GUIDE_SEEN, openPanel, PANEL, VERSE_COUNT, waitForApp } from './helpers.ts';
 import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 /**
@@ -49,20 +49,15 @@ test.describe('reading in Portuguese', () => {
 
   test('a reference can be typed in Portuguese, accents or not', async ({ page }) => {
     await open(page, '?lang=pt');
-    const search = page.locator(ACTIVE).getByRole('searchbox');
-    await search.fill('Gênesis 1:1');
-    await search.press('Enter');
+    await goTo(page, 'Gênesis 1:1');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Gênesis 1:1' })).toBeVisible();
-    await search.fill('salmos 23');
-    await search.press('Enter');
+    await goTo(page, 'salmos 23');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Salmo 23' })).toBeVisible();
   });
 
   test('a reference it cannot read says so in Portuguese', async ({ page }) => {
     await open(page, '?lang=pt');
-    const search = page.locator(ACTIVE).getByRole('searchbox');
-    await search.fill('Hesitações 4:4');
-    await search.press('Enter');
+    await goTo(page, 'Hesitações 4:4');
     await expect(page.locator(ACTIVE).getByRole('alert')).toContainText('Livro desconhecido');
   });
 
@@ -290,8 +285,7 @@ test.describe('a language with no Bible of its own', () => {
 
   test('reads a reference typed in Ukrainian', async ({ page }) => {
     await open(page, 'uk/');
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Івана 3:16');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Івана 3:16');
     await expect(page).toHaveURL(/ref=John\.3\.16/);
   });
 

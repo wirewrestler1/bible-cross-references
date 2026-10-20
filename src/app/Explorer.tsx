@@ -209,37 +209,37 @@ export function Explorer({ core }: { readonly core: VizCore }) {
   );
 
   const masthead = (
-    <>
-      <h1 className={styles.title}>
-        <InAppLink
-          href={hrefOf(HOME, null)}
-          className={styles.home}
-          onFollow={() => {
-            focusTarget.current = 'h1 a';
-            navigate({
-              view: HOME.id,
-              passage: null,
-              filter: DEFAULT_LINK_FILTER,
-              translation: location.translation,
-              locale: localeId,
-            });
-            setGeneration((value) => value + 1);
-          }}
-        >
-          <span className={styles.fullName}>{t('app.name')}</span>
-          <span className={styles.shortName}>{t('app.name.short')}</span>
-        </InAppLink>
-      </h1>
-      <ViewSwitch
-        views={VIEWS}
-        current={location.view}
-        hrefOf={(view) => hrefOf(view, passage)}
-        onOpen={(view) => {
-          focusTarget.current = '[aria-current="page"]';
-          navigate({ ...location, view: view.id, passage });
+    <h1 className={styles.title}>
+      <InAppLink
+        href={hrefOf(HOME, null)}
+        className={styles.home}
+        onFollow={() => {
+          focusTarget.current = 'h1 a';
+          navigate({
+            view: HOME.id,
+            passage: null,
+            filter: DEFAULT_LINK_FILTER,
+            translation: location.translation,
+            locale: localeId,
+          });
+          setGeneration((value) => value + 1);
         }}
-      />
-    </>
+      >
+        <span className={styles.fullName}>{t('app.name')}</span>
+        <span className={styles.shortName}>{t('app.name.short')}</span>
+      </InAppLink>
+    </h1>
+  );
+  const viewSwitch = (
+    <ViewSwitch
+      views={VIEWS}
+      current={location.view}
+      hrefOf={(view) => hrefOf(view, passage)}
+      onOpen={(view) => {
+        focusTarget.current = '[aria-current="page"]';
+        navigate({ ...location, view: view.id, passage });
+      }}
+    />
   );
 
   return (
@@ -260,6 +260,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
               fallback={(error) => (
                 <VizPage
                   masthead={masthead}
+                  viewSwitch={viewSwitch}
                   credits={<Credits translation={translation.manifest} />}
                 >
                   <p role="alert" className={styles.error}>
@@ -281,6 +282,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
                   navigate({ ...location, filter: next }, { replace: true });
                 }}
                 masthead={masthead}
+                viewSwitch={viewSwitch}
                 translationMenu={translationMenu}
                 shareUrl={(target) =>
                   new URL(
@@ -323,7 +325,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
         );
       })}
       {/* Once, for both views: the "?" in either header opens it. */}
-      <FirstVisitGuide />
+      <FirstVisitGuide credits={<Credits translation={translation.manifest} />} />
     </>
   );
 }

@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { LINK_KIND_IDS } from '../../core/datasets/link-kinds.ts';
 import { useLocalization } from '../../i18n/use-locale.tsx';
 import { GUIDE_PREFERENCE } from '../lib/preference-keys.ts';
 import { useStringPreference } from '../lib/preferences.ts';
 import { setGuideOpen, useGuideOpen } from './guide-state.ts';
+import { SiteFooter } from './SiteFooter.tsx';
+import controls from '../../visualizations/shared/components/controls.module.css';
 import styles from './FirstVisitGuide.module.css';
 
 /** A question mark in a ring, the one icon this guide needs. */
@@ -22,13 +24,13 @@ function GuideIcon() {
   );
 }
 
-/** The header button that opens the guide. */
+/** The header (or bar) button that opens the guide. */
 export function GuideButton() {
   const { t } = useLocalization();
   return (
     <button
       type="button"
-      className={styles.button}
+      className={`${controls.button} ${controls.menuButton}`}
       aria-label={t('guide.open')}
       title={t('guide.open')}
       onClick={() => {
@@ -36,6 +38,7 @@ export function GuideButton() {
       }}
     >
       <GuideIcon />
+      <span className={controls.menuLabel}>{t('guide.short')}</span>
     </button>
   );
 }
@@ -45,7 +48,12 @@ export function GuideButton() {
  * what the lines are, the four kinds and how far to trust each, what the weight means, and
  * which books are new. Dismissing it is remembered, so it does not come back on its own.
  */
-export function FirstVisitGuide() {
+interface FirstVisitGuideProps {
+  /** Data attribution, which on a phone has no footer to live in: the guide carries it. */
+  readonly credits?: ReactNode;
+}
+
+export function FirstVisitGuide({ credits }: FirstVisitGuideProps) {
   const { t } = useLocalization();
   const [seen, setSeen] = useStringPreference(GUIDE_PREFERENCE, '');
   const open = useGuideOpen();
@@ -124,6 +132,7 @@ export function FirstVisitGuide() {
         <button type="button" className={styles.done} onClick={dismiss}>
           {t('guide.done')}
         </button>
+        {credits !== undefined && <SiteFooter className={styles.footer}>{credits}</SiteFooter>}
       </section>
     </div>
   );

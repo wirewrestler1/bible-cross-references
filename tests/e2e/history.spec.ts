@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, GUIDE_SEEN, PANEL, waitForApp } from './helpers.ts';
+import { ACTIVE, goTo, GUIDE_SEEN, PANEL, waitForApp } from './helpers.ts';
 import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 /** Portuguese pages exist only while the language is published; English only for now. */
@@ -91,9 +91,7 @@ test.describe('browser history', () => {
     await waitForApp(page);
     await expect(page.locator(PANEL).getByRole('heading', { name: 'John 3:16' })).toBeVisible();
 
-    const search = page.locator(ACTIVE).getByRole('searchbox');
-    await search.fill('Isaiah 53:5');
-    await search.press('Enter');
+    await goTo(page, 'Isaiah 53:5');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Isaiah 53:5' })).toBeVisible();
 
     await page.goBack();
@@ -110,8 +108,7 @@ test.describe('browser history', () => {
     // three translations of one verse should not have to press Back three times to leave it.
     await page.goto('./?ref=Gen.1.1');
     await waitForApp(page);
-    await page.locator(ACTIVE).getByRole('searchbox').fill('John 3:16');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'John 3:16');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'John 3:16' })).toBeVisible();
 
     await page
@@ -174,9 +171,7 @@ test.describe('browser history', () => {
     await waitForApp(page);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
-    const search = page.locator(ACTIVE).getByRole('searchbox');
-    await search.fill('Isaiah 53:5');
-    await search.press('Enter');
+    await goTo(page, 'Isaiah 53:5');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Isaiah 53:5' })).toBeVisible();
 
     expect(query(page)).toContain('lang=en');
@@ -194,10 +189,8 @@ test.describe('browser history', () => {
     // reached, and the reader is trapped on one page.
     await page.goto('./?ref=John.3.16');
     await waitForApp(page);
-    const search = page.locator(ACTIVE).getByRole('searchbox');
     for (const reference of ['Isaiah 53:5', 'Genesis 1:1', 'Psalm 23']) {
-      await search.fill(reference);
-      await search.press('Enter');
+      await goTo(page, reference);
       await expect(page.locator(PANEL)).toContainText(reference.split(' ')[0] ?? '');
     }
 

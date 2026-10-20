@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import {
   ACTIVE,
   collectErrors,
+  goTo,
   LINK_COUNT,
   openPassage,
   PANEL,
@@ -23,8 +24,7 @@ test.describe('reading the Bible', () => {
   test('a verse can be found by typing its reference', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Ps 23:1');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Ps 23:1');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Psalm 23:1' })).toBeVisible();
     await expect(page).toHaveURL(/ref=Ps\.23\.1/);
   });
@@ -32,8 +32,7 @@ test.describe('reading the Bible', () => {
   test('a whole chapter can be opened, and lists its verses', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Psalm 23');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Psalm 23');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Psalm 23' })).toBeVisible();
     await expect(page.locator(PANEL).getByRole('button', { name: /Verses/ })).toBeVisible();
   });
@@ -41,8 +40,7 @@ test.describe('reading the Bible', () => {
   test('a reference that is not a reference says so, and changes nothing', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Hesitations 4:4');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Hesitations 4:4');
     await expect(page.locator(ACTIVE).getByRole('alert')).toBeVisible();
     await expect(page).not.toHaveURL(/ref=/);
   });
@@ -80,8 +78,7 @@ test.describe('reading the Bible', () => {
 
   test('Back returns to the passage before it', async ({ page }) => {
     await openPassage(page, 'John.3.16');
-    await page.locator(ACTIVE).getByRole('searchbox').fill('Ps 23:1');
-    await page.locator(ACTIVE).getByRole('searchbox').press('Enter');
+    await goTo(page, 'Ps 23:1');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Psalm 23:1' })).toBeVisible();
     await page.goBack();
     await expect(page.locator(PANEL).getByRole('heading', { name: 'John 3:16' })).toBeVisible();

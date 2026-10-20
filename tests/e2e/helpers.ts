@@ -42,7 +42,28 @@ export const ACTIVE = 'div[data-active="true"]';
 /** Waits for the app to have drawn: the data is loaded and the canvas is up. */
 export async function waitForApp(page: Page): Promise<void> {
   await page.locator(`${ACTIVE} canvas`).first().waitFor({ state: 'attached' });
-  await page.locator(`${ACTIVE} footer`).first().waitFor();
+  // The last thing the frame renders: the footer on a wide screen, the bar on a phone (where
+  // the footer's links live in the guide instead).
+  await page.locator(`${ACTIVE} :is(footer, ${BAR_SELECTOR})`).first().waitFor();
+}
+
+/** The bar along the bottom of a phone, where the switch, the search and the menus are. */
+const BAR_SELECTOR = 'nav[aria-label="Main controls"]';
+export const BAR = `${ACTIVE} ${BAR_SELECTOR}`;
+
+/**
+ * Types a reference into the search box and submits it. On a phone the box is a sheet behind
+ * the bar's Search button; on a wide screen it is in the header. Either way, what the reader
+ * does is the same: find the box, type, go.
+ */
+export async function goTo(page: Page, reference: string): Promise<void> {
+  const active = page.locator(ACTIVE);
+  const box = active.getByRole('searchbox');
+  if (!(await box.isVisible())) {
+    await active.getByRole('button', { name: 'Search', exact: true }).click();
+  }
+  await box.fill(reference);
+  await box.press('Enter');
 }
 
 /** Collects console errors, ignoring the software renderer's performance chatter. */

@@ -360,6 +360,120 @@
   }
 }
 
+/* The bar along the bottom of a phone, and the scrim behind a menu opened from it: nothing on
+   wider screens, where the same controls are in the header and a menu is a popover. */
+.bar,
+.menuScrim,
+.searchSheet {
+  display: none;
+}
+
+@media (max-width: 47.99rem) {
+  .bar {
+    display: flex;
+    align-items: stretch;
+    padding-block-end: env(safe-area-inset-bottom, 0px);
+    border-block-start: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  /* The switch's links stand in the bar as items of their own. */
+  .bar .segmented {
+    display: contents;
+  }
+
+  .bar .menu {
+    display: flex;
+    flex: 1 1 0;
+  }
+
+  .bar .button,
+  .bar .menuButton {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-block-size: var(--bar-height);
+    min-inline-size: 0;
+    padding: var(--space-1) 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+
+  .bar .button svg {
+    font-size: 1.375rem;
+  }
+
+  .bar .button[aria-current='page'],
+  .bar .button[aria-expanded='true'] {
+    color: var(--color-text);
+  }
+
+  .bar .menuLabel,
+  .bar .shortLabel {
+    display: inline;
+  }
+
+  .bar .longLabel {
+    display: none;
+  }
+
+  .bar .menuButton .indicator {
+    inset-block-start: var(--space-1);
+    inset-inline-end: calc(50% - 1.125rem);
+  }
+
+  /* A menu opened from the bar rises from it as a sheet, the width of the screen. */
+  .popover {
+    position: fixed;
+    inset-block-start: auto;
+    inset-block-end: calc(var(--bar-height) + env(safe-area-inset-bottom, 0px));
+    inset-inline: 0;
+    z-index: 30;
+    inline-size: auto;
+    max-inline-size: none;
+    max-block-size: calc(100dvh - var(--bar-height) - 6rem - env(safe-area-inset-top, 0px));
+    padding: var(--space-4) var(--space-4) var(--space-6);
+    border-block-end: 0;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.5);
+  }
+
+  .menuScrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 29;
+    background: rgb(0 0 0 / 0.45);
+  }
+
+  .searchSheet {
+    display: block;
+    position: fixed;
+    inset-block-end: calc(var(--bar-height) + env(safe-area-inset-bottom, 0px));
+    inset-inline: 0;
+    z-index: 30;
+    padding: var(--space-4) var(--space-4) var(--space-6);
+    border-radius: 1rem 1rem 0 0;
+    background: var(--color-surface);
+    box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.5);
+  }
+
+  .searchSheet .search {
+    flex: none;
+    max-inline-size: none;
+  }
+
+  .searchSheet .error {
+    position: static;
+    margin-block-start: var(--space-2);
+  }
+}
+
 /* One language's translations in the picker, under the language's own name for itself. */
 .group {
   display: grid;

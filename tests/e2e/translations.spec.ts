@@ -87,10 +87,17 @@ test.describe('translations', () => {
     }
   });
 
-  test('the credit in the footer follows the translation on screen', async ({ page }) => {
+  test('the credit follows the translation on screen', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await expect(page.locator(`${ACTIVE} footer`)).toContainText('WEB');
+    const footer = page.locator(`${ACTIVE} footer`);
+    if (await footer.isVisible()) {
+      await expect(footer).toContainText('WEB');
+      return;
+    }
+    // A phone has no footer: the credit is at the end of the guide, behind the bar's "?".
+    await page.locator(ACTIVE).getByRole('button', { name: 'How to read this' }).click();
+    await expect(page.getByRole('dialog', { name: 'How to read this' })).toContainText('WEB');
   });
 
   test('a quote is copied with its reference and a link that names the translation', async ({

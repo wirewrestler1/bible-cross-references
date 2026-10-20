@@ -28,6 +28,8 @@
   --space-8: 2rem;
 
   --radius: 0.5rem;
+  /* The bar along the bottom of a phone (controls.module.css); menus open above it. */
+  --bar-height: 3.5rem;
   --content-width: 72rem;
 }
 
