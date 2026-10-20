@@ -115,6 +115,19 @@ text you are reading all work with no connection. On an iPhone or iPad that firs
 happen inside the installed app: a home-screen app there has storage of its own, apart from
 Safari's.
 
+### The look
+
+Deep space: a near-black blue surface, the arcs as the only light, and the chrome a thin layer
+of glass over them — pills and sheets with no borders that brighten when touched. The books
+along the axis cast their colour around them, the focus is a warm gold light, and the legend
+folds into a strip of the genres' dots. The name, the titles and the verses are set in
+[Fraunces](https://github.com/undercasetype/Fraunces) (SIL Open Font License 1.1, bundled from
+`@fontsource-variable/fraunces` so the installed app keeps it); everything else in the system
+face, so labels cost no download. The mark — three arcs rising from a baseline under a cross, a
+dome — has one source, [`src/shared/ui/mark-paths.ts`](src/shared/ui/mark-paths.ts), that the
+header, the first frame and the favicon draw from; `node scripts/icons.ts` rasterizes it into
+the app icons.
+
 ## Languages
 
 This release speaks English. The repository still holds the words of five more languages —
@@ -320,6 +333,7 @@ put the domain in a `CNAME` file under `public/`.
   the arcs follow.
 - OpenBible.info, eBible.org, CrossWire, Projekt Runeberg, STEPBible and the Berean Bible, for
   publishing their data under licences that let a project like this exist.
+- [Undercase Type](https://undercase.xyz), for Fraunces, under the SIL Open Font License.
 
 ## License
 
