@@ -34,7 +34,10 @@ test.describe('reading the Bible', () => {
     await waitForApp(page);
     await goTo(page, 'Psalm 23');
     await expect(page.locator(PANEL).getByRole('heading', { name: 'Psalm 23' })).toBeVisible();
-    await expect(page.locator(PANEL).getByRole('button', { name: /Verses/ })).toBeVisible();
+    await expect(page.locator(PANEL).getByRole('tab', { name: /verses/ })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
   });
 
   test('a reference that is not a reference says so, and changes nothing', async ({ page }) => {

@@ -7,7 +7,7 @@ import { verseIndex } from '../../../test-utils/fixtures.ts';
 import { createVizData } from '../../../test-utils/viz-data.ts';
 import { DEFAULT_LINK_FILTER } from '../link-filter.ts';
 import { canCopy, copyQuote, quotePassage } from '../passage-quote.ts';
-import { PassagePanel } from './PassagePanel.tsx';
+import { PassageCard } from './PassageCard.tsx';
 import { enBooks } from '../../../i18n/books/en.ts';
 
 const JOHN_3_16 = verseIndex('John', 3, 16);
@@ -101,7 +101,7 @@ describe('copyQuote', () => {
 describe('the copy button', () => {
   function renderPanel(passage: Passage = versePassage(JOHN_3_16)) {
     render(
-      <PassagePanel
+      <PassageCard
         data={DATA}
         passage={passage}
         filter={DEFAULT_LINK_FILTER}
@@ -172,6 +172,7 @@ describe('the copy button', () => {
   it('copies a chapter\u2019s links rather than the chapter itself', async () => {
     renderPanel(chapterPassageOf(JOHN_3_16, CANONICAL_VERSIFICATION));
     expect(screen.queryByRole('button', { name: /Copy John 3 with a link/ })).toBeNull();
+    await userEvent.click(screen.getByRole('tab', { name: /points? out/ }));
     await userEvent.click(screen.getByRole('button', { name: /Copy Romans 5:8–9 with a link/ }));
     await waitFor(() => {
       expect(clipboard.writeText).toHaveBeenCalled();

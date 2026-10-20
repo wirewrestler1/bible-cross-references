@@ -97,16 +97,16 @@ describe('OriginalWordsSection', () => {
 
   it('appears once they have', async () => {
     renderSection();
-    expect(await screen.findByText(/SAME HEBREW WORD|Same Hebrew word/i)).toBeDefined();
+    expect(await screen.findByLabelText(/Same Hebrew word/i)).toBeDefined();
   });
 
   it('says Hebrew in the Old Testament and Greek in the New', async () => {
     const { unmount } = renderSection(GEN_1_1);
-    expect(await screen.findByRole('heading', { name: /Hebrew/i })).toBeDefined();
+    expect(await screen.findByLabelText(/Hebrew/i)).toBeDefined();
     unmount();
     state.loaded = dataset();
     renderSection(ACTS_5_14);
-    expect(await screen.findByRole('heading', { name: /Greek/i })).toBeDefined();
+    expect(await screen.findByLabelText(/Greek/i)).toBeDefined();
   });
 
   it("lists the verse's words, rarest first, with how it sounds and what it means", async () => {
@@ -170,13 +170,6 @@ describe('OriginalWordsSection', () => {
     expect(await screen.findByText(/STEP Bible/)).toBeDefined();
     expect(screen.getByText(/Tyndale House/)).toBeDefined();
     expect(screen.getByText(/more than 100 verses are left out/)).toBeDefined();
-  });
-
-  it('keeps the credit visible when the section is folded away', async () => {
-    renderSection();
-    const band = await screen.findByRole('button', { name: /Same Hebrew word/i });
-    await userEvent.click(band);
-    expect(screen.getByText(/STEP Bible/)).toBeDefined();
   });
 
   it('shows nothing for a verse with no words of its own', async () => {

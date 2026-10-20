@@ -2,52 +2,58 @@ import { expect, test } from '@playwright/test';
 import { ACTIVE, LINK_COUNT, openPassage, PANEL, waitForApp } from './helpers.ts';
 
 test.describe('cross-references', () => {
-  test('a verse lists where it points and what points at it', async ({ page }) => {
+  test('a verse lists where it points and what points at it, behind two chips', async ({
+    page,
+  }) => {
     await openPassage(page, 'John.3.16');
-    await expect(page.locator(PANEL).getByRole('button', { name: /References/ })).toBeVisible();
-    await expect(page.locator(PANEL).getByRole('button', { name: /Referenced by/ })).toBeVisible();
+    const card = page.locator(PANEL);
+    const out = card.getByRole('tab', { name: /points? out/ });
+    const inward = card.getByRole('tab', { name: /points? in/ });
+    await expect(out).toHaveAttribute('aria-selected', 'true');
+    await expect(card.getByRole('button', { name: /^Romans 5:8/ }).first()).toBeVisible();
+    await inward.click();
+    await expect(inward).toHaveAttribute('aria-selected', 'true');
+    await expect(out).toHaveAttribute('aria-selected', 'false');
+    // The passages that point here, 1 John among them. (Romans 5:8 is in both lists: it points
+    // at John 3:16 and John 3:16 points at it, so its presence proves nothing either way.)
+    await expect(card.getByRole('button', { name: /^1 John/ }).first()).toBeVisible();
+  });
+
+  test('the card carries the verse’s own links, drawn small, above the headline', async ({
+    page,
+  }) => {
+    await openPassage(page, 'John.3.16');
+    const mini = page.locator(PANEL).getByRole('img', { name: /drawn small/ });
+    await expect(mini).toBeVisible();
+    expect(await mini.locator('path').count()).toBeGreaterThan(10);
+  });
+
+  test('the spectrum narrows the list to one genre, and widens it again', async ({ page }) => {
+    await openPassage(page, 'John.3.16');
+    const card = page.locator(PANEL);
+    const spectrum = card.getByRole('group', { name: 'Narrow to a genre' });
+    const gospels = spectrum.getByRole('button', { name: /^Gospels:/ });
+    const before = await card.getByRole('button', { name: /^Romans 5:8/ }).count();
+    expect(before).toBeGreaterThan(0);
+    await gospels.click();
+    await expect(gospels).toHaveAttribute('aria-pressed', 'true');
+    await expect(card.getByRole('button', { name: /^Romans 5:8/ })).toHaveCount(0);
     await expect(
-      page
-        .locator(PANEL)
-        .getByRole('button', { name: /^Romans 5:8/ })
-        .first(),
+      card.getByRole('button', { name: /^(Matthew|Mark|Luke|John) / }).first(),
     ).toBeVisible();
+    await gospels.click();
+    await expect(card.getByRole('button', { name: /^Romans 5:8/ }).first()).toBeVisible();
   });
 
-  test('a section can be folded away, and stays folded on the next visit', async ({ page }) => {
-    await openPassage(page, 'John.3.16');
-    const band = page.locator(PANEL).getByRole('button', { name: /^References where/ });
-    await band.click();
-    await expect(band).toHaveAttribute('aria-expanded', 'false');
-
-    await page.reload();
-    await waitForApp(page);
-    await expect(
-      page.locator(PANEL).getByRole('button', { name: /^References where/ }),
-    ).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  test('the section heading stays on screen while its list scrolls past it', async ({ page }) => {
+  test('a long list shows its first links, and the rest on request', async ({ page }) => {
     await openPassage(page, 'Gen.1.1');
-    const scroll = page.locator(`${PANEL} [class*="scroll"]`);
-    await scroll.evaluate((element) => {
-      element.scrollTop = element.scrollHeight * 0.4;
-    });
-    const stuck = await scroll.evaluate((element) => {
-      const top = element.getBoundingClientRect().top;
-      return [...element.querySelectorAll('h3')]
-        .filter((heading) => Math.abs(heading.getBoundingClientRect().top - top) < 4)
-        .map((heading) => heading.textContent.trim().slice(0, 20));
-    });
-    expect(stuck.length).toBe(1);
-  });
-
-  test('the genre breakdown opens', async ({ page }) => {
-    await openPassage(page, 'John.3.16');
-    const band = page.locator(PANEL).getByRole('button', { name: /Connects to/ });
-    await band.click();
-    await expect(band).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator(PANEL).getByText('Gospels').first()).toBeVisible();
+    const card = page.locator(PANEL);
+    const more = card.getByRole('button', { name: /^Show all/ });
+    await expect(more).toBeVisible();
+    const before = await card.locator('[class*="rowButton"]').count();
+    await more.click();
+    await expect(more).toHaveCount(0);
+    expect(await card.locator('[class*="rowButton"]').count()).toBeGreaterThan(before);
   });
 
   test('raising the vote threshold shows fewer links, and says so in the address', async ({

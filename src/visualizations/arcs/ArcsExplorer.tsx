@@ -14,7 +14,7 @@ import { useLocalization } from '../../i18n/use-locale.tsx';
 import { GenreLegend } from '../shared/components/GenreLegend.tsx';
 import { toggleGenre } from '../shared/components/GenreToggles.tsx';
 import { LinkStats } from '../shared/components/LinkStats.tsx';
-import { PassagePanel } from '../shared/components/PassagePanel.tsx';
+import { PassageCard } from '../shared/components/PassageCard.tsx';
 import { ReferenceSearch } from '../shared/components/ReferenceSearch.tsx';
 import { VizPage } from '../shared/components/VizPage.tsx';
 import { DEFAULT_LINK_FILTER, selectLinks } from '../shared/link-filter.ts';
@@ -85,7 +85,7 @@ export function ArcsExplorer({
       }
       panel={
         passage && (
-          <PassagePanel
+          <PassageCard
             data={data}
             passage={passage}
             filter={filter}

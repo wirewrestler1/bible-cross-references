@@ -7,7 +7,7 @@ import { GuideButton } from '../../shared/ui/FirstVisitGuide.tsx';
 import { FiltersMenu } from '../shared/components/FiltersMenu.tsx';
 import { GenreMenu } from '../shared/components/GenreMenu.tsx';
 import { toggleGenre } from '../shared/components/GenreToggles.tsx';
-import { PassagePanel } from '../shared/components/PassagePanel.tsx';
+import { PassageCard } from '../shared/components/PassageCard.tsx';
 import { ReferenceSearch } from '../shared/components/ReferenceSearch.tsx';
 import { SegmentedControl } from '../shared/components/SegmentedControl.tsx';
 import { VizPage } from '../shared/components/VizPage.tsx';
@@ -125,7 +125,7 @@ export function ThreadsExplorer({
       }
       panel={
         selectedVerse !== null && (
-          <PassagePanel
+          <PassageCard
             data={data}
             passage={{ kind: 'verse', verse: selectedVerse }}
             filter={filter}

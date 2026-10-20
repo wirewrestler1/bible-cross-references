@@ -15,14 +15,14 @@ export const en = {
 
   'view.arcs': 'Arcs',
   'view.arcs.short': 'Arcs',
-  'view.arcs.open': 'Show in Arcs',
+  'view.arcs.open': 'See it in the arcs',
   'view.threads': 'Threads',
   'view.threads.short': 'Threads',
-  'view.threads.open': 'Read in context',
+  'view.threads.open': 'Read the chapter',
   'view.switch': 'Visualizations',
 
   'search.label': 'Go to a Bible reference',
-  'search.placeholder': 'Go to…  John 3:16, Ps 23',
+  'search.placeholder': 'Find a verse…  Sirach 24, John 3:16',
   /** The bar's button for the search, on phones. */
   'search.short': 'Search',
   /** The list under the box of what the typing could become. */
@@ -146,6 +146,14 @@ export const en = {
   'menu.translation': 'Translation',
   // Beside a translation that carries the deuterocanonical books.
   'menu.translation.deuterocanon': 'with the deuterocanon',
+  /** One line on what each Bible is, under its name in the picker. */
+  'translation.note.web': 'Modern English, public domain, from eBible.org',
+  'translation.note.bsb': 'Modern English, 2022, public domain',
+  'translation.note.kjv': 'The 1769 text of the Authorised Version',
+  'translation.note.blivre': 'Brazilian Portuguese, from the Textus Receptus',
+  'translation.note.luther1912': 'German, Luther’s text as revised in 1912',
+  'translation.note.riveduta1927': 'Italian, Luzzi’s revision of 1927',
+  'translation.note.vbl': 'Spanish, a free modern translation',
   'menu.translation.failed': (name: string) => `${name} could not be loaded.`,
   'menu.translation.error': (message: string) => `${message} Check your connection and try again.`,
   'menu.language': 'Language',
@@ -205,6 +213,21 @@ export const en = {
   'note.fromVerse': (verse: string) => `from v. ${verse}`,
   'note.toVerse': (verse: string) => `to v. ${verse}`,
 
+  /** The card's chips: what its list holds. */
+  'card.chips': 'What to list',
+  'card.out': (count: string, plural: number) =>
+    plural === 1 ? `${count} points out` : `${count} point out`,
+  'card.in': (count: string, plural: number) =>
+    plural === 1 ? `${count} points in` : `${count} point in`,
+  'card.verses': (count: string, plural: number) =>
+    plural === 1 ? `${count} verse` : `${count} verses`,
+  'card.words': 'Words',
+  /** Where the passage sits: verse 3 of 34, chapter 24 of 51. */
+  'card.position': (at: string, of: string) => `${at} of ${of}`,
+  'card.genres': 'Narrow to a genre',
+  'card.genre': (name: string, count: string) => `${name}: ${count}`,
+  'card.miniArcs': (reference: string) => `The links of ${reference}, drawn small`,
+  'card.none': 'Nothing here under the current filters.',
   'panel.connectsTo': 'Connects to',
   'panel.connectsTo.note': (count: number) => (count === 1 ? '1 genre' : `${String(count)} genres`),
   'panel.references': 'References',
