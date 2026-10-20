@@ -25,7 +25,7 @@ export function formOf(count: number, one: string, few: string, many: string): s
 
 /** The interface in Ukrainian. Anything left out falls back to the English word. */
 export const uk: LocaleMessages = {
-  'app.name': 'Перехресні посилання Біблії',
+  'app.name': 'Перехресні посилання Біблії: православний канон',
   'app.name.short': 'Перехресні посилання',
 
   'view.arcs': 'Арки',

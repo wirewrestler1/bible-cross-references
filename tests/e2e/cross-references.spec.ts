@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ACTIVE, PANEL, openPassage, waitForApp } from './helpers.ts';
+import { ACTIVE, LINK_COUNT, openPassage, PANEL, waitForApp } from './helpers.ts';
 
 test.describe('cross-references', () => {
   test('a verse lists where it points and what points at it', async ({ page }) => {
@@ -57,7 +57,7 @@ test.describe('cross-references', () => {
     await waitForApp(page);
     const shownBefore = await page
       .locator(ACTIVE)
-      .getByText(/of 344,799 links shown/)
+      .getByText(new RegExp(`of ${LINK_COUNT} links shown`))
       .textContent();
     await page
       .locator(ACTIVE)
@@ -65,9 +65,9 @@ test.describe('cross-references', () => {
       .click();
     await page.locator(ACTIVE).getByRole('combobox').first().selectOption('20');
     await expect(page).toHaveURL(/votes=20/);
-    await expect(page.locator(ACTIVE).getByText(/of 344,799 links shown/)).not.toHaveText(
-      shownBefore ?? '',
-    );
+    await expect(
+      page.locator(ACTIVE).getByText(new RegExp(`of ${LINK_COUNT} links shown`)),
+    ).not.toHaveText(shownBefore ?? '');
   });
 
   test('a filtered link is shared by its address', async ({ page }) => {

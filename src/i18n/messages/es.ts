@@ -2,7 +2,7 @@ import type { Emphasized, LocaleMessages } from './types.ts';
 
 /** The interface in Spanish. Anything left out falls back to the English word. */
 export const es: LocaleMessages = {
-  'app.name': 'Referencias cruzadas de la Biblia',
+  'app.name': 'Referencias cruzadas de la Biblia: canon ortodoxo',
   'app.name.short': 'Referencias',
 
   'view.arcs': 'Arcos',

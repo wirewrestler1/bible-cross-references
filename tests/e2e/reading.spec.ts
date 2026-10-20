@@ -1,5 +1,13 @@
 import { expect, test } from '@playwright/test';
-import { ACTIVE, PANEL, collectErrors, openPassage, waitForApp } from './helpers.ts';
+import {
+  ACTIVE,
+  collectErrors,
+  LINK_COUNT,
+  openPassage,
+  PANEL,
+  VERSE_COUNT,
+  waitForApp,
+} from './helpers.ts';
 
 test.describe('reading the Bible', () => {
   test('the arcs are drawn, and say how much is shown', async ({ page }) => {
@@ -7,8 +15,8 @@ test.describe('reading the Bible', () => {
     await page.goto('./');
     await waitForApp(page);
     await expect(page.locator(`${ACTIVE} canvas`).first()).toBeVisible();
-    await expect(page.getByText(/31,102 verses/)).toBeVisible();
-    await expect(page.getByText(/of 344,799 links shown/)).toBeVisible();
+    await expect(page.getByText(new RegExp(`${VERSE_COUNT} verses`))).toBeVisible();
+    await expect(page.getByText(new RegExp(`of ${LINK_COUNT} links shown`))).toBeVisible();
     expect(errors).toEqual([]);
   });
 

@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import { describe, expect, it } from 'vitest';
-import { analytics } from './analytics.ts';
 import { firstFrame } from './first-frame.ts';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -42,38 +41,6 @@ function resolveConfig(plugin: Plugin, command: 'build' | 'serve', base = '/'): 
 const BASE = '/bible-cross-references/';
 
 const HTML = '<html><head><title>t</title></head><body><div id="root"></div></body></html>';
-
-describe('analytics', () => {
-  it('adds the tag to a built page', () => {
-    const plugin = analytics();
-    resolveConfig(plugin, 'build');
-    const tags = hook(plugin, 'transformIndexHtml')(HTML, { path: PAGE_PATH });
-    expect(JSON.stringify(tags)).toContain('googletagmanager.com');
-  });
-
-  it("reports only from the site's own origin, so forks and previews send nothing", () => {
-    const plugin = analytics();
-    resolveConfig(plugin, 'build');
-    const tags = hook(plugin, 'transformIndexHtml')(HTML, { path: PAGE_PATH });
-    expect(JSON.stringify(tags)).toContain('trekhleb.dev');
-  });
-
-  it('adds nothing on the dev server', () => {
-    const plugin = analytics();
-    resolveConfig(plugin, 'serve');
-    expect(
-      hook(plugin, 'transformIndexHtml')(HTML, {
-        path: PAGE_PATH,
-      }),
-    ).toEqual([]);
-  });
-
-  it('adds nothing to a file that is not a page', () => {
-    const plugin = analytics();
-    resolveConfig(plugin, 'build');
-    expect(hook(plugin, 'transformIndexHtml')(HTML, { path: '/elsewhere.html' })).toEqual([]);
-  });
-});
 
 describe('firstFrame', () => {
   const transform = () => hook(firstFrame(), 'transformIndexHtml');

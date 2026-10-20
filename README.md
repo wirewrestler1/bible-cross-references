@@ -1,42 +1,58 @@
-# Bible Cross-References
+# Bible Cross-References: Orthodox Canon
 
-[![Bible Cross-References: 344,799 connections between 31,102 verses, from Genesis to Revelation](public/social-preview.jpg)](https://trekhleb.dev/bible-cross-references/)
+[![Bible Cross-References: Orthodox Canon — the cross-references of the whole Orthodox Bible, deuterocanon included, drawn as arcs](public/social-preview.jpg)](https://wirewrestler1.github.io/bible-cross-references/)
 
-See how the Bible is woven together, and read any passage with its connections in view.
+See how the Bible is woven together — the deuterocanon included — and read any passage with its
+connections in view.
 
-**▶ [Open Bible Cross-References](https://trekhleb.dev/bible-cross-references/)**
+**▶ [Open Bible Cross-References: Orthodox Canon](https://wirewrestler1.github.io/bible-cross-references/)**
+
+This is a fork of [Bible Cross-References](https://trekhleb.dev/bible-cross-references/) by
+[Oleksii Trekhleb](https://trekhleb.dev), which drew the cross-references of the 66-book
+Protestant canon. Everything that fork does, this one does too; what it adds is the rest of the
+Orthodox Bible — Tobit, Judith, Greek Esther, Wisdom, Sirach, Baruch with the Letter of Jeremiah,
+Greek Daniel with Susanna and Bel, 1–3 Maccabees, 1 Esdras, the Prayer of Manasseh, Psalm 151,
+and 4 Maccabees as an appendix — with cross-references into and out of those books, which no open
+compilation had. The original's code is MIT and stays MIT; its author is credited here and in the
+page's structured data.
 
 ## Why this exists
 
 For centuries, readers of the Bible have followed cross-references: the small notes in the margin
 that send you from one passage to another that echoes, quotes or fulfills it. The _Treasury of
-Scripture Knowledge_ alone lists hundreds of thousands of them. On paper you can only follow them
-one at a time, so the bigger picture stays hidden: how the prophets echo the Law, how the New
-Testament quotes the Psalms and Isaiah, how far a single verse reaches.
+Scripture Knowledge_ alone lists hundreds of thousands of them — but it stops at the 66 books. A
+reader of an Orthodox or Catholic Bible has fourteen more, and the New Testament quotes and
+alludes to them constantly: Hebrews 11 remembers the mother and her seven sons from 2 Maccabees
+7, Romans 1 follows Wisdom 13 almost line by line, Matthew 11's "my yoke is easy" answers
+Sirach 51. On paper those links stay in a study Bible's notes, if anywhere.
 
-This project draws all 344,799 of them at once. You can start from a bird's-eye view of the whole
-Bible, zoom down to a single verse, and read it in context with every connection one click away.
-It aims to be two things: a picture of how deeply the Bible is interconnected, and a practical
-companion while reading.
+This project draws all of them at once: the Treasury's links across the 66 books, and three
+further kinds that reach the deuterocanon (see [Data](#data)). You can start from a bird's-eye
+view of the whole canon, zoom down to a single verse, and read it in context with every connection
+one click away.
 
-It is free, open source, and built only on openly licensed data (see [Data](#data)).
+It is free, open source, and built only on openly licensed data.
 
 ## What you can do
 
-### Arcs: the whole Bible at once
+### Arcs: the whole canon at once
 
 ![Arcs: every verse of the Bible on one line, with its cross-references drawn as
 arcs](public/screenshots/arcs.jpg)
 
-- All 31,102 verses sit on one line, from Genesis to Revelation, and every cross-reference is an
-  arc colored by the genres it connects.
-- Zoom from the whole Bible down to single verses; hover a passage to see how many connections it
+- All 37,128 verses of the 80 books sit on one line, from Genesis to Revelation with the
+  deuterocanon as its own crimson region between Malachi and Matthew, and every cross-reference
+  is an arc colored by the genres it connects.
+- Zoom from the whole canon down to single verses; hover a passage to see how many connections it
   has.
-- Search for any reference ("John 3:16", "Ps 23") or click a passage to see where its links land.
-- Read it in six translations — English (Berean Standard Bible, King James Version), Portuguese,
-  German, Italian and Spanish — with the interface in any of six languages: English, Portuguese,
-  German, Italian, Spanish or Ukrainian; the choice is remembered and travels in the link you share
-  ([`?t=kjv`](https://trekhleb.dev/bible-cross-references/?ref=John.3.16&t=kjv)).
+- Search for any reference ("John 3:16", "Sir 24", "Susanna 1:5", "Psalm 151") or click a
+  passage to see where its links land.
+- Read it in seven translations — English (World English Bible with the deuterocanon, Berean
+  Standard Bible, King James Version), Portuguese, German, Italian and Spanish — with the
+  interface in any of six languages. Only the World English Bible carries the deuterocanonical
+  books; the others say so where one would be shown.
+- Filter by weight, hide a genre, or hide a kind of link: the Treasury's, the Swedish 1917
+  apparatus, the curated links, the computed ones.
 
 ### Focus a passage
 
@@ -44,16 +60,13 @@ arcs](public/screenshots/arcs.jpg)
 references](public/screenshots/arcs-verse.jpg)
 
 The details panel shows the passage's text, where its connections go by genre, and every reference
-with its text. Each one is a link: follow it to travel there. "Read in context" opens the passage in
-Threads.
+with its text and a small tag saying which kind of link it is. Each one is a link: follow it to
+travel there. "Read in context" opens the passage in Threads.
 
-A verse also lists the Hebrew or Greek words behind it — the dictionary form, how it is said and
-what it means — and, under each one, every other verse that uses the same word, least common
-first. It is a different kind of link from a cross-reference and is kept apart from it: a
-cross-reference is somebody's judgement that two passages belong together, while this is the plain
-fact that they share a word. Acts 5:14 and Luke 5:6, for instance, share πλῆθος (_plēthos_,
-"multitude"), which no cross-reference joins. Words used in more than 100 verses are left out, and
-the text of the verse in its original language is never shown: only the dictionary form.
+A verse of the 66 books also lists the Hebrew or Greek words behind it — the dictionary form, how
+it is said and what it means — and, under each one, every other verse that uses the same word.
+It is a different kind of link from a cross-reference and is kept apart from it. The tagged
+original-language data stops at the 66 books, so the deuterocanon has no words section.
 
 ### Threads: read with the connections in view
 
@@ -61,7 +74,7 @@ the text of the verse in its original language is never shown: only the dictiona
 land](public/screenshots/threads.jpg)
 
 - Read a chapter while each verse sends threads to where its cross-references land in the whole
-  Bible, shown as a bar of all 66 books.
+  canon, shown as a bar of all the books. Computed links are drawn dashed.
 - Switch between what a verse points to, what points to it, or both.
 - Tap a verse for its connections and follow them from passage to passage. "Show in Arcs" leads
   back to the big picture.
@@ -74,16 +87,16 @@ land](public/screenshots/threads.jpg)
 Both views work on phones. On the arcs, touch and hold, then slide, to preview passages (on the book
 bar, just slide), and pinch to zoom. The details open in a sheet that you drag up to read and pull
 down to close. Every passage has its own link, filters included, e.g.
-[`?ref=John.3.16`](https://trekhleb.dev/bible-cross-references/?ref=John.3.16), so you can share
-exactly what you are looking at.
+[`?ref=Sir.24.21`](https://wirewrestler1.github.io/bible-cross-references/?ref=Sir.24.21) or
+[`?ref=Heb.11.35&kinds=curated`](https://wirewrestler1.github.io/bible-cross-references/?ref=Heb.11.35&kinds=curated),
+so you can share exactly what you are looking at.
 
 ### Install it, and read with no connection
 
 Every footer carries a quiet **Install** link — an arrow alone on phones — which opens the steps
 for the device you are reading on. The same guide opens at
-[`#install`](https://trekhleb.dev/bible-cross-references/#install), so that address can be sent to
-someone who asks for "the app". Inside the installed app the link is gone, since the browser tells
-the page it is already running as one.
+[`#install`](https://wirewrestler1.github.io/bible-cross-references/#install). Inside the
+installed app the link is gone, since the browser tells the page it is already running as one.
 
 | Device          | How                                                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -93,189 +106,143 @@ the page it is already running as one.
 | Safari on a Mac | _Share → Add to Dock_.                                                                                                               |
 
 Open it once while you are online. The service worker ([`sw/`](sw/)) then keeps the pages, this
-version's code and the datasets on the device, so the whole Bible, its 344,799 cross-references and
-the text you are reading all work with no connection, and open instantly on the next visit. On an
-iPhone or iPad that first visit has to happen inside the installed app: a home-screen app there has
-storage of its own, apart from Safari's. On Android and the desktop the two share it, so the visit
-that installed the app has already done the work.
+version's code and the datasets on the device, so the whole canon, its cross-references and the
+text you are reading all work with no connection. On an iPhone or iPad that first visit has to
+happen inside the installed app: a home-screen app there has storage of its own, apart from
+Safari's.
 
 ## Languages
 
 The app speaks English, Portuguese, German, Italian, Spanish and Ukrainian. Each has pages of its
-own: English at the root,
-every other language one path segment down
-([`/pt/`](https://trekhleb.dev/bible-cross-references/pt/?t=blivre)). Which language a visit
-speaks is settled in this order: the page's own path, then the address (`?lang=pt`), then the
+own: English at the root, every other language one path segment down
+([`/pt/`](https://wirewrestler1.github.io/bible-cross-references/pt/?t=blivre)). Which language a
+visit speaks is settled in this order: the page's own path, then the address (`?lang=pt`), then the
 reader's last choice, then what their browser asks for, then English. On a first visit the Bible
-follows the interface — a browser asking for Portuguese arrives at the Bíblia Livre without being
-asked — and after that the two are independent, so a Portuguese interface can read an English
-text, or the other way round. Both are chosen in one menu, because the header has no room for a
-sixth button.
-
-The app speaks one language it cannot yet read: there are Ukrainian menus and no Ukrainian Bible,
-because no complete one has been found that is both freely licensed and numbered the way this app
-addresses verses. The two do not wait on each other, which is deliberate: a text can be adopted in
-an afternoon once its licence and its verse numbering check out, while an interface is a few
-hundred strings that want a native reader, and holding the Bibles back until the menus caught up
-would
-serve nobody. A reader whose browser asks for one of those languages gets English menus and the
-Berean Standard Bible, with their own Bible one tap away — the picker puts the language their
-browser asked for directly under the interface's own, so it is the first group they did not have
-to look for.
-
-The path comes first because it is not a preference but a fact: the file served at `/pt/` was
-written in Portuguese — its title, its description, its `og:` tags and its `lang` — before any
-script ran. That is what a crawler reads and what WhatsApp, Facebook and every other link preview
-reads, and none of them runs JavaScript. A static host serves one file per path and nothing per
-query, so a path is the only thing that can select it.
-
-Links shared before this existed name their language in the query, and keep working exactly as
-they did: `?lang=pt` is pinned in [`src/app/url-contract.test.ts`](src/app/url-contract.test.ts)
-and will not be taken away. Opening one quietly rewrites the address bar to `/pt/` — nothing
-else about it is touched, tracking parameters and fragment included — so the link the reader
-copies next is the one that previews in Portuguese.
+follows the interface, and after that the two are independent. Both are chosen in one menu.
 
 Everything the interface says lives in [`src/i18n/`](src/i18n/):
 
 ```text
 src/i18n/messages/   every word the interface says; en.ts is the source of truth
-src/i18n/books/      the 66 book names, their short forms and what a reader may type
-src/i18n/genres/     the ten genre names
+src/i18n/books/      the 80 book names, their short forms and what a reader may type
+src/i18n/genres/     the eleven genre names
 src/i18n/install/    the install steps, which are rich text and name real browser buttons
 ```
 
 English is written `as const`, and `Messages` is derived from it, so a locale that misspells a key
-or gives a value the wrong shape does not compile. A locale may leave a key out at run time — the
-English word is used instead, which is what keeps a catalogue being written from crashing — but
-not in a language the app offers: [`completeness.test.ts`](src/i18n/completeness.test.ts) **fails**
-on anything missing, blank, or still in English. Messages that take values are small functions
-rather than strings with
-placeholders: the compiler then checks the arguments, and each language can order its words and
-count its plurals its own way (`Intl.PluralRules` is in the platform for the languages that need
-three or more forms).
+or gives a value the wrong shape does not compile.
+[`completeness.test.ts`](src/i18n/completeness.test.ts) fails on anything missing, blank, or still
+in English. Book names are matched on what was typed before accents are folded away, and the
+sections of the deuterocanon that readers cite as books of their own — Susanna, Bel, the Letter of
+Jeremiah, the Song of the Three — are understood as the chapters they are here.
 
-Book names are matched on what was typed before accents are folded away, because in Portuguese
-the accent is the whole difference between two books: `Jo` is the usual abbreviation for João and
-`Jó` is Job. Typing without accents still works everywhere it is unambiguous — `genesis` finds
-Gênesis, `josue` finds Josué.
+**To add a language:** run `npm run locale:new -- es` and work until `npm run check` is green;
+[CONTRIBUTING.md](CONTRIBUTING.md#translations) walks through it.
 
-**To add a language:** run `npm run locale:new -- es`, which writes every file it needs, then add
-it to the shared files the compiler and the test gate name between them. Work until `npm run check` is green — the gate
-lists what is left one item at a time, and nothing half-translated ships. Green means every slot
-is filled with something real, not that the words are right: what it cannot check, and what a
-reviewer who reads the language still has to, is in
-[CONTRIBUTING.md](CONTRIBUTING.md#what-the-gate-cannot-check-and-what-a-reviewer-still-has-to).
-[CONTRIBUTING.md](CONTRIBUTING.md#translations) walks through it. The Bible text is a
-separate job — see [Data](#data) — and neither waits on the other: a language can have an
-interface with no Bible of its own, which is the right answer where no translation can be
-licensed.
-
-Everything a reader never sees but a crawler does is written per language at build time, from
-[`src/i18n/site-copy.ts`](src/i18n/site-copy.ts): the title, the description, `og:locale`, the
-structured data's `inLanguage`, the `<noscript>` text, the share picture and its alt text, and a
-web manifest of its own, so installing from `/pt/` installs an app that opens in Portuguese.
-Every language of a page names every other with `hreflang`, reciprocally, and the English one is
-also `x-default`.
-
-`sitemap.xml` lists all of them with their alternates, and `robots.txt` is written beside it —
-but a `robots.txt` is only read at a **domain's** root, and this site is served from a
-sub-path of one. The published file is therefore inert here (it becomes the real thing under
-`BASE_PATH=/`), so for the sitemap to be found one of these has to happen outside this
-repository: either `Sitemap: https://trekhleb.dev/bible-cross-references/sitemap.xml` is added
-to the root `robots.txt` of trekhleb.dev, or the sitemap is submitted directly in Search
-Console, which needs no `robots.txt` at all. Until then the pages are discovered only by being
-linked to.
-
-The `/debug/` page stays in English whatever the reader's language, because it is for whoever is
-working on the data, and it is `noindex`.
-
-Every language but English still shares the English picture under its own name
-(`social-preview.pt.jpg`, `social-preview.de.jpg` and so on), each marked `placeholder: true`
-where it is declared. The URL is already the final one, so the real picture can replace it without a single
-shared link changing — but a link shared before that happens caches the English card on WhatsApp
-and Facebook, so both are worth drawing before any of this is promoted.
+Every language but English still shares the English share picture under its own name, marked
+`placeholder: true` where it is declared.
 
 ## Data
 
-The app is built on openly licensed datasets only:
+The app is built on openly licensed datasets only. The canon is the 80 books of the Orthodox
+Bible, the 66 in their usual order and the deuterocanon as one block between Malachi and
+Matthew; every dataset addresses verses by OSIS id in the app's own numbering, which is the
+KJV's for the 66 books and the World English Bible's (the Greek numbering, gaps kept) for the
+rest.
 
-| Dataset          | Source                                                                                                                                | License                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Bible text       | [Berean Standard Bible](https://berean.bible/) (BSB), the default                                                                     | [Public domain](https://berean.bible/terms.htm)                                                |
-| Bible text       | [King James Version](https://ebible.org/Scriptures/details.php?id=eng-kjv2006) (KJV), the 1769 text, from eBible.org                  | [Public domain](https://ebible.org/Scriptures/details.php?id=eng-kjv2006) (see the note below) |
-| Bible text       | [Bíblia Livre](https://sites.google.com/site/biblialivre/) (BLIVRE), Brazilian Portuguese, Textus Receptus edition                    | [CC BY 3.0 BR](https://creativecommons.org/licenses/by/3.0/br/)                                |
-| Bible text       | [Lutherbibel 1912](https://ebible.org/Scriptures/details.php?id=deu1912) (LUT), German, from eBible.org                               | [Public domain](https://ebible.org/Scriptures/details.php?id=deu1912)                          |
-| Bible text       | [Riveduta 1927](https://ebible.org/Scriptures/details.php?id=ita1927) (RIV), Italian, the revision made under Giovanni Luzzi          | [Public domain](https://ebible.org/Scriptures/details.php?id=ita1927)                          |
-| Bible text       | [Versión Biblia Libre](https://ebible.org/Scriptures/details.php?id=spavbl) (VBL), Spanish                                            | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                |
-| Cross-references | [OpenBible.info](https://www.openbible.info/labs/cross-references/), largely from the public-domain _Treasury of Scripture Knowledge_ | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
-| Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge             | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
+| Dataset          | Source                                                                                                                                                                 | License                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Bible text       | [World English Bible](https://ebible.org/Scriptures/details.php?id=eng-web) (WEB), with the deuterocanon, from eBible.org — the default                                | Public domain                                                                                  |
+| Bible text       | [Berean Standard Bible](https://berean.bible/) (BSB)                                                                                                                   | [Public domain](https://berean.bible/terms.htm)                                                |
+| Bible text       | [King James Version](https://ebible.org/Scriptures/details.php?id=eng-kjv2006) (KJV), the 1769 text, from eBible.org                                                   | [Public domain](https://ebible.org/Scriptures/details.php?id=eng-kjv2006) (see the note below) |
+| Bible text       | [Bíblia Livre](https://sites.google.com/site/biblialivre/) (BLIVRE), Brazilian Portuguese, Textus Receptus edition                                                     | [CC BY 3.0 BR](https://creativecommons.org/licenses/by/3.0/br/)                                |
+| Bible text       | [Lutherbibel 1912](https://ebible.org/Scriptures/details.php?id=deu1912) (LUT), German, from eBible.org                                                                | [Public domain](https://ebible.org/Scriptures/details.php?id=deu1912)                          |
+| Bible text       | [Riveduta 1927](https://ebible.org/Scriptures/details.php?id=ita1927) (RIV), Italian, the revision made under Giovanni Luzzi                                           | [Public domain](https://ebible.org/Scriptures/details.php?id=ita1927)                          |
+| Bible text       | [Versión Biblia Libre](https://ebible.org/Scriptures/details.php?id=spavbl) (VBL), Spanish                                                                             | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                |
+| Cross-references | [OpenBible.info](https://www.openbible.info/labs/cross-references/), largely from the public-domain _Treasury of Scripture Knowledge_ (66 books)                       | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
+| Cross-references | The apparatus of the Swedish Bible 1917 with the Apocrypha of 1921, from CrossWire's [Swe1917](https://crosswire.org/sword/modules/ModInfo.jsp?modName=Swe1917) module | Public domain                                                                                  |
+| Cross-references | [Curated deuterocanon cross-references](data/curated/), compiled for this app                                                                                          | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
+| Cross-references | [Computed similarity links](data/computed/), from the World English Bible's words                                                                                      | [CC0](https://creativecommons.org/publicdomain/zero/1.0/)                                      |
+| Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge (66 books)                                   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
-A note on the KJV: it is public domain in the United States and most of the world, but in the
-United Kingdom letters patent that do not expire reserve the right to **print** it, and to import
-printed copies, to the Crown's patentees — Cambridge University Press, Oxford University Press
-and Collins. That is a restriction on printing rather than on a web page, and it has no effect
-outside the UK. The app says so where the translation is chosen. It is offered alongside the BSB,
-never instead of it, and
-its text is only downloaded for readers who ask for it.
+### The four kinds of link
 
-A note on the Bíblia Livre: it is an independent volunteer translation, updated from João Ferreira
-de Almeida's, and the edition used here follows the Textus Receptus — the same textual basis as the
-KJV, which is why it fits the app's verse numbering exactly, all 31,102 of them, with nothing
-dropped or merged. Attribution and the edition's date are shown where the translation is chosen.
+The app loads one merged dataset, and every link in it carries its kind, which is how it is
+drawn and how far to trust it. Each kind has a weight on one scale, so the Filters menu's
+threshold means the same thing for all of them; by default links of weight 4 and up are shown.
 
-A note on the German and the Italian: both are old enough to be published freely. The Lutherbibel
-1912 is the 1912 revision of Luther's translation, the work of a church committee published in
-1912, and a different work from the Luther 1984 and the Luther 2017, which the Deutsche
-Bibelgesellschaft still holds rights in — its own licence page lists those two and no 1912 text.
-The Riveduta 1927 was revised under Giovanni Luzzi, who died on 25 January 1948, so it left
-copyright in Italy and most of the European Union on 1 January 2019; Spain keeps an 80-year term
-for authors who died before 1987, which would run to 2029, and a few countries outside Europe run
-longer still (Mexico is life plus 100). There is no identifiable claimant in any of them, and the
-digitisation adds no new right of its own, but "public domain everywhere" would be too strong.
-Neither name is a registered trademark: a TMview search returns nothing for "Lutherbibel" or
-"Riveduta", and the same search run against "reina valera" correctly returns 68 marks held by the
-national Bible societies — so the zero is a result and not a broken query. TMview searches some
-80 offices rather than a single register, and says nothing about unregistered rights.
+- **Treasury (OpenBible.info).** The _Treasury of Scripture Knowledge_'s cross-references as
+  OpenBible.info publishes them, ranked by its readers' votes — the votes rank the links, they
+  don't prove them right or wrong. These cover the 66 books only; the Treasury never reached the
+  deuterocanon. Drawn in full.
+- **Swedish Bible 1917.** The parallel-passage apparatus of the Swedish state Bible of 1917 with
+  its Apocrypha of 1921, public domain, as CrossWire's Swe1917 module carries it: about 11,000
+  references, some 2,800 of them into or out of Tobit, Judith, Greek Esther, Wisdom, Sirach,
+  Baruch, the additions to Daniel, 1–2 Maccabees and the Prayer of Manasseh. It is the one open
+  compilation found that reaches those books (the search is in
+  [`data/SOURCES-RESEARCH.md`](data/SOURCES-RESEARCH.md)). Each link weighs 5. References into
+  the twenty-five chapters that the Swedish edition numbers differently from the Greek are left
+  out rather than placed a verse away from their words, as are some 240 references the module
+  itself mis-tagged; the build reports every one. Drawn a little dimmer than the Treasury's.
+- **Curated.** About 1,200 links compiled for this app and read against the text before they
+  were committed: the New Testament's quotations and allusions to the deuterocanon (the
+  Nestle-Aland index of loci allegati and the public checklists derived from it were used as a
+  checklist, and no annotation was copied from any edition), the deuterocanon's own retellings
+  and quotations of the Old Testament — Sirach's Praise of the Fathers figure by figure, Wisdom's
+  history of the Exodus, Baruch beside Daniel 9, 1 Esdras beside Chronicles–Ezra–Nehemiah — and
+  the parallels between the deuterocanonical books. Weight 10 is a quotation or unmistakable
+  allusion, 5 a probable allusion, 2 a thematic parallel. Drawn in full; CC BY 4.0, © 2026
+  Andrew Battaglia.
+- **Computed.** About 8,000 links from the verses of the deuterocanon to the verses whose words
+  are most like theirs, found by TF-IDF cosine similarity over the World English Bible
+  ([`scripts/data/compute-similarity.ts`](scripts/data/compute-similarity.ts); the best five per
+  verse scoring at least 0.5, less any link the other kinds already have; the weight is the score
+  times ten). A computed link says the words are alike, not that the passages are related, and it
+  is drawn faint and dashed for that reason. CC0.
 
-A note on how these two are numbered: both follow the Hebrew and Greek verse divisions, which
-part company with the KJV's in a few dozen places — Hebrew Bibles close Genesis 31, Numbers 29,
-1 Samuel 23 and Jonah 1 a verse earlier. eBible republishes them against the KJV numbering this
-app uses, which in a handful of verses means two of the edition's verses are joined into one. No
-verse is missing and none is empty; the text of both is complete. Where the edition's own number
-was left in the text, the build removes it, and the counts are in `data/raw/README.md`.
+Where two kinds have the same link it is kept once, in that order of precedence. The whole thing is
+in [`data/datasets.lock.json`](data/datasets.lock.json) as numbers: what each build produced, so
+a change to any importer shows up in review.
 
-A note on the Spanish: the Versión Biblia Libre is a modern translation under CC BY-SA 4.0 rather
-than a public-domain one, so its credit and licence travel with every copy and anyone who
-redistributes it must do the same. It is here because it is the only complete Spanish Bible found
-that is both freely licensed and correctly numbered: the obvious candidate, the public-domain
-Reina Valera 1909, is numbered the Hebrew way and was never remapped, so in its machine-readable
-editions — eBible's and CrossWire's alike — eighteen verses are blank and the text of six
-chapters sits one verse away from the number it is filed under. It is not used here for that
-reason.
+### Notes on the texts
 
-A note on what the links mean: they are the _Treasury of Scripture Knowledge_'s cross-references,
-which connect passages by shared themes, words, people and events. OpenBible.info readers have
-voted on how helpful each link is; the votes rank the links, they don't prove them right or wrong.
-By default the site shows the links with at least 4 votes, the best supported 44% (153,419). That
-hides the links readers voted down (0.4%) and the loosest ones; the Filters menu shows more, down to
-every link.
+The World English Bible is the default because it is the one English text here with the whole
+Orthodox canon; "World English Bible" is a trademark of eBible.org, which asks that a changed text
+not be called by that name, and no word of it is changed. The build files its Romans doxology under
+the KJV's 16:25–27 (the WEB prints it as 14:24–26), keeps the thirty-nine verse numbers the Greek
+numbering of Sirach and Esther skips as empty verses, and leaves out the WEB's 2 Esdras, which is
+not in the Orthodox canon. The Greek additions to Esther are printed inside the verses where the
+Greek has them, and Greek Daniel carries the Prayer of Azariah and the Song of the Three in
+chapter 3, Susanna as chapter 13 and Bel as chapter 14; the Letter of Jeremiah is Baruch 6.
+Sirach is numbered as the WEB numbers it, which in chapters 30–36 is the older numbering rather
+than the NRSV's.
+
+The KJV is public domain in the United States and most of the world, but in the United Kingdom
+letters patent reserve the right to print it to the Crown's patentees; the app says so where the
+translation is chosen. The Lutherbibel 1912 and the Riveduta 1927 are old enough to be published
+freely and are different works from the revisions still in copyright. The Versión Biblia Libre is
+under CC BY-SA 4.0, so its credit and licence travel with every copy. None of these five carries
+the deuterocanon, and the app says "not in this translation" where one of its books would be
+shown. The details of what the build does to each text are in
+[`data/raw/README.md`](data/raw/README.md).
 
 The smaller files are committed to [`data/raw/`](data/raw/) exactly as downloaded;
 [`data/sources.json`](data/sources.json) pins every source by SHA-256, and anything not committed
-(the larger archives — the eBible texts and the STEPBible word data) is downloaded by the build
-and checked against its pin, so a dataset is never built from a file nobody vouched for. `npm run dev` and `npm run build` turn them into the
-app's
-datasets in `public/data/` (generated, git-ignored), validated against the canonical KJV
-versification (31,102 verses).
+(the larger eBible archives and the STEPBible word data) is downloaded by the build and checked
+against its pin. `npm run dev` and `npm run build` turn them into the app's datasets in
+`public/data/` (generated, git-ignored), validated against the canonical versification (37,128
+verses in 1,386 chapters).
 
-To adopt a newer upstream version (OpenBible.info updates its vote counts from time to time):
+To adopt a newer upstream version:
 
 ```sh
 npm run data:fetch -- --update   # download and re-pin the new version
 npm run data:build               # rebuild, then review the numbers on /debug/
 ```
 
-Then commit `data/raw/` and `data/sources.json`.
+Then commit `data/raw/`, `data/sources.json` and `data/datasets.lock.json`. To change the curated
+list, edit the TSV and bump the date in its header; to recompute the similarity links, run
+`node scripts/data/compute-similarity.ts`.
 
 ## Development
 
@@ -287,7 +254,7 @@ npm run dev
 ```
 
 Then open <http://localhost:5173/> for the app, or <http://localhost:5173/debug/> for an internal
-page that shows the datasets behind it.
+page that shows the datasets behind it, with the links counted by kind and by genre pair.
 
 | Script                  | Purpose                                                         |
 | ----------------------- | --------------------------------------------------------------- |
@@ -298,158 +265,56 @@ page that shows the datasets behind it.
 | `npm run check`         | The gate: type check, lint, format check, unit tests + coverage |
 | `npm run test`          | Run the unit tests                                              |
 | `npm run test:watch`    | Run the unit tests in watch mode                                |
-| `npm run test:coverage` | Run the unit tests and check the coverage thresholds            |
+| `npm run test:coverage` | Run the unit tests with a coverage report                       |
 | `npm run test:e2e`      | Run the end-to-end tests against the built site                 |
-| `npm run format`        | Format all files with Prettier                                  |
+| `npm run test:visual`   | Compare every major screen against its baseline picture         |
+| `npm run lint`          | ESLint                                                          |
+| `npm run format`        | Prettier                                                        |
 
-### Project structure
+The project is TypeScript throughout — the app, the data pipeline, the service worker and the
+build plugins — under one strict configuration. The code is laid out as the app reads it:
 
 ```text
-data/                    Upstream data (raw/, committed) and its pins (sources.json)
-scripts/data/            Data pipeline: fetch and build CLIs, one importer per source
-index.html, threads/     Page entries of the app (the same app, one per view)
-debug/                   Page entry of the internal data page
-vite/                    Build plugins: page metadata, first frame, offline cache, analytics
-sw/                      The service worker that caches the site for offline use
-public/                  Icons, the social preview image and README screenshots
-src/core/                Framework-free domain code shared by the app and the pipeline
-  bible/                 Books, genres, versification, verse references, passages
-  datasets/              Dataset IDs, file formats and their runtime validation
-src/translations/        Translation plugins: manifests, registry, loading, text search
-src/words/               Original-language words: manifest, registry, per-verse index
-src/cross-references/    Cross-reference plugins: manifests, registry, bidirectional index
-src/app/                 The app: its views, the URL state and the view switch
-src/visualizations/      One folder per visualization (Arcs, Threads), plus shared blocks
-src/features/debug/      The /debug/ page
-src/shared/              Reusable UI (footer, icons, tables), styles, formatting and loading
-tests/                   Repository-level tests, and tests/e2e/ the end-to-end suite
+src/core/             the canon (80 books, 11 genres), the versification, dataset formats, link kinds
+src/translations/     the Bible-text plugins and their registry
+src/cross-references/ the cross-reference sources, their registry and the index
+src/words/            the original-language words
+src/visualizations/   Arcs and Threads, with what they share
+src/features/debug/   the /debug/ page
+src/i18n/             everything the interface says, in every language
+scripts/data/         the pipeline: fetch, importers, the versification generator, the similarity script
+vite/                 the build plugins: site head, offline cache, first frame
+sw/                   the service worker
+tests/e2e/            the end-to-end suite
 ```
 
-Visualizations never import each other; `src/app/views.ts` lists them, and the app connects them.
-
-### Tests
-
-Two suites, and a pull request has to pass both.
-
-```sh
-npm run check      # types, lint, formatting, unit tests, coverage thresholds
-npm run test:e2e   # the flows, in a real browser against the built site
-```
-
-**Unit tests** (`*.test.ts` beside the code, Vitest with happy-dom) cover the domain code, the
-data pipeline, the build plugins and the components. They are the gate on coverage: `npm run
-check` fails below **98% of statements, lines and functions** (`test.coverage.thresholds` in
-`vite.config.ts`). Branches are held at 88% instead, because `noUncheckedIndexedAccess` makes
-TypeScript demand a fallback on every array read and most of those cannot happen.
-
-Three kinds of file are left out of that measurement, each for a reason, and all three are
-covered by the end-to-end suite instead:
-
-- **Entry points** (`src/app/main.tsx`, `scripts/data/build.ts`, …), which run on import, so
-  importing them is running them.
-- **GPU drawing** (shaders, the WebGL scenes, the canvas painters): a fake DOM cannot give them a
-  context, and a mock of one would only test the mock.
-- **Touch choreography and the views that host a canvas** (`use-bottom-sheet.ts`,
-  `ArcsExplorer.tsx`, …): a fake DOM can be made to report any pointer path and any transform.
-
-**End-to-end tests** (`tests/e2e/`, Playwright against `npm run preview`) cover what only a real
-browser can answer: that a reader can read a chapter, open a verse, follow a cross-reference, see
-the Hebrew and Greek, filter and switch translation; that the layout holds from 320px to 1920px;
-and that the offline cache stores the app, serves it with the network gone, and — the one failure
-that could strand an audience on a stale version — **replaces itself when a new release ships**.
-They run in three projects: `desktop`, `phone` (Pixel 7), and `offline`, which runs last on its
-own because it rewrites the built worker to stand in for a new release.
-
-**The gallery** (`npm run test:visual`) photographs every major screen at desktop and phone size
-into `tests/e2e/visual.spec.ts-snapshots/` — open that folder to see what the app looks like. It
-is deliberately outside CI and outside `npm run test:e2e`, because a pixel baseline belongs to the
-machine that drew it; `tests/e2e/README.md` explains how to regenerate them.
-
-To run any of them locally you need the browser once: `npx playwright install --with-deps chromium`.
+Adding a book, a translation or a cross-reference source means adding it to the registry that
+names it, and the compiler lists every place that then has to know (importers, manifests,
+allowances, book names in every language). The gate is `npm run check`: types, type coverage,
+lint, formatting, and the unit tests with their coverage thresholds.
 
 ### Deployment
 
-The site is static. The CI workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
-publishes every push to `main` with GitHub Pages, once all checks pass, at
-[trekhleb.dev/bible-cross-references](https://trekhleb.dev/bible-cross-references/), so production
-builds use the base path `/bible-cross-references/`, and `npm run preview` serves the build at
-<http://localhost:4173/bible-cross-references/>. Besides the pages, the build writes:
+The site is static. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the gate, builds
+the site, checks the built datasets against `data/datasets.lock.json`, runs the end-to-end suite,
+and publishes `main` to GitHub Pages at
+<https://wirewrestler1.github.io/bible-cross-references/>. To build for another location, set
+`BASE_PATH` (the path, with slashes) and `SITE_ORIGIN` (the origin) when building, e.g.
+`BASE_PATH=/ SITE_ORIGIN=https://example.org npm run build` for the root of a custom domain, and
+put the domain in a `CNAME` file under `public/`.
 
-- the page metadata: canonical URLs, Open Graph and Twitter cards, and structured data;
-- `sitemap.xml`;
-- a web app manifest and a service worker (from [`sw/`](sw/)). The worker is scoped to the site's
-  path, so it never touches the rest of the domain.
+## Acknowledgements
 
-Each release caches under a name of its own, a hash of the files it was built from. A new worker
-installs beside the running one, takes over, and deletes the previous release's cache; pages are
-fetched from the network first, so an online reader always has the newest one. Every visit asks
-for the newest worker ([`src/app/register-offline-cache.ts`](src/app/register-offline-cache.ts))
-rather than leaving that to the browser's own check, which it may put off for a day.
-
-If the offline cache ever has to be withdrawn, replace the body of
-[`sw/service-worker.ts`](sw/service-worker.ts) with a worker that removes itself, keeping the
-`declare const self` line at the top, and deploy that:
-
-```ts
-self.addEventListener('install', () => void self.skipWaiting());
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      for (const name of await caches.keys()) {
-        if (name.startsWith('bible-cross-references')) {
-          await caches.delete(name);
-        }
-      }
-      await self.registration.unregister();
-    })(),
-  );
-});
-```
-
-One visit then unregisters the worker and deletes every cache it made, and the site goes on as an
-ordinary one. Taking `sw.js` off the server does not do this: the registration survives a 404.
-
-The live site counts visits with Google Analytics. The tag only reports from trekhleb.dev, so local
-previews and forks deployed elsewhere send nothing. To build for another location, set the path and
-the origin:
-
-```sh
-BASE_PATH=/ SITE_ORIGIN=https://example.org npm run build
-```
+- [Oleksii Trekhleb](https://trekhleb.dev), whose
+  [Bible Cross-References](https://github.com/trekhleb/bible-cross-references) this is a fork
+  of: the visualizations, the pipeline, the six languages and the care about licences are his.
+- Chris Harrison and Christoph Römhild, whose
+  [Visualizing the Bible](https://www.chrisharrison.net/index.php/Visualizations/BibleViz) (2007)
+  the arcs follow.
+- OpenBible.info, eBible.org, CrossWire, Projekt Runeberg, STEPBible and the Berean Bible, for
+  publishing their data under licences that let a project like this exist.
 
 ## License
 
-The code is released under the [MIT License](LICENSE). The data keeps its own licenses (see
-[Data](#data)):
-
-> Cross-reference data: OpenBible.info (CC BY 4.0), largely from the public-domain Treasury of
-> Scripture Knowledge. Modified: re-indexed to KJV verse numbering.
-> Scripture text: Berean Standard Bible (BSB), dedicated to the public domain.
-> Scripture text: King James Version (Authorized Version), the 1769 text, public domain in the
-> United States and most of the world; in the United Kingdom, letters patent reserve the right to
-> print it to the Crown's patentees — Cambridge University Press, Oxford University Press and
-> Collins.
-> Scripture text: Bíblia Livre (BLIVRE), Copyright © Diego Santos, Mario Sérgio e Marco Teles,
-> fevereiro de 2018, <http://sites.google.com/site/biblialivre/>, licensed under CC BY 3.0 Brasil
-> (<http://creativecommons.org/licenses/by/3.0/br/>). Modified: whitespace is normalized in 271
-> verses, which moves whitespace only.
-> Scripture text: Lutherbibel 1912, the 1912 revision of Martin Luther's German translation,
-> public domain. Modified: the edition's own verse numbers, which differ from the numbering used
-> here, are removed from the text of 358 verses, and a corrupt token from Judges 11:25.
-> Scripture text: Riveduta 1927, the Italian revision made under Giovanni Luzzi, public domain.
-> Modified: the edition's own verse numbers, which differ from the numbering used here, are
-> removed from the text of 228 verses, and a running head from three more.
-> Scripture text: Versión Biblia Libre (VBL), Copyright © 2018–2020 Jonathan Gallagher y Shelly
-> Barrios de Avila, with Gustavo Sanabria and Rebekah Põldaas, licensed under CC BY-SA 4.0
-> (<https://creativecommons.org/licenses/by-sa/4.0/>). Modified: a space before a colon is moved
-> in one verse, which moves whitespace only.
-> Original-language words: STEP Bible (CC BY 4.0), based on work at Tyndale House, Cambridge.
-> Modified: reduced to the dictionary forms used in each verse, keyed to KJV verse numbering,
-> with psalm superscriptions left out.
-
-UI icons are from [Lucide](https://lucide.dev/) (ISC License), plus the touch-gesture icons from
-[Material Design Icons](https://fonts.google.com/icons) (Apache License 2.0), via
-[react-icons](https://react-icons.github.io/react-icons/) (MIT). The views are original designs:
-Arcs is inspired by Chris Harrison and Christoph Römhild's
-[Bible Cross-References](https://www.chrisharrison.net/index.php/Visualizations/BibleViz), and the
-genre colors by Drawing with Data's [Bible Fascinator](https://designs.drawingwithdata.com/fascinator).
+The code is [MIT](LICENSE), as the original's is. The datasets are under their own licences,
+listed above; the MIT license does not apply to them.

@@ -4,7 +4,7 @@ import { preferenceKey } from './preference-keys.ts';
 /**
  * Small per-reader preferences, kept in localStorage so they last between visits.
  *
- * - The origin (trekhleb.dev) is shared with other sites, so every key is namespaced.
+ * - The origin (a github.io user site) is shared with other sites, so every key is namespaced.
  * - Storage can be unavailable (private browsing, blocked site data): values then live in memory
  *   for the visit.
  * - Every component using a preference sees its changes at once, including other tabs.

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ACTIVE, PANEL, openPanel, waitForApp } from './helpers.ts';
+import { ACTIVE, openPanel, PANEL, VERSE_COUNT, waitForApp } from './helpers.ts';
 import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 /** Opens the app in a language, with the details of a passage in view. */
@@ -59,7 +59,9 @@ test.describe('reading in Portuguese', () => {
 
   test('counts are written the way a Brazilian writes them', async ({ page }) => {
     await open(page, '?lang=pt');
-    await expect(page.getByText(/31\.102 versículos/)).toBeVisible();
+    await expect(
+      page.getByText(new RegExp(`${VERSE_COUNT.replace(',', '\\.')} versículos`)),
+    ).toBeVisible();
   });
 
   test('the Hebrew words of a verse are named in Portuguese', async ({ page }) => {
@@ -180,9 +182,9 @@ test.describe('the Portuguese pages', () => {
     expect(response.ok()).toBe(true);
     const html = await response.text();
     expect(html).toContain('<html lang="pt-BR"');
-    expect(html).toContain('<title>Referências Cruzadas da Bíblia</title>');
+    expect(html).toContain('<title>Referências Cruzadas da Bíblia: cânon ortodoxo</title>');
     expect(html).toContain('property="og:locale" content="pt_BR"');
-    expect(html).toContain('referências cruzadas da Bíblia');
+    expect(html).toContain('referências cruzadas de toda a Bíblia ortodoxa');
     expect(html).toContain('social-preview.pt.jpg');
     // The canonical URL is the published one, not the host this test happens to run against.
     expect(html).toMatch(/rel="canonical" href="[^"]*\/pt\/"/);
@@ -191,7 +193,7 @@ test.describe('the Portuguese pages', () => {
     expect(html).toContain('hreflang="x-default"');
     const english = await (await request.get('./')).text();
     expect(english).toContain('hreflang="pt"');
-    expect(english).toContain('<title>Bible Cross-References</title>');
+    expect(english).toContain('<title>Bible Cross-References: Orthodox Canon</title>');
     expect(english).toContain('property="og:locale" content="en_US"');
   });
 
@@ -264,7 +266,7 @@ test.describe('a language with no Bible of its own', () => {
   test('opens in Ukrainian and keeps the default Bible', async ({ page }) => {
     await open(page, 'uk/');
     await expect(page.locator(ACTIVE).getByRole('button', { name: /Переклад/ })).toContainText(
-      'BSB',
+      'WEB',
     );
     await expect(page.locator(ACTIVE).getByRole('button', { name: /Фільтри/ })).toBeVisible();
   });

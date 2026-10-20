@@ -18,15 +18,15 @@ import {
 export const ROOT_DIR = resolve(import.meta.dirname, '..');
 
 /** The site's name: `import.meta.env.SITE_NAME` in code, `%SITE_NAME%` in the HTML entries. */
-export const SITE_NAME = 'Bible Cross-References';
+export const SITE_NAME = 'Bible Cross-References: Orthodox Canon';
 
 /**
  * Where the built site is served. GitHub Pages serves this repository (bible-cross-references) at
- * trekhleb.dev/bible-cross-references/, under the owner's custom domain. Set `BASE_PATH` and
- * `SITE_ORIGIN` to build for another location, e.g. `BASE_PATH=/` for the root of a domain.
+ * wirewrestler1.github.io/bible-cross-references/. Set `BASE_PATH` and `SITE_ORIGIN` to build for
+ * another location, e.g. `BASE_PATH=/` for the root of a custom domain.
  */
 export const DEPLOY_BASE = '/bible-cross-references/';
-export const SITE_ORIGIN = process.env['SITE_ORIGIN'] ?? 'https://trekhleb.dev';
+export const SITE_ORIGIN = process.env['SITE_ORIGIN'] ?? 'https://wirewrestler1.github.io';
 
 /**
  * A base path always ends in a slash. Vite normalizes its own, but `SITE_URL` is built here and
@@ -46,10 +46,22 @@ export const SITE_URL = new URL(
   SITE_ORIGIN,
 ).href;
 
-export const AUTHOR = {
-  name: 'Oleksii Trekhleb',
-  url: 'https://trekhleb.dev',
-  twitter: '@Trekhleb',
+export const AUTHOR: {
+  readonly name: string;
+  readonly url: string;
+  readonly twitter: string | null;
+} = {
+  name: 'Andrew Battaglia',
+  url: 'https://github.com/wirewrestler1',
+  // No handle: the Twitter card is attributed to the site rather than to a person.
+  twitter: null,
+};
+
+/** The work this is a fork of, credited in the README and the structured data. */
+export const ORIGINAL = {
+  title: 'Bible Cross-References',
+  author: 'Oleksii Trekhleb',
+  url: 'https://trekhleb.dev/bible-cross-references/',
 };
 
 /**

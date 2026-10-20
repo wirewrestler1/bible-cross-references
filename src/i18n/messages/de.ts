@@ -2,7 +2,7 @@ import type { Emphasized, LocaleMessages } from './types.ts';
 
 /** The interface in German. Anything left out falls back to the English word. */
 export const de: LocaleMessages = {
-  'app.name': 'Bibel-Querverweise',
+  'app.name': 'Bibel-Querverweise: orthodoxer Kanon',
   'app.name.short': 'Querverweise',
 
   'view.arcs': 'Bögen',

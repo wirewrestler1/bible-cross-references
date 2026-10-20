@@ -80,61 +80,61 @@ export interface SiteCopy {
 
 export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
   en: {
-    siteName: 'Bible Cross-References',
+    siteName: 'Bible Cross-References: Orthodox Canon',
     hreflang: 'en',
     ogLocale: 'en_US',
     pages: {
       main: {
-        title: 'Bible Cross-References',
+        title: 'Bible Cross-References: Orthodox Canon',
         description:
-          'Explore all 344,799 Bible cross-references: every verse on one line with its links as arcs, and every chapter with threads to where its verses connect.',
+          'Explore the cross-references of the whole Orthodox Bible, deuterocanon included: every verse on one line with its links as arcs, and every chapter with threads to where its verses connect.',
         noscript:
-          'Bible Cross-References draws the 344,799 cross-references between the verses of the Bible. It needs JavaScript to run.',
+          'Bible Cross-References: Orthodox Canon draws the cross-references between the verses of the Bible, the deuterocanon included. It needs JavaScript to run.',
       },
       threads: {
-        title: 'Threads · Bible Cross-References',
+        title: 'Threads · Bible Cross-References: Orthodox Canon',
         description:
-          "Read any chapter of the Bible while threads show where each verse's cross-references land, from Genesis to Revelation.",
+          "Read any chapter of the Orthodox Bible, Tobit to 4 Maccabees included, while threads show where each verse's cross-references land, from Genesis to Revelation.",
         noscript:
           'Threads shows where each verse of a Bible chapter connects across the whole Bible. It needs JavaScript to run.',
       },
     },
     manifest: {
-      name: 'Bible Cross-References',
+      name: 'Bible Cross-References: Orthodox Canon',
       shortName: 'Cross-Refs',
       description:
-        'Every cross-reference in the Bible, drawn as arcs, and every chapter with its threads.',
+        'The cross-references of the Orthodox Bible, deuterocanon included, drawn as arcs, and every chapter with its threads.',
     },
     socialImage: {
       file: 'social-preview.jpg',
-      alt: 'Arcs connecting the verses of the Bible, from Genesis to Revelation, colored by genre',
+      alt: 'Arcs connecting the verses of the Orthodox Bible, deuterocanon included, from Genesis to Revelation, colored by genre',
     },
   },
   pt: {
-    siteName: 'Referências Cruzadas da Bíblia',
+    siteName: 'Referências Cruzadas da Bíblia: cânon ortodoxo',
     hreflang: 'pt',
     ogLocale: 'pt_BR',
     pages: {
       main: {
-        title: 'Referências Cruzadas da Bíblia',
+        title: 'Referências Cruzadas da Bíblia: cânon ortodoxo',
         description:
-          'Explore as 344.799 referências cruzadas da Bíblia: cada versículo em uma linha, com suas ligações em arcos, e cada capítulo com seus fios.',
+          'Explore as referências cruzadas de toda a Bíblia ortodoxa, deuterocanônicos incluídos: cada versículo em uma linha, com suas ligações em arcos, e cada capítulo com seus fios.',
         noscript:
-          'Referências Cruzadas da Bíblia desenha as 344.799 referências cruzadas entre os versículos da Bíblia. É preciso ativar o JavaScript.',
+          'Referências Cruzadas da Bíblia: cânon ortodoxo desenha as referências cruzadas entre os versículos da Bíblia, deuterocanônicos incluídos. É preciso ativar o JavaScript.',
       },
       threads: {
-        title: 'Fios · Referências Cruzadas da Bíblia',
+        title: 'Fios · Referências Cruzadas da Bíblia: cânon ortodoxo',
         description:
-          'Leia qualquer capítulo da Bíblia enquanto os fios mostram onde chegam as referências cruzadas de cada versículo, de Gênesis a Apocalipse.',
+          'Leia qualquer capítulo da Bíblia ortodoxa, de Tobias a 4 Macabeus, enquanto os fios mostram onde chegam as referências cruzadas de cada versículo, de Gênesis a Apocalipse.',
         noscript:
           'Fios mostra onde cada versículo de um capítulo da Bíblia se conecta em toda a Bíblia. É preciso ativar o JavaScript.',
       },
     },
     manifest: {
-      name: 'Referências Cruzadas da Bíblia',
+      name: 'Referências Cruzadas da Bíblia: cânon ortodoxo',
       shortName: 'Ref. Cruzadas',
       description:
-        'Todas as referências cruzadas da Bíblia, desenhadas em arcos, e cada capítulo com seus fios.',
+        'As referências cruzadas da Bíblia ortodoxa, deuterocanônicos incluídos, desenhadas em arcos, e cada capítulo com seus fios.',
     },
     socialImage: {
       file: 'social-preview.pt.jpg',
@@ -148,30 +148,30 @@ export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
     },
   },
   de: {
-    siteName: 'Bibel-Querverweise',
+    siteName: 'Bibel-Querverweise: orthodoxer Kanon',
     hreflang: 'de',
     ogLocale: 'de_DE',
     pages: {
       main: {
-        title: 'Bibel-Querverweise',
+        title: 'Bibel-Querverweise: orthodoxer Kanon',
         description:
-          'Alle 344.799 Querverweise der Bibel auf einen Blick: jeder Vers auf einer Linie, seine Verbindungen als Bögen, und jedes Kapitel mit Fäden dorthin, wohin seine Verse führen.',
+          'Die Querverweise der ganzen orthodoxen Bibel, deuterokanonische Bücher eingeschlossen: jeder Vers auf einer Linie, seine Verbindungen als Bögen, und jedes Kapitel mit Fäden dorthin, wohin seine Verse führen.',
         noscript:
-          'Bibel-Querverweise zeichnet die 344.799 Querverweise zwischen den Versen der Bibel. Dafür wird JavaScript gebraucht.',
+          'Bibel-Querverweise: orthodoxer Kanon zeichnet die Querverweise zwischen den Versen der Bibel, die deuterokanonischen Bücher eingeschlossen. Dafür wird JavaScript gebraucht.',
       },
       threads: {
-        title: 'Fäden · Bibel-Querverweise',
+        title: 'Fäden · Bibel-Querverweise: orthodoxer Kanon',
         description:
-          'Lesen Sie ein beliebiges Kapitel der Bibel und sehen Sie dabei, wohin die Querverweise jedes Verses führen, von 1. Mose bis zur Offenbarung.',
+          'Lesen Sie ein beliebiges Kapitel der orthodoxen Bibel, von Tobit bis 4. Makkabäer, und sehen Sie dabei, wohin die Querverweise jedes Verses führen, von 1. Mose bis zur Offenbarung.',
         noscript:
           'Fäden zeigt, wohin jeder Vers eines Kapitels in der ganzen Bibel führt. Dafür wird JavaScript gebraucht.',
       },
     },
     manifest: {
-      name: 'Bibel-Querverweise',
+      name: 'Bibel-Querverweise: orthodoxer Kanon',
       shortName: 'Querverweise',
       description:
-        'Alle Querverweise der Bibel als Bögen gezeichnet, und jedes Kapitel mit seinen Fäden.',
+        'Die Querverweise der orthodoxen Bibel, deuterokanonische Bücher eingeschlossen, als Bögen gezeichnet, und jedes Kapitel mit seinen Fäden.',
     },
     socialImage: {
       file: 'social-preview.de.jpg',
@@ -181,30 +181,30 @@ export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
     },
   },
   it: {
-    siteName: 'Riferimenti incrociati della Bibbia',
+    siteName: 'Riferimenti incrociati della Bibbia: canone ortodosso',
     hreflang: 'it',
     ogLocale: 'it_IT',
     pages: {
       main: {
-        title: 'Riferimenti incrociati della Bibbia',
+        title: 'Riferimenti incrociati della Bibbia: canone ortodosso',
         description:
-          'Esplora tutti i 344.799 riferimenti incrociati della Bibbia: ogni versetto su una linea con i suoi collegamenti ad archi, e ogni capitolo con i fili verso i versetti a cui rimanda.',
+          'Esplora i riferimenti incrociati dell’intera Bibbia ortodossa, deuterocanonici compresi: ogni versetto su una linea con i suoi collegamenti ad archi, e ogni capitolo con i fili verso i versetti a cui rimanda.',
         noscript:
-          'Riferimenti incrociati della Bibbia disegna i 344.799 riferimenti fra i versetti della Bibbia. Serve JavaScript.',
+          'Riferimenti incrociati della Bibbia: canone ortodosso disegna i riferimenti fra i versetti della Bibbia, deuterocanonici compresi. Serve JavaScript.',
       },
       threads: {
-        title: 'Fili · Riferimenti incrociati della Bibbia',
+        title: 'Fili · Riferimenti incrociati della Bibbia: canone ortodosso',
         description:
-          'Leggi un capitolo qualsiasi della Bibbia e vedi dove portano i riferimenti incrociati di ogni versetto, dalla Genesi all’Apocalisse.',
+          'Leggi un capitolo qualsiasi della Bibbia ortodossa, da Tobia a 4 Maccabei, e vedi dove portano i riferimenti incrociati di ogni versetto, dalla Genesi all’Apocalisse.',
         noscript:
           'Fili mostra dove porta ogni versetto di un capitolo nell’intera Bibbia. Serve JavaScript.',
       },
     },
     manifest: {
-      name: 'Riferimenti incrociati della Bibbia',
+      name: 'Riferimenti incrociati della Bibbia: canone ortodosso',
       shortName: 'Riferimenti',
       description:
-        'Tutti i riferimenti incrociati della Bibbia disegnati ad archi, e ogni capitolo con i suoi fili.',
+        'I riferimenti incrociati della Bibbia ortodossa, deuterocanonici compresi, disegnati ad archi, e ogni capitolo con i suoi fili.',
     },
     socialImage: {
       file: 'social-preview.it.jpg',
@@ -214,30 +214,30 @@ export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
     },
   },
   es: {
-    siteName: 'Referencias cruzadas de la Biblia',
+    siteName: 'Referencias cruzadas de la Biblia: canon ortodoxo',
     hreflang: 'es',
     ogLocale: 'es_ES',
     pages: {
       main: {
-        title: 'Referencias cruzadas de la Biblia',
+        title: 'Referencias cruzadas de la Biblia: canon ortodoxo',
         description:
-          'Explore las 344.799 referencias cruzadas de la Biblia: cada versículo en una línea con sus conexiones en arcos, y cada capítulo con hilos hacia los versículos adonde llevan.',
+          'Explore las referencias cruzadas de toda la Biblia ortodoxa, deuterocanónicos incluidos: cada versículo en una línea con sus conexiones en arcos, y cada capítulo con hilos hacia los versículos adonde llevan.',
         noscript:
-          'Referencias cruzadas de la Biblia dibuja las 344.799 referencias entre los versículos de la Biblia. Hace falta JavaScript.',
+          'Referencias cruzadas de la Biblia: canon ortodoxo dibuja las referencias entre los versículos de la Biblia, deuterocanónicos incluidos. Hace falta JavaScript.',
       },
       threads: {
-        title: 'Hilos · Referencias cruzadas de la Biblia',
+        title: 'Hilos · Referencias cruzadas de la Biblia: canon ortodoxo',
         description:
-          'Lea cualquier capítulo de la Biblia y vea adónde llevan las referencias cruzadas de cada versículo, de Génesis a Apocalipsis.',
+          'Lea cualquier capítulo de la Biblia ortodoxa, de Tobías a 4 Macabeos, y vea adónde llevan las referencias cruzadas de cada versículo, de Génesis a Apocalipsis.',
         noscript:
           'Hilos muestra adónde lleva cada versículo de un capítulo en toda la Biblia. Hace falta JavaScript.',
       },
     },
     manifest: {
-      name: 'Referencias cruzadas de la Biblia',
+      name: 'Referencias cruzadas de la Biblia: canon ortodoxo',
       shortName: 'Referencias',
       description:
-        'Todas las referencias cruzadas de la Biblia dibujadas en arcos, y cada capítulo con sus hilos.',
+        'Las referencias cruzadas de la Biblia ortodoxa, deuterocanónicos incluidos, dibujadas en arcos, y cada capítulo con sus hilos.',
     },
     socialImage: {
       file: 'social-preview.es.jpg',
@@ -247,32 +247,32 @@ export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
     },
   },
   uk: {
-    siteName: 'Перехресні посилання Біблії',
+    siteName: 'Перехресні посилання Біблії: православний канон',
     hreflang: 'uk',
     ogLocale: 'uk_UA',
     pages: {
       main: {
-        title: 'Перехресні посилання Біблії',
+        title: 'Перехресні посилання Біблії: православний канон',
         description:
-          'Перегляньте всі 344 799 перехресних посилань Біблії: кожен вірш на одній лінії з арками своїх зв’язків, а кожна глава — з лініями до віршів, куди вони ведуть.',
+          'Перегляньте перехресні посилання всієї православної Біблії, разом із второканонічними книгами: кожен вірш на одній лінії з арками своїх зв’язків, а кожна глава — з лініями до віршів, куди вони ведуть.',
         noscript:
-          'Сайт «Перехресні посилання Біблії» малює 344 799 перехресних посилань між віршами Біблії. Для роботи потрібен JavaScript.',
+          'Сайт «Перехресні посилання Біблії: православний канон» малює перехресні посилання між віршами Біблії, разом із второканонічними книгами. Для роботи потрібен JavaScript.',
       },
       threads: {
-        title: 'Глави · Перехресні посилання Біблії',
+        title: 'Глави · Перехресні посилання Біблії: православний канон',
         description:
-          'Читайте будь-яку главу Біблії й бачте, куди ведуть перехресні посилання кожного вірша, від Буття до Об’явлення.',
+          'Читайте будь-яку главу православної Біблії, від Товита до 4 Маккавеїв, і бачте, куди ведуть перехресні посилання кожного вірша, від Буття до Об’явлення.',
         noscript:
           '«Глави» показують, куди ведуть перехресні посилання кожного вірша глави — через усю Біблію. Для роботи потрібен JavaScript.',
       },
     },
     manifest: {
-      name: 'Перехресні посилання Біблії',
+      name: 'Перехресні посилання Біблії: православний канон',
       // Nine characters: a home screen truncates around twelve, and «Посилання Бі…» would
       // say less than «Посилання» does.
       shortName: 'Посилання',
       description:
-        'Усі перехресні посилання Біблії, намальовані арками, і кожна глава зі своїми лініями.',
+        'Перехресні посилання православної Біблії, разом із второканонічними книгами, намальовані арками, і кожна глава зі своїми лініями.',
     },
     socialImage: {
       file: 'social-preview.uk.jpg',

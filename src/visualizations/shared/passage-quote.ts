@@ -28,7 +28,7 @@ function escapeHtml(text: string): string {
  * A verse or passage, quoted in full with its reference, translation and a link, e.g.
  *
  *     ¹Now when men began… ²the sons of God saw…
- *     — Genesis 6:1–2 (BSB) https://trekhleb.dev/bible-cross-references/?ref=Gen.6.1
+ *     — Genesis 6:1–2 (WEB) https://wirewrestler1.github.io/bible-cross-references/?ref=Gen.6.1
  *
  * A passage's verses are numbered (with the chapter too where it changes). Verses a translation
  * omits are left out.

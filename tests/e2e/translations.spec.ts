@@ -6,7 +6,7 @@ test.describe('translations', () => {
     page,
   }) => {
     await openPassage(page, 'John.3.16');
-    await expect(page.locator(PANEL)).toContainText(/one and only Son/);
+    await expect(page.locator(PANEL)).toContainText(/only born Son/);
 
     await page
       .locator(ACTIVE)
@@ -90,7 +90,7 @@ test.describe('translations', () => {
   test('the credit in the footer follows the translation on screen', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await expect(page.locator(`${ACTIVE} footer`)).toContainText('BSB');
+    await expect(page.locator(`${ACTIVE} footer`)).toContainText('WEB');
   });
 
   test('a quote is copied with its reference and a link that names the translation', async ({
@@ -105,7 +105,7 @@ test.describe('translations', () => {
     await expect(page.locator(PANEL).getByRole('status').first()).toHaveText(/copied/);
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     expect(copied).toContain('Psalm 23:1');
-    expect(copied).toContain('(BSB)');
-    expect(copied).toContain('?ref=Ps.23.1&t=bsb');
+    expect(copied).toContain('(WEB)');
+    expect(copied).toContain('?ref=Ps.23.1&t=web');
   });
 });

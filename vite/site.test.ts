@@ -22,7 +22,7 @@ describe('the site', () => {
   });
 
   it('names itself and its author', () => {
-    expect(SITE_NAME).toBe('Bible Cross-References');
+    expect(SITE_NAME).toBe('Bible Cross-References: Orthodox Canon');
     expect(AUTHOR.name).toBeTruthy();
     expect(AUTHOR.url.startsWith('https://')).toBe(true);
     for (const page of PAGE_LIST) {

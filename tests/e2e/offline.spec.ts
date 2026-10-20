@@ -47,7 +47,7 @@ async function installWorker(page: Page, path = './?ref=John.3.16'): Promise<voi
  *
  * `context.setOffline(true)` does not reach fetches the service worker makes. Measured against
  * this build: with it set and the page reloaded, the server was still asked for — and still
- * served — `bsb.json`, `openbible.json` and `stepbible.json`. Every test below would therefore
+ * served — `web.json`, `orthodox.json` and `stepbible.json`. Every test below would therefore
  * have passed with an empty cache, which is the opposite of what they are for.
  *
  * Aborting the context's routes does reach them, so these tests are about the cache rather than

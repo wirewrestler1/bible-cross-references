@@ -1,4 +1,22 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { expect, type Page } from '@playwright/test';
+import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
+import { crossReferencesDatasetPath } from '../../src/core/datasets/paths.ts';
+import { vizCrossReferenceSource } from '../../src/visualizations/shared/viz-datasets.ts';
+
+/** The verse count as the app formats it, e.g. `37,128`. */
+export const VERSE_COUNT = CANONICAL_VERSIFICATION.verseCount.toLocaleString('en-US');
+
+/** How many links the dataset the app draws holds, per the lock file, formatted likewise. */
+export const LINK_COUNT = (() => {
+  const lock = JSON.parse(
+    readFileSync(resolve(import.meta.dirname, '../../data/datasets.lock.json'), 'utf8'),
+  ) as Record<string, { shape: Record<string, number> }>;
+  return (
+    lock[crossReferencesDatasetPath(vizCrossReferenceSource().id)]?.shape['links'] ?? 0
+  ).toLocaleString('en-US');
+})();
 
 /** The panel of the view currently on screen (both views stay mounted). */
 export const PANEL = 'div[data-active="true"] aside';

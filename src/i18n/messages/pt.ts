@@ -2,7 +2,7 @@ import type { LocaleMessages } from './types.ts';
 
 /** The interface in Portuguese. Anything left out falls back to the English word. */
 export const pt: LocaleMessages = {
-  'app.name': 'Referências Cruzadas da Bíblia',
+  'app.name': 'Referências Cruzadas da Bíblia: cânon ortodoxo',
   'app.name.short': 'Referências Cruzadas',
 
   'view.arcs': 'Arcos',

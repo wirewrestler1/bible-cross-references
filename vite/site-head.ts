@@ -145,7 +145,7 @@ export function siteHead(): Plugin {
         meta('property', 'og:image:height', String(social.height)),
         meta('property', 'og:image:alt', social.alt),
         meta('name', 'twitter:card', 'summary_large_image'),
-        meta('name', 'twitter:creator', AUTHOR.twitter),
+        ...(AUTHOR.twitter === null ? [] : [meta('name', 'twitter:creator', AUTHOR.twitter)]),
         meta('name', 'twitter:title', title),
         meta('name', 'twitter:description', description),
         meta('name', 'twitter:image', image),
