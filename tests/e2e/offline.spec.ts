@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { expect, test, type Page, type BrowserContext } from '@playwright/test';
 import { ACTIVE, PANEL, waitForApp } from './helpers.ts';
+import { LOCALE_IDS } from '../../src/i18n/locale-id.ts';
 
 const WORKER = resolve(import.meta.dirname, '../../dist/sw.js');
 
@@ -103,6 +104,8 @@ test.describe('the offline cache', () => {
     page,
     context,
   }) => {
+    // Only while German pages are published; the next test covers a non-default Bible meanwhile.
+    test.skip(!LOCALE_IDS.includes('de'), 'German is not published in this release');
     await installWorker(page, './de/?ref=John.3.16');
     await cutTheNetwork(context);
     await page.reload();
