@@ -131,6 +131,16 @@ export class GlowCompositor {
     renderer.render(this.#quadScene, this.#quadCamera);
   }
 
+  /**
+   * Lets go of the accumulation buffer on the GPU — the largest thing the glow holds, a
+   * half-float texture the size of the screen — while nobody is looking. Three.js sets the
+   * target up again the next time it is rendered to, and `#dirty` makes sure that happens.
+   */
+  release(): void {
+    this.#target.dispose();
+    this.#dirty = true;
+  }
+
   dispose(): void {
     this.#quad.geometry.dispose();
     this.#quad.material.dispose();

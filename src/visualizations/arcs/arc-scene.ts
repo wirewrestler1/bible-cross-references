@@ -124,6 +124,16 @@ export class ArcScene {
     this.#common.u_viewport.value.set(width, height);
   }
 
+  /**
+   * Shrinks to a pixel while unseen, giving the GPU back the antialiased drawing buffer and the
+   * glow's accumulation buffer: together the bulk of what the page holds, and what a phone
+   * weighs when deciding whether a background page may stay. `setSize` brings it all back.
+   */
+  sleep(): void {
+    this.#renderer.setSize(1, 1, false);
+    this.#glow.release();
+  }
+
   setLayout(layout: ArcLayout): void {
     this.#common.u_axis.value.set(layout.axisStart, layout.axisEnd);
     this.#common.u_baseline.value = layout.baseline;

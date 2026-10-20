@@ -151,6 +151,12 @@ export class ArcsController {
   /** Hidden (another view is shown), it draws nothing; the intro waits until it's shown. */
   #active = true;
   #hasLinks = false;
+  /**
+   * Whether the canvases have been shrunk to a pixel because nothing can see them: the page is
+   * in the background, or another view is in front. The layout is kept so they come back at
+   * their size.
+   */
+  #asleep = false;
 
   constructor(options: ArcsControllerOptions) {
     this.#options = options;
@@ -191,19 +197,63 @@ export class ArcsController {
       },
     });
     options.container.addEventListener('keydown', this.#onKeyDown);
+    document.addEventListener('visibilitychange', this.#onVisibilityChange);
   }
 
   setSize(width: number, height: number): void {
     this.#layout = computeArcLayout(width, height);
-    this.#scene.setSize(width, height);
     this.#scene.setLayout(this.#layout);
+    if (!this.#asleep) {
+      this.#applySize();
+    }
+    this.#scheduler.request();
+  }
+
+  /** Gives the canvases the layout's size, at the device's pixel ratio. */
+  #applySize(): void {
+    const { width, height } = this.#layout;
+    this.#scene.setSize(width, height);
     const ratio = Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO);
     const canvas = this.#options.overlayCanvas;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     this.#overlay.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  /**
+   * Nothing can see the canvases: the page went to the background, or another view is in
+   * front. They shrink to a pixel, so the GPU gets back the screen-sized buffers behind them —
+   * what a phone weighs when it decides whether a page it is not showing may stay in memory, and
+   * so whether the reader finds it as they left it or watches it load again. Everything else
+   * (the links, the window, the focus) stays, and `#wake` has it drawn again in one frame.
+   */
+  #sleep(): void {
+    if (this.#asleep) {
+      return;
+    }
+    this.#asleep = true;
+    this.#scene.sleep();
+    const canvas = this.#options.overlayCanvas;
+    canvas.width = 1;
+    canvas.height = 1;
+  }
+
+  #wake(): void {
+    if (!this.#asleep) {
+      return;
+    }
+    this.#asleep = false;
+    this.#applySize();
     this.#scheduler.request();
   }
+
+  readonly #onVisibilityChange = (): void => {
+    if (document.visibilityState === 'hidden') {
+      this.#sleep();
+    } else if (this.#active) {
+      this.#wake();
+    }
+  };
 
   /** All links to draw as the glowing background. The first ones grow in (see `#playIntro`). */
   setLinks(instances: ArcInstances): void {
@@ -285,6 +335,7 @@ export class ArcsController {
     this.#scheduler.dispose();
     this.#detachGestures();
     this.#options.container.removeEventListener('keydown', this.#onKeyDown);
+    document.removeEventListener('visibilitychange', this.#onVisibilityChange);
     this.#scene.dispose();
   }
 
@@ -318,19 +369,27 @@ export class ArcsController {
     this.#draw();
   }
 
-  /** Shown or hidden; drawing resumes (and the intro starts) when it's shown. */
+  /**
+   * Shown or hidden; drawing resumes (and the intro starts) when it's shown. Hidden behind the
+   * other view, the canvases sleep like a background page's.
+   */
   setActive(active: boolean): void {
     this.#active = active;
     if (active) {
+      if (document.visibilityState !== 'hidden') {
+        this.#wake();
+      }
       if (this.#intro === 'pending' && this.#hasLinks) {
         this.#playIntro();
       }
       this.#scheduler.request();
+    } else {
+      this.#sleep();
     }
   }
 
   #draw(): void {
-    if (!this.#active || this.#layout.width === 0 || this.#layout.height === 0) {
+    if (this.#asleep || !this.#active || this.#layout.width === 0 || this.#layout.height === 0) {
       return;
     }
     this.#scene.setView(this.#view);
