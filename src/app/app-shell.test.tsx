@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DebugPage } from '../features/debug/DebugPage.tsx';
@@ -287,7 +287,8 @@ describe('VizPage on a phone', () => {
     expect(screen.getByRole('searchbox')).toBeDefined();
     const scrim = container.querySelector('[class*="menuScrim"]');
     expect(scrim).not.toBeNull();
-    await userEvent.click(scrim ?? container);
+    // A tap, which moves no focus (a pointer's press would, and the sheet closes on that alone).
+    fireEvent.click(scrim ?? container);
     expect(screen.queryByRole('searchbox')).toBeNull();
 
     // Open again, then widen past a phone: the box is back in the header, and the sheet is gone.

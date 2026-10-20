@@ -1,0 +1,100 @@
+/* The search box with its list of what the typing could become. On a wide screen the list hangs
+   under the box like a menu; on a phone, where the box sits in a sheet just above the keyboard,
+   the list stands above the box instead. */
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.box {
+  position: relative;
+}
+
+.list {
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-1));
+  inset-inline: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  max-block-size: min(50vh, 20rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.5);
+}
+
+/* Books: one to a line, the way a list of names reads. */
+.row,
+.chip {
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) - 2px);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+
+.row {
+  flex: 1 1 100%;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Chapters and verses: numbers in a grid a thumb can pick from. */
+.chip {
+  flex: 0 0 auto;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.5rem;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.chip[data-kind='whole-chapter'] {
+  flex: 1 1 100%;
+  background: none;
+  color: var(--color-text-muted);
+  text-align: start;
+}
+
+.row:hover,
+.chip:hover,
+.row[aria-selected='true'],
+.chip[aria-selected='true'] {
+  border-color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+@media (max-width: 47.99rem) {
+  /* In the sheet: the list above the box, in the sheet's own flow, under its own scroll. */
+  .form {
+    flex-direction: column-reverse;
+    gap: var(--space-2);
+  }
+
+  .list {
+    position: static;
+    max-block-size: min(40dvh, 18rem);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .row {
+    padding-block: var(--space-3);
+  }
+
+  .chip {
+    min-inline-size: 3.25rem;
+    min-block-size: 2.75rem;
+  }
+}
