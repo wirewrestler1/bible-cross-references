@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { ACTIVE, LINK_COUNT, openPassage, PANEL, waitForApp } from './helpers.ts';
+import { VOTE_THRESHOLDS } from '../../src/visualizations/shared/link-filter.ts';
 
 test.describe('cross-references', () => {
   test('a verse lists where it points and what points at it, behind two chips', async ({
@@ -69,7 +70,10 @@ test.describe('cross-references', () => {
       .locator(ACTIVE)
       .getByRole('button', { name: /Filters/ })
       .click();
-    await page.locator(ACTIVE).getByRole('combobox').first().selectOption('20');
+    await page
+      .locator(ACTIVE)
+      .getByRole('slider')
+      .fill(String(VOTE_THRESHOLDS.indexOf(20)));
     await expect(page).toHaveURL(/votes=20/);
     await expect(
       page.locator(ACTIVE).getByText(new RegExp(`of ${LINK_COUNT} links shown`)),
@@ -83,7 +87,10 @@ test.describe('cross-references', () => {
       .locator(ACTIVE)
       .getByRole('button', { name: /Filters/ })
       .click();
-    await expect(page.locator(ACTIVE).getByRole('combobox').first()).toHaveValue('20');
+    await expect(page.locator(ACTIVE).getByRole('slider')).toHaveAttribute(
+      'aria-valuetext',
+      'Weight 20 and up',
+    );
   });
 
   test('a genre can be hidden and shown again', async ({ page }) => {

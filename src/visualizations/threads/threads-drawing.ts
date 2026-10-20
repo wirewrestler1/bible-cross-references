@@ -37,9 +37,13 @@ export interface ThreadsDrawing {
   readonly emphasizedLink: number | null;
 }
 
-const TEXT = '#ecebe6';
-const MUTED = '#9a9890';
-const LABEL_FONT = '10px system-ui, -apple-system, "Segoe UI", sans-serif';
+const TEXT = '#e8e6df';
+const MUTED = 'rgb(232 230 223 / 0.55)';
+/** The chapter's own place on the spine: the one warm light, the colour of the mark. */
+const HERE = '#f1b24a';
+/** How far a book's light spreads past its stretch of the spine, in px. */
+const SPINE_GLOW = 5;
+const LABEL_FONT = '500 10px system-ui, -apple-system, "Segoe UI", sans-serif';
 
 /** Horizontal position of the spine bar and its width. */
 export function spineBar(drawing: Pick<ThreadsDrawing, 'gutterWidth' | 'compact'>): {
@@ -137,12 +141,19 @@ function drawSpine(context: CanvasRenderingContext2D, drawing: ThreadsDrawing): 
   context.textBaseline = 'middle';
   context.textAlign = 'left';
 
+  // The books as light along the spine: each casts a little of its colour, alternate books of
+  // a genre dimmer so neighbours stay distinguishable.
   for (const [index, segment] of spine.segments.entries()) {
-    context.globalAlpha = index % 2 === 0 ? 1 : 0.72;
-    context.fillStyle = elementAt(GENRE_HEX, segment.genreOrdinal);
+    const color = elementAt(GENRE_HEX, segment.genreOrdinal);
+    context.globalAlpha = index % 2 === 0 ? 0.95 : 0.7;
+    context.fillStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = SPINE_GLOW;
     context.fillRect(bar.left, segment.top, bar.width, Math.max(segment.bottom - segment.top, 0.5));
   }
+  context.shadowBlur = 0;
   context.globalAlpha = 1;
+  context.letterSpacing = '0.02em';
 
   for (const segment of spine.segments) {
     const height = segment.bottom - segment.top;
@@ -158,11 +169,14 @@ function drawSpine(context: CanvasRenderingContext2D, drawing: ThreadsDrawing): 
     context.fillText(label, labelX, (segment.top + segment.bottom) / 2);
   }
 
-  // "You are here": a bracket around the current chapter.
+  // "You are here": a bracket of gold light around the current chapter.
   const top = spine.yOf(chapter.start) - 2;
   const bottom = Math.max(spine.yOf(chapter.end) + 2, top + 4);
-  context.fillStyle = TEXT;
+  context.fillStyle = HERE;
+  context.shadowColor = HERE;
+  context.shadowBlur = 10;
   context.fillRect(bar.left - 3, top, 2, bottom - top);
+  context.shadowBlur = 0;
   context.beginPath();
   context.moveTo(bar.left - 3, (top + bottom) / 2 - 4);
   context.lineTo(bar.left - 8, (top + bottom) / 2);

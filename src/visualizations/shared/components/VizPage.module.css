@@ -134,19 +134,23 @@
     gap: var(--space-2);
   }
 
-  /* One row: the name, then the view's own tools at the end. The rest is in the bar. */
+  /* The name, then the view's own tools at the end; a view with more tools than fit beside the
+     name (the Reader's direction switch and genres) wraps them onto a row of their own. The
+     rest is in the bar. */
   .header {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    gap: var(--space-2);
     padding-block: calc(var(--space-2) + env(safe-area-inset-top, 0px)) var(--space-2);
   }
 
   .masthead {
-    flex: 0 1 auto;
+    flex: 1 0 auto;
   }
 
   .controls {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     flex-wrap: nowrap;
+    margin-inline-start: auto;
   }
 
   /* Phones: the details panel is a bottom sheet (see use-bottom-sheet.ts) resting at one of
