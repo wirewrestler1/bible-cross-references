@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ClickIcon,
   DragIcon,
@@ -14,6 +14,7 @@ import { useLocalization } from '../../i18n/use-locale.tsx';
 import { GenreLegend } from '../shared/components/GenreLegend.tsx';
 import { toggleGenre } from '../shared/components/GenreToggles.tsx';
 import { LinkStats } from '../shared/components/LinkStats.tsx';
+import { WholeIcon } from '../../shared/ui/icons.tsx';
 import { PassageCard } from '../shared/components/PassageCard.tsx';
 import { ReferenceSearch } from '../shared/components/ReferenceSearch.tsx';
 import { VizPage } from '../shared/components/VizPage.tsx';
@@ -22,7 +23,7 @@ import { summarizeLinks } from '../shared/link-summary.ts';
 import type { Passage } from '../../core/bible/passage.ts';
 import type { Connection } from '../shared/connections.ts';
 import type { VisualizationProps } from '../visualization.ts';
-import { ArcsStage } from './ArcsStage.tsx';
+import { ArcsStage, type ArcsStageControls } from './ArcsStage.tsx';
 
 const INSPIRATION = {
   title: 'Bible Cross-References',
@@ -33,7 +34,6 @@ const INSPIRATION = {
 export function ArcsExplorer({
   data,
   active,
-  arrival,
   passage,
   onNavigate,
   filter,
@@ -43,6 +43,7 @@ export function ArcsExplorer({
   translationMenu,
   passageLinks,
   shareUrl,
+  passagePicture,
 }: VisualizationProps) {
   const { t } = useLocalization();
   const { index } = data.crossReferences;
@@ -57,6 +58,9 @@ export function ArcsExplorer({
   const closePanel = () => {
     onNavigate(null);
   };
+  // Zoomed in (to a passage's reach, or by hand): the stats corner offers the whole canon back.
+  const [zoomed, setZoomed] = useState(false);
+  const stage = useRef<ArcsStageControls | null>(null);
   // A connection pointed at in the panel; it belongs to the passage it was pointed at on.
   const [preview, setPreview] = useState<{
     readonly passage: Passage;
@@ -94,6 +98,7 @@ export function ArcsExplorer({
             onSelect={onNavigate}
             onClose={closePanel}
             shareUrl={shareUrl}
+            picture={passagePicture}
             onPreview={(connection) => {
               setPreview(connection && { passage, connection });
             }}
@@ -104,15 +109,31 @@ export function ArcsExplorer({
       <ArcsStage
         data={data}
         active={active}
-        arrival={arrival}
         linkIds={linkIds}
         filter={filter}
         focus={passage}
         preview={previewed}
         onSelect={onNavigate}
+        onZoomChange={setZoomed}
+        onControls={(controls) => {
+          stage.current = controls;
+        }}
       />
       <LinkStats
         summary={summary}
+        action={
+          zoomed ? (
+            <button
+              type="button"
+              onClick={() => {
+                stage.current?.resetView();
+              }}
+            >
+              <WholeIcon />
+              {t('arcs.wholeBible')}
+            </button>
+          ) : undefined
+        }
         hint={{
           pointer: (
             <>

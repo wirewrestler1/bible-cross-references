@@ -184,6 +184,8 @@ export const en = {
     plural === 1 ? ' link between the testaments' : ' links between the testaments',
   ],
   'hint.zoom': 'to zoom',
+  /** Zoomed in: the way back. */
+  'arcs.wholeBible': 'Whole Bible',
   'hint.pan': 'to pan',
   'hint.focus': 'to focus',
   'hint.hold': 'hold to preview',
@@ -225,6 +227,8 @@ export const en = {
   /** Where the passage sits: verse 3 of 34, chapter 24 of 51. */
   'card.position': (at: string, of: string) => `${at} of ${of}`,
   'card.genres': 'Narrow to a genre',
+  'card.books': 'Narrow to a book',
+  'card.book': (name: string, count: string) => `${name}: ${count}`,
   'card.genre': (name: string, count: string) => `${name}: ${count}`,
   'card.miniArcs': (reference: string) => `The links of ${reference}, drawn small`,
   'card.none': 'Nothing here under the current filters.',

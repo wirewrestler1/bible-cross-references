@@ -1,4 +1,4 @@
-import { BOOKS } from '../../core/bible/books.ts';
+import { BOOKS, type BookId } from '../../core/bible/books.ts';
 import { GENRES, getBookGenre, getGenreBooks } from '../../core/bible/genres.ts';
 import type { GenreId } from '../../core/bible/genres.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
@@ -21,6 +21,11 @@ export interface AxisPaint {
   readonly passage: VerseIndexRange | null;
   /** How much of the axis has arrived, 0–1, from its start; 1 (or absent) is the whole of it. */
   readonly reveal?: number;
+  /**
+   * Books to name whatever their room (by their abbreviations, each as near its place as the
+   * last allows): the ones a passage reaches, on a small picture where few names would fit.
+   */
+  readonly marked?: ReadonlySet<BookId>;
 }
 
 const TEXT = '#e8e6df';
@@ -153,7 +158,7 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
 
 function paintBookLabels(
   context: CanvasRenderingContext2D,
-  { layout, versification, names, focus, hover, passage }: AxisPaint,
+  { layout, versification, names, focus, hover, passage, marked }: AxisPaint,
   along: (verse: number) => number,
 ): void {
   const horizontal = layout.orientation === 'horizontal';
@@ -166,6 +171,12 @@ function paintBookLabels(
   context.textAlign = horizontal ? 'center' : 'right';
   const touches = (range: VerseIndexRange | null, start: number, end: number) =>
     range !== null && range.start <= end && range.end >= start;
+  // Marked books are named first, in the canon's order, each pushed right of the last name
+  // when its own place is taken; the rest are named only where they fit between them.
+  const taken: { from: number; to: number }[] = [];
+  const free = (from: number, to: number) =>
+    taken.every((span) => to + 4 < span.from || from - 4 > span.to);
+  let lastMarkedRight = Number.NEGATIVE_INFINITY;
 
   for (const book of BOOKS) {
     const range = versification.bookRange(book.id);
@@ -175,18 +186,32 @@ function paintBookLabels(
     if (room <= 0) continue;
     const short = names[book.id].abbreviation ?? book.id;
     const candidates = [names[book.id].name, short];
-    const label = horizontal
-      ? candidates.find((text) => context.measureText(text).width + 8 <= room)
-      : room >= 12
-        ? candidates.find((text) => context.measureText(text).width <= sideRoom)
-        : undefined;
-    if (label === undefined) continue;
+    const isMarked = marked?.has(book.id) ?? false;
+    let label: string | undefined;
+    let center = (from + to) / 2;
+    if (isMarked && horizontal) {
+      label = candidates.find((text) => context.measureText(text).width + 8 <= room) ?? short;
+      const width = context.measureText(label).width;
+      center = Math.max(center, lastMarkedRight + width / 2 + 6);
+      if (center + width / 2 > layout.axisEnd) continue;
+      lastMarkedRight = center + width / 2;
+      taken.push({ from: center - width / 2, to: lastMarkedRight });
+    } else {
+      label = horizontal
+        ? candidates.find((text) => context.measureText(text).width + 8 <= room)
+        : room >= 12
+          ? candidates.find((text) => context.measureText(text).width <= sideRoom)
+          : undefined;
+      if (label === undefined) continue;
+      const width = context.measureText(label).width;
+      if (horizontal && !free(center - width / 2, center + width / 2)) continue;
+    }
     const isActive =
+      isMarked ||
       touches(focus, range.start, range.end) ||
       touches(hover, range.start, range.end) ||
       touches(passage, range.start, range.end);
     context.fillStyle = isActive ? TEXT : MUTED;
-    const center = (from + to) / 2;
     if (horizontal) {
       context.fillText(label, center, layout.baseline + labelOffset + 12);
     } else {

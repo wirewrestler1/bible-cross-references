@@ -26,7 +26,20 @@ test.describe('cross-references', () => {
     await openPassage(page, 'John.3.16');
     const mini = page.locator(PANEL).getByRole('img', { name: /drawn small/ });
     await expect(mini).toBeVisible();
-    expect(await mini.locator('path').count()).toBeGreaterThan(10);
+    // Drawn with the arcs' own painter, on a canvas: by now it holds the axis and the arcs.
+    await expect
+      .poll(() =>
+        mini.evaluate((element) => {
+          const canvas = element as HTMLCanvasElement;
+          const context = canvas.getContext('2d');
+          if (!context || canvas.width === 0) return 0;
+          const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+          let lit = 0;
+          for (let i = 3; i < data.length; i += 4) if (data[i] !== 0) lit += 1;
+          return lit;
+        }),
+      )
+      .toBeGreaterThan(500);
   });
 
   test('the spectrum narrows the list to one genre, and widens it again', async ({ page }) => {

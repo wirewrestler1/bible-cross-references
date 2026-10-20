@@ -3,6 +3,7 @@ import type { Passage } from '../core/bible/passage.ts';
 import type { MessageKey } from '../i18n/messages/types.ts';
 import type { IconComponent } from '../shared/ui/icons.tsx';
 import type { LinkFilter } from './shared/link-filter.ts';
+import type { PassagePictureProps } from './shared/passage-picture.ts';
 import type { VizData } from './shared/viz-data.ts';
 
 /**
@@ -23,12 +24,6 @@ export interface VisualizationProps {
    * hidden one should stop drawing (and start its intro once shown).
    */
   readonly active: boolean;
-  /**
-   * Whether this is the visit's arrival: the host decides once, when the page first opens, and
-   * the visualization shown then plays its opening reveal. A page a phone reloads on return
-   * is not arriving, and gets its visualization at once.
-   */
-  readonly arrival: boolean;
   /** The site's name, a link home, from the host. */
   readonly masthead: ReactNode;
   /** The host's switch between visualizations, placed by the page frame. */
@@ -39,6 +34,8 @@ export interface VisualizationProps {
   readonly passageLinks: (passage: Passage) => ReactNode;
   /** A passage's address on the published site, for links meant for others (copied quotes). */
   readonly shareUrl: (passage: Passage) => string;
+  /** The picture at the top of a passage's card, from whichever visualization offers one. */
+  readonly passagePicture?: JSXElementConstructor<PassagePictureProps> | undefined;
 }
 
 /**
@@ -57,4 +54,10 @@ export interface Visualization {
   readonly openLabelKey: MessageKey;
   /** Usually lazy, so each visualization's code (e.g. Three.js) is a chunk of its own. */
   readonly Component: JSXElementConstructor<VisualizationProps>;
+  /**
+   * A small piece of this visualization's drawing for the top of a passage's card, in every
+   * view: the host hands it to each visualization as `passagePicture`. Kept out of the lazy
+   * chunk, since the card needs it wherever it opens.
+   */
+  readonly PassagePicture?: JSXElementConstructor<PassagePictureProps>;
 }

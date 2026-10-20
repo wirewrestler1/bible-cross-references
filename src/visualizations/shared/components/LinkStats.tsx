@@ -11,6 +11,8 @@ interface LinkStatsProps {
    * screen (phones included, since touch gestures are harder to guess).
    */
   readonly hint?: { readonly pointer: ReactNode; readonly touch: ReactNode };
+  /** Something to do about what is on screen, under the words: e.g. a way back when zoomed in. */
+  readonly action?: ReactNode;
 }
 
 /** Renders a message's pieces, setting its numbers apart from the words around them. */
@@ -27,7 +29,7 @@ function Line({ parts }: { readonly parts: Emphasized }) {
 }
 
 /** A quiet corner summary of what is on screen; context, not the main event. */
-export function LinkStats({ summary, hint }: LinkStatsProps) {
+export function LinkStats({ summary, hint, action }: LinkStatsProps) {
   const { t, n, share } = useLocalization();
   const { verseCount, shownLinks, totalLinks, connectedVerses, crossTestamentLinks } = summary;
   return (
@@ -52,6 +54,7 @@ export function LinkStats({ summary, hint }: LinkStatsProps) {
           <span className={`${styles.hint} ${styles.touchHint}`}>{hint.touch}</span>
         </>
       )}
+      {action !== undefined && <span className={styles.action}>{action}</span>}
     </div>
   );
 }

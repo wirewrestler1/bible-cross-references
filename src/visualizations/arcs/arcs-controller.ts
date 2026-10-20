@@ -15,12 +15,13 @@ import {
 } from './arc-layout.ts';
 import { ArcScene } from './arc-scene.ts';
 import {
+  fitRange,
   fullView,
   interpolateView,
   panView,
-  revealRange,
-  zoomView,
+  reachOf,
   type AxisView,
+  zoomView,
 } from './axis-view.ts';
 import { paintAxis, paintPulse } from './axis-painter.ts';
 
@@ -46,8 +47,6 @@ export interface ArcsControllerOptions {
   readonly container: HTMLElement;
   readonly glCanvas: HTMLCanvasElement;
   readonly overlayCanvas: HTMLCanvasElement;
-  /** Whether the visit is arriving: then the axis sweeps in and the arcs unfold when first shown. */
-  readonly arrival: boolean;
   readonly versification: Versification;
   /** Book and genre names for the axis; replaced when the reader changes language. */
   readonly names: BookNames;
@@ -55,6 +54,8 @@ export interface ArcsControllerOptions {
   readonly onHover: (hover: ArcHover | null) => void;
   readonly onSelect: (passage: Passage) => void;
   readonly onClear: () => void;
+  /** The window moved: whether it now shows the whole axis (so the host can offer a way back). */
+  readonly onViewChange?: (full: boolean) => void;
 }
 
 /** Below this many pixels per verse, pointing picks whole chapters instead of single verses. */
@@ -127,6 +128,8 @@ export class ArcsController {
   #introTimer: ReturnType<typeof setTimeout> | undefined;
   /** How much of the axis has swept in, 0–1: the books light up from Genesis to Revelation. */
   #axisReveal = 1;
+  /** Whether the host was last told the window shows the whole axis. */
+  #reportedFull = true;
   /** The focused links growing out of their passage, while they do. */
   #cancelBloom: (() => void) | null = null;
   /** The ring spreading from a landing, while it does: where, and how far along. */
@@ -263,9 +266,9 @@ export class ArcsController {
     this.#scene.setFocus(range && this.#linksOfRange(range));
     this.#scene.setDimmed(range !== null);
     if (range && changed) {
-      this.#animateTo(
-        revealRange(this.#view, range.start, range.end + 1, this.#options.versification.verseCount),
-      );
+      // The window glides to the passage's reach: its arcs large, their books named.
+      const reach = reachOf(range, this.#linksOfRange(range)?.endpoints ?? []);
+      this.#animateTo(fitRange(reach.start, reach.end, this.#options.versification.verseCount));
       this.#land(range);
     }
     this.#scheduler.request();
@@ -329,11 +332,11 @@ export class ArcsController {
    * The arrival: the axis lights up book by book from Genesis to Revelation, and as it goes
    * every arc grows from its source verse to its target while the glow fades in — the whole
    * Bible's connections unfolding over a few seconds, continuing the loading screen's arcs of
-   * light. Once per visit (the host decides; see `arrival` in Explorer.tsx), and not at all for
-   * readers who prefer reduced motion.
+   * light. On every load, when the arcs are first shown; not at all for readers who prefer
+   * reduced motion.
    */
   #playIntro(): void {
-    if (prefersReducedMotion() || !this.#options.arrival) {
+    if (prefersReducedMotion()) {
       this.#intro = 'done';
       return;
     }
@@ -410,6 +413,12 @@ export class ArcsController {
     }
     this.#scene.setView(this.#view);
     this.#scene.render();
+    const total = this.#options.versification.verseCount;
+    const full = this.#view.start <= 0 && this.#view.end >= total;
+    if (full !== this.#reportedFull) {
+      this.#reportedFull = full;
+      this.#options.onViewChange?.(full);
+    }
     paintAxis(this.#overlay, {
       layout: this.#layout,
       view: this.#view,

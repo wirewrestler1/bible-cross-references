@@ -60,13 +60,21 @@ arcs](public/screenshots/arcs.jpg)
 ![Arcs with John 3:16 focused: its connections highlighted, and a card with its text and
 references](public/screenshots/arcs-verse.jpg)
 
-The passage opens as a card. Its own links are drawn small at the top — the whole canon as a
-line, the passage a point of gold on it — and under the headline and the text, chips choose
-what the list holds: where the passage points, what points at it, or a chapter's verses, each
-with how many links it has. A spectrum of the genres the list reaches narrows it to one. Every
-link is a row with a point of light in the colour of the genre it lands in, the reference, a
-thin tag saying which kind of link it is, and the text; the surest come first, and each one
-travels there. "Read the chapter" opens the passage in the Reader.
+The passage opens as a card, and the arcs glide to its reach: the window that fits the passage
+and everything it connects to, so its arcs are large and the books they land in are named
+along the axis ("Whole Bible", in the corner, is the way back). The card carries a small piece
+of that picture at the top, drawn with the arcs' own machinery — the same axis of books as
+light, the same window, the reached books named by their abbreviations, the passage a point of
+gold — and what you do in one happens in the other: an arc pointed at in the small picture is
+the link previewed on the stage, a row pointed at in the list lights its arc, and an arc
+pressed travels there. Under the headline and the text, chips choose what the list holds:
+where the passage points, what points at it, or a chapter's verses, each with how many links
+it has. A spectrum of the genres the list reaches, named with their counts, narrows it to one;
+so do the books it reaches, as pills in their genre's colour with counts, in the canon's
+order. The list is grouped under the books it lands in, the surest link first within each.
+Every link is a row with a point of light in the colour of the genre it lands in, the
+reference, a thin tag saying which kind of link it is, and the text; each one travels there.
+"Read the chapter" opens the passage in the Reader.
 
 A verse of the 66 books also has a Words chip: the Hebrew or Greek words behind it as pills —
 the dictionary form, how it is said and what it means — and, for the one opened, every other
@@ -137,13 +145,12 @@ the app icons.
 The app arrives rather than appears. The first time it opens in a visit, arcs of light connect
 verse to verse at random across an empty axis, a few a second and then a flood, until the whole
 spectrum stands (the data is usually quicker, from the cache; the screen stays until the picture
-is full, then fades over the page); then the axis lights up book by book from Genesis to
-Revelation, every arc grows from its source verse to its target, and the chrome comes in piece
-by piece over the next seconds. Each screen keeps a
+is full, then fades over the page). Then, on every load, the axis lights up book by book from
+Genesis to Revelation, every arc grows from its source verse to its target, and the chrome
+comes in piece by piece over the next seconds. Each screen keeps a
 little of that: the Reader's threads draw themselves from the verses to the spine when a
 chapter opens, the verse card's miniature draws its arcs when it opens, and the arcs grow out
-again when you come back to them. A phone that reloads the page on return lands quietly, and
-readers who prefer reduced motion get every screen at once.
+again when you come back to them. Readers who prefer reduced motion get every screen at once.
 
 ## Languages
 

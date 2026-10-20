@@ -1,11 +1,11 @@
 import { INTRO_SESSION_KEY } from './preference-keys.ts';
 
 /**
- * Whether this visit has already arrived: the loading screen's spectrum and the interface's
- * four-second arrival play once, the first time the app opens in a session. A phone that puts
- * the page away and reloads it whole on return is returning, not arriving, and gets the page
- * at once. Storage can refuse (private browsing); then every load is an arrival, which is no
- * worse than before.
+ * Whether this visit has already arrived: the loading screen holds its spectrum once, the
+ * first time the app opens in a session (the page's own reveal plays on every load). A phone
+ * that puts the page away and reloads it whole on return is returning, not arriving, and gets
+ * past the loading screen as soon as the data is here. Storage can refuse (private browsing);
+ * then every load is an arrival, which is no worse than before.
  */
 export function hasArrived(): boolean {
   try {

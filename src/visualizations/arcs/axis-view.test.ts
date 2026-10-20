@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { clampView, fullView, MIN_VIEW_SPAN, panView, revealRange, zoomView } from './axis-view.ts';
+import {
+  clampView,
+  fitRange,
+  fullView,
+  MIN_VIEW_SPAN,
+  panView,
+  reachOf,
+  revealRange,
+  zoomView,
+} from './axis-view.ts';
 
 const TOTAL = 31102;
 
@@ -35,5 +44,23 @@ describe('axis view', () => {
     const view = { start: 0, end: 1000 };
     expect(revealRange(view, 10, 20, TOTAL)).toBe(view);
     expect(revealRange(view, 5000, 5010, TOTAL)).toEqual({ start: 4505, end: 5505 });
+  });
+
+  it('fits a range with room around it, never narrower than a chapter or so', () => {
+    const wide = fitRange(1000, 9000, TOTAL);
+    expect(wide.start).toBeLessThan(1000);
+    expect(wide.end).toBeGreaterThan(9000);
+    expect(wide.end - wide.start).toBeCloseTo(8000 * 1.16);
+    const narrow = fitRange(500, 501, TOTAL);
+    expect(narrow.end - narrow.start).toBeCloseTo(120 * 1.16);
+    expect(fitRange(0, TOTAL, TOTAL)).toEqual(fullView(TOTAL));
+  });
+
+  it("measures a passage's reach from its arcs' endpoints", () => {
+    expect(reachOf({ start: 100, end: 104 }, [])).toEqual({ start: 100, end: 105 });
+    expect(reachOf({ start: 100, end: 104 }, Float32Array.of(102.5, 40, 102.5, 9000))).toEqual({
+      start: 40,
+      end: 9000,
+    });
   });
 });

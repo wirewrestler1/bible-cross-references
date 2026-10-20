@@ -18,8 +18,8 @@ import { Credits } from '../visualizations/shared/components/Credits.tsx';
 import { TranslationMenu } from '../visualizations/shared/components/TranslationMenu.tsx';
 import { FirstVisitGuide } from '../shared/ui/FirstVisitGuide.tsx';
 import { Mark } from '../shared/ui/Mark.tsx';
-import { hasArrived, rememberArrival } from '../shared/lib/arrival.ts';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
+import type { Visualization } from '../visualizations/visualization.ts';
 import {
   resetTranslation,
   translationLoader,
@@ -54,18 +54,11 @@ const [HOME] = VIEWS;
 const ARRIVAL_MS = 4800;
 
 export function Explorer({ core }: { readonly core: VizCore }) {
-  // The arrival: once per visit, the chrome comes in after the arcs have grown, piece by piece,
-  // over the first seconds (see VizPage.module.css); a return gets the page at once. Decided
-  // while rendering, before the arcs remember the arrival as theirs; the chrome waits unseen
-  // ('pending') through the arcs' first build, which can hold the page for a moment, and its
-  // clock starts on the first frame after, in step with the arcs' own.
-  const [arrival] = useState(() => !hasArrived());
-  const [arriving, setArriving] = useState<'pending' | 'true' | null>(arrival ? 'pending' : null);
-  useEffect(() => {
-    if (arrival) {
-      rememberArrival();
-    }
-  }, [arrival]);
+  // The arrival: on every load, the chrome comes in after the arcs have grown, piece by piece,
+  // over the first seconds (see VizPage.module.css). The chrome waits unseen ('pending')
+  // through the arcs' first build, which can hold the page for a moment, and its clock starts
+  // on the first frame after, in step with the arcs' own.
+  const [arriving, setArriving] = useState<'pending' | 'true' | null>('pending');
   useEffect(() => {
     if (arriving === null) {
       return undefined;
@@ -279,6 +272,11 @@ export function Explorer({ core }: { readonly core: VizCore }) {
     />
   );
 
+  // The picture at the top of every passage card: the arcs', small, in whichever view.
+  const passagePicture = (VIEWS as readonly Visualization[])
+    .map((view) => view.PassagePicture)
+    .find((picture) => picture !== undefined);
+
   return (
     <>
       {VIEWS.map((view) => {
@@ -310,7 +308,6 @@ export function Explorer({ core }: { readonly core: VizCore }) {
               <view.Component
                 data={data}
                 active={isActive}
-                arrival={arrival}
                 passage={passage}
                 onNavigate={(target) => {
                   navigate({ ...location, view: view.id, passage: target });
@@ -343,6 +340,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
                     import.meta.env.SITE_URL,
                   ).href
                 }
+                passagePicture={passagePicture}
                 passageLinks={(target) =>
                   VIEWS.filter((other) => other !== view).map((other) => (
                     <InAppLink

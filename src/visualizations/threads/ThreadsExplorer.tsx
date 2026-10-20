@@ -60,6 +60,7 @@ export function ThreadsExplorer({
   translationMenu,
   passageLinks,
   shareUrl,
+  passagePicture,
 }: VisualizationProps) {
   const { t } = useLocalization();
   const [direction, setDirection] = useState<ThreadDirection>('outgoing');
@@ -133,6 +134,7 @@ export function ThreadsExplorer({
             onSelect={onNavigate}
             onClose={closePanel}
             shareUrl={shareUrl}
+            picture={passagePicture}
             onPreview={(connection) => {
               setPreview(connection && passage && { passage, connection });
             }}

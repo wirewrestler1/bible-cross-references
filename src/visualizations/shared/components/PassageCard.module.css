@@ -7,45 +7,6 @@
   min-block-size: 0;
 }
 
-/* The passage's own links, small: the first thing the sheet shows at its lowest height. */
-.mini {
-  display: block;
-  flex: none;
-  inline-size: 100%;
-  block-size: 4.5rem;
-  margin-block-start: var(--space-1);
-}
-
-.miniAxis {
-  stroke: rgb(232 230 223 / 0.18);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.miniHere {
-  fill: var(--color-accent);
-}
-
-/* Each arc of the miniature draws itself from the passage outward when the card opens. */
-.miniArc {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: mini-draw 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes mini-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .miniArc {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-}
-
 .header {
   display: flex;
   align-items: flex-start;
@@ -209,6 +170,76 @@
 
 .spectrum:has([aria-pressed='true']) .band:not([aria-pressed='true']) {
   opacity: 0.3;
+}
+
+/* The genres' names and counts, under the spectrum. */
+.genreKeys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-1) 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.keyCount {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The books reached: pills in their genre's colour, each with its count. */
+.books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-block-start: var(--space-2);
+}
+
+.book {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: baseline;
+  padding: 2px var(--space-2);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.book:hover,
+.book[aria-pressed='true'] {
+  background: color-mix(in srgb, currentColor 24%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.books:has([aria-pressed='true']) .book:not([aria-pressed='true']) {
+  opacity: 0.45;
+}
+
+.bookCount {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The list is grouped under the books it lands in. */
+.bookHead {
+  margin: var(--space-3) 0 0;
+  padding-inline: var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bookHead:first-child {
+  margin-block-start: var(--space-1);
 }
 
 .list {

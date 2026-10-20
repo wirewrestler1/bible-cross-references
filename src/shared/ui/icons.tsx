@@ -10,6 +10,7 @@ import {
   LuChevronDown,
   LuChevronLeft,
   LuChevronRight,
+  LuMaximize,
   LuCopy,
   LuEllipsisVertical,
   LuGithub,
@@ -68,6 +69,8 @@ export const ReadingIcon = decorative(LuBookOpenText);
 export const PreviousIcon = decorative(LuChevronLeft);
 export const NextIcon = decorative(LuChevronRight);
 export const ExpandIcon = decorative(LuChevronDown);
+/** Back to the whole canon, from a zoomed-in window. */
+export const WholeIcon = decorative(LuMaximize);
 export const CloseIcon = decorative(LuX);
 
 // Actions

@@ -1,4 +1,12 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState,
+  type JSXElementConstructor,
+  type ReactNode,
+} from 'react';
+import { BOOKS, type BookId } from '../../../core/bible/books.ts';
 import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
 import {
   chapterPassageOf,
@@ -31,11 +39,11 @@ import {
 } from '../connections.ts';
 import type { LinkFilter } from '../link-filter.ts';
 import { canCopy, copyQuote, quotePassage, type PassageQuote } from '../passage-quote.ts';
+import type { PassagePictureProps } from '../passage-picture.ts';
 import { GENRE_COLORS, GENRE_HEX } from '../palette.ts';
 import { verseNotes } from '../verse-notes.ts';
 import type { VizData } from '../viz-data.ts';
 import { useLocalization, type Localization } from '../../../i18n/use-locale.tsx';
-import { MiniArcs } from './MiniArcs.tsx';
 import { OriginalWordsSection } from './OriginalWordsSection.tsx';
 import styles from './PassageCard.module.css';
 
@@ -54,6 +62,8 @@ interface PassageCardProps {
   readonly onPreview?: (connection: Connection | null) => void;
   /** A passage's address on the published site, for copied quotes. */
   readonly shareUrl: (passage: Passage) => string;
+  /** The picture at the top: the passage's own links as a small piece of a visualization. */
+  readonly picture?: JSXElementConstructor<PassagePictureProps> | undefined;
 }
 
 /** What the list under the chips shows. */
@@ -203,9 +213,17 @@ function describeLandingNote(
   }
 }
 
-/** The surer links first; among equals, canonical order. */
-function byWeight(a: Connection, b: Connection): number {
-  return b.link.votes - a.link.votes || a.otherStart - b.otherStart || a.here - b.here;
+/** By the canon's order of the books they land in; within a book, the surer links first. */
+function byBookThenWeight(
+  a: Connection & { readonly bookOrdinal: number },
+  b: Connection & { readonly bookOrdinal: number },
+): number {
+  return (
+    a.bookOrdinal - b.bookOrdinal ||
+    b.link.votes - a.link.votes ||
+    a.otherStart - b.otherStart ||
+    a.here - b.here
+  );
 }
 
 /**
@@ -224,6 +242,7 @@ export function PassageCard({
   onClose,
   onPreview,
   shareUrl,
+  picture: Picture,
 }: PassageCardProps) {
   const { t, books, n, genreName } = useLocalization();
   const { versification, crossReferences, verseGenres } = data;
@@ -237,7 +256,8 @@ export function PassageCard({
       ),
     [crossReferences.index, passage, versification, filter, verseGenres],
   );
-  const range = passageRange(passage, versification);
+  // Kept while the passage stays: the picture starts its drawing over when these change.
+  const range = useMemo(() => passageRange(passage, versification), [passage, versification]);
   const book = versification.bookAt(range.start);
   const genre = getBookGenre(book.id);
   const previous = neighbor(passage, -1, versification);
@@ -248,17 +268,27 @@ export function PassageCard({
   const position = isVerse
     ? t('card.position')(n(ref.verse), n(versification.verseCountOf(book.id, ref.chapter) ?? 0))
     : t('card.position')(n(ref.chapter), n(versification.chapterCountOf(book.id)));
-  const all = [...connections.outgoing, ...connections.incoming];
+  const all = useMemo(() => [...connections.outgoing, ...connections.incoming], [connections]);
+  // A connection pointed at, in the picture or the list: both show it, and so does the host.
+  const [pointed, setPointed] = useState<Connection | null>(null);
+  const point = (connection: Connection | null) => {
+    setPointed(connection);
+    onPreview?.(connection);
+  };
 
   return (
     <div className={styles.card}>
-      <MiniArcs
-        connections={all}
-        here={range}
-        verseCount={versification.verseCount}
-        verseGenres={verseGenres}
-        label={t('card.miniArcs')(reference)}
-      />
+      {Picture !== undefined && (
+        <Picture
+          data={data}
+          connections={all}
+          here={range}
+          label={t('card.miniArcs')(reference)}
+          pointed={pointed}
+          onPoint={point}
+          onSelect={onSelect}
+        />
+      )}
       <header className={styles.header}>
         <div className={styles.heading}>
           <p className={styles.eyebrow}>
@@ -314,7 +344,7 @@ export function PassageCard({
         connections={connections}
         actions={actions}
         onSelect={onSelect}
-        onPreview={onPreview}
+        onPreview={point}
         shareUrl={shareUrl}
       />
     </div>
@@ -356,6 +386,7 @@ function CardBody({
         : 'out',
   );
   const [genreFilter, setGenreFilter] = useState<number | null>(null);
+  const [bookFilter, setBookFilter] = useState<BookId | null>(null);
   const [limit, setLimit] = useState(INITIAL_ITEMS);
 
   const direction =
@@ -367,12 +398,25 @@ function CardBody({
     counts[genre] = (counts[genre] ?? 0) + 1;
   }
   const present = GENRES.filter((genre) => (counts[genre.ordinal] ?? 0) > 0);
+  // The books the chosen direction reaches, in the canon's order, each with its count: what
+  // the passage connects to, at a glance, and a way to narrow the list to one of them.
+  const bookCounts = new Map<BookId, number>();
+  for (const connection of direction ?? []) {
+    const id = versification.bookAt(connection.otherStart).id;
+    bookCounts.set(id, (bookCounts.get(id) ?? 0) + 1);
+  }
+  const reached = BOOKS.filter((candidate) => bookCounts.has(candidate.id));
   const listed = (direction ?? [])
+    .map((connection) => ({
+      ...connection,
+      bookOrdinal: versification.bookAt(connection.otherStart).ordinal,
+    }))
     .filter(
       (connection) =>
-        genreFilter === null || elementAt(verseGenres, connection.otherStart) === genreFilter,
+        (genreFilter === null || elementAt(verseGenres, connection.otherStart) === genreFilter) &&
+        (bookFilter === null || versification.bookAt(connection.otherStart).id === bookFilter),
     )
-    .toSorted(byWeight);
+    .toSorted(byBookThenWeight);
   const visible = listed.slice(0, limit);
 
   const chips: readonly { readonly mode: Mode; readonly label: string }[] = [
@@ -465,6 +509,45 @@ function CardBody({
           ))}
         </div>
       )}
+      {direction !== null && present.length > 0 && (
+        <p className={styles.genreKeys} aria-hidden="true">
+          {present.map((genre) => (
+            <span
+              key={genre.id}
+              className={styles.genreKey}
+              style={{ color: elementAt(GENRE_HEX, genre.ordinal) }}
+            >
+              {genreName(genre.id)}{' '}
+              <span className={styles.keyCount}>{n(counts[genre.ordinal] ?? 0)}</span>
+            </span>
+          ))}
+        </p>
+      )}
+      {direction !== null && reached.length > 0 && (
+        <div className={styles.books} role="group" aria-label={t('card.books')}>
+          {reached.map((reachedBook) => {
+            const count = bookCounts.get(reachedBook.id) ?? 0;
+            const color = elementAt(GENRE_HEX, getBookGenre(reachedBook.id).ordinal);
+            return (
+              <button
+                key={reachedBook.id}
+                type="button"
+                className={styles.book}
+                style={{ color }}
+                aria-pressed={bookFilter === reachedBook.id}
+                aria-label={t('card.book')(books[reachedBook.id].name, n(count))}
+                onClick={() => {
+                  setBookFilter((current) => (current === reachedBook.id ? null : reachedBook.id));
+                  setLimit(INITIAL_ITEMS);
+                }}
+              >
+                {books[reachedBook.id].name}
+                <span className={styles.bookCount}>{n(count)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {mode === 'verses' && (
         <ChapterVerses
@@ -479,7 +562,12 @@ function CardBody({
       {direction !== null && (
         <div className={styles.list}>
           {listed.length === 0 && <p className={styles.muted}>{t('card.none')}</p>}
-          {visible.map((connection) => {
+          {visible.map((connection, index) => {
+            const landing = versification.bookAt(connection.otherStart);
+            const previousLanding = index > 0 ? visible[index - 1] : undefined;
+            const firstOfBook =
+              previousLanding === undefined ||
+              versification.bookAt(previousLanding.otherStart).id !== landing.id;
             const note = landingNote(connection, versification, !isVerse);
             const other = formatVerseIndexRange(
               versification,
@@ -490,68 +578,78 @@ function CardBody({
             const color = elementAt(GENRE_HEX, elementAt(verseGenres, connection.otherStart));
             const kind = linkKindId(connection.link.kind);
             return (
-              <div
-                key={`${String(connection.link.id)}-${connection.direction}`}
-                className={styles.row}
-                onPointerEnter={(event) => {
-                  if (event.pointerType === 'mouse') onPreview?.(connection);
-                }}
-                onPointerLeave={() => {
-                  onPreview?.(null);
-                }}
-              >
-                <button
-                  type="button"
-                  className={styles.rowButton}
-                  onClick={() => {
-                    onSelect(versePassage(connection.otherStart));
+              <Fragment key={`${String(connection.link.id)}-${connection.direction}`}>
+                {firstOfBook && (
+                  <h3 className={styles.bookHead} style={{ color }}>
+                    {books[landing.id].name}
+                  </h3>
+                )}
+                <div
+                  className={styles.row}
+                  onPointerEnter={(event) => {
+                    if (event.pointerType === 'mouse') onPreview?.(connection);
                   }}
-                  onFocus={() => {
-                    onPreview?.(connection);
-                  }}
-                  onBlur={() => {
+                  onPointerLeave={() => {
                     onPreview?.(null);
                   }}
                 >
-                  <span
-                    className={styles.dot}
-                    style={{ background: color, color }}
-                    aria-hidden="true"
-                  />
-                  <span className={styles.rowMain}>
-                    <span className={styles.rowHead}>
-                      <strong className={styles.rowRef}>{other}</strong>
-                      {note !== null && (
-                        <span className={styles.note}>
-                          {describeLandingNote(note, versification, localization)}
-                        </span>
-                      )}
-                      <span className={styles.kind} data-kind={kind} title={t(`kind.${kind}.note`)}>
-                        {t(`kind.${kind}`)}
-                      </span>
-                    </span>
-                    <ConnectionText
-                      translation={translation}
-                      versification={versification}
-                      start={connection.otherStart}
-                      end={connection.otherEnd}
+                  <button
+                    type="button"
+                    className={styles.rowButton}
+                    onClick={() => {
+                      onSelect(versePassage(connection.otherStart));
+                    }}
+                    onFocus={() => {
+                      onPreview?.(connection);
+                    }}
+                    onBlur={() => {
+                      onPreview?.(null);
+                    }}
+                  >
+                    <span
+                      className={styles.dot}
+                      style={{ background: color, color }}
+                      aria-hidden="true"
                     />
-                  </span>
-                </button>
-                <CopyQuoteButton
-                  reference={other}
-                  quote={() =>
-                    quotePassage({
-                      translation,
-                      versification,
-                      names: books,
-                      start: connection.otherStart,
-                      end: connection.otherEnd,
-                      url: shareUrl(versePassage(connection.otherStart)),
-                    })
-                  }
-                />
-              </div>
+                    <span className={styles.rowMain}>
+                      <span className={styles.rowHead}>
+                        <strong className={styles.rowRef}>{other}</strong>
+                        {note !== null && (
+                          <span className={styles.note}>
+                            {describeLandingNote(note, versification, localization)}
+                          </span>
+                        )}
+                        <span
+                          className={styles.kind}
+                          data-kind={kind}
+                          title={t(`kind.${kind}.note`)}
+                        >
+                          {t(`kind.${kind}`)}
+                        </span>
+                      </span>
+                      <ConnectionText
+                        translation={translation}
+                        versification={versification}
+                        start={connection.otherStart}
+                        end={connection.otherEnd}
+                      />
+                    </span>
+                  </button>
+                  <CopyQuoteButton
+                    reference={other}
+                    quote={() =>
+                      quotePassage({
+                        translation,
+                        versification,
+                        names: books,
+                        start: connection.otherStart,
+                        end: connection.otherEnd,
+                        url: shareUrl(versePassage(connection.otherStart)),
+                      })
+                    }
+                  />
+                </div>
+              </Fragment>
             );
           })}
           {listed.length > limit && (

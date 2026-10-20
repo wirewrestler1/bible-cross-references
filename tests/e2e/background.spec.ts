@@ -8,9 +8,12 @@ import { ACTIVE, PANEL, waitForApp } from './helpers.ts';
  * memory by its weight, so this is what stands between the reader and watching it load again.
  */
 
-/** The arcs' two canvases (WebGL and the overlay), as `width×height` in device pixels. */
+/**
+ * The stage's two canvases (WebGL and the overlay), as `width×height` in device pixels. The
+ * card's small picture is a canvas too, but a small one that stays as it is.
+ */
 async function arcCanvasSizes(page: Page): Promise<string[]> {
-  return page.locator('div[data-view="arcs"] canvas').evaluateAll((canvases) =>
+  return page.locator('div[data-view="arcs"] [role="application"] canvas').evaluateAll((canvases) =>
     canvases.map((element) => {
       const canvas = element as HTMLCanvasElement;
       return `${String(canvas.width)}×${String(canvas.height)}`;

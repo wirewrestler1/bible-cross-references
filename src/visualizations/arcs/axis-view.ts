@@ -50,3 +50,38 @@ export function interpolateView(from: AxisView, to: AxisView, progress: number):
     end: from.end + (to.end - from.end) * progress,
   };
 }
+
+/** Room around a fitted range, as a share of its span on each side. */
+const FIT_MARGIN = 0.08;
+/** A fitted window is never narrower than this many verses: a lone verse still shows its chapter. */
+const FIT_MIN_SPAN = 120;
+
+/**
+ * The window that fits a range with a little room around it: a verse's reach, so its arcs are
+ * large and the books they land in are named on the axis. Never narrower than a chapter or so,
+ * never wider than the axis.
+ */
+export function fitRange(start: number, end: number, total: number): AxisView {
+  const span = Math.max(end - start, FIT_MIN_SPAN);
+  const center = (start + end) / 2;
+  const half = (span * (1 + 2 * FIT_MARGIN)) / 2;
+  return clampView({ start: center - half, end: center + half }, total);
+}
+
+/**
+ * How far a passage reaches: itself and every end of its links, from the arcs' endpoints
+ * (source and target positions along the axis, in verse units). A passage with no links
+ * reaches only itself.
+ */
+export function reachOf(
+  range: { readonly start: number; readonly end: number },
+  endpoints: Iterable<number>,
+): { readonly start: number; readonly end: number } {
+  let start = range.start;
+  let end = range.end + 1;
+  for (const at of endpoints) {
+    if (at < start) start = at;
+    if (at > end) end = at;
+  }
+  return { start, end };
+}

@@ -5,6 +5,7 @@ import { versePassage, type Passage } from '../../../core/bible/passage.ts';
 import { verseIndex } from '../../../test-utils/fixtures.ts';
 import { createVizData } from '../../../test-utils/viz-data.ts';
 import { DEFAULT_LINK_FILTER } from '../link-filter.ts';
+import type { PassagePictureProps } from '../passage-picture.ts';
 import { PassageCard } from './PassageCard.tsx';
 
 const JOHN_3_16 = verseIndex('John', 3, 16);
@@ -25,6 +26,24 @@ const DATA = createVizData(
   ]),
 );
 
+/** A stand-in for the host's picture: it shows the label and lets a test point at a link. */
+function Picture({ label, connections, onPoint }: PassagePictureProps) {
+  return (
+    <svg role="img" aria-label={label}>
+      {connections.map((connection) => (
+        <title
+          key={`${String(connection.link.id)}-${connection.direction}`}
+          onPointerEnter={() => {
+            onPoint(connection);
+          }}
+        >
+          {connection.direction}
+        </title>
+      ))}
+    </svg>
+  );
+}
+
 function renderPanel(passage: Passage = versePassage(JOHN_3_16), props = {}) {
   const onSelect = vi.fn();
   const onClose = vi.fn();
@@ -36,6 +55,7 @@ function renderPanel(passage: Passage = versePassage(JOHN_3_16), props = {}) {
       onSelect={onSelect}
       onClose={onClose}
       shareUrl={(target) => `https://example.org/?ref=${target.kind}`}
+      picture={Picture}
       {...props}
     />,
   );
@@ -66,11 +86,13 @@ describe('PassageCard', () => {
     expect(screen.queryByText(/But God proves His love/)).toBeNull();
   });
 
-  it('draws the passage’s own links small, above the headline', () => {
-    renderPanel();
-    const mini = screen.getByRole('img', { name: 'The links of John 3:16, drawn small' });
-    // One arc per link, out and in.
-    expect(mini.querySelectorAll('path')).toHaveLength(2);
+  it('shows the host’s picture of the passage’s links above the headline, and lets it point', async () => {
+    const onPreview = vi.fn();
+    renderPanel(undefined, { onPreview });
+    const picture = screen.getByRole('img', { name: 'The links of John 3:16, drawn small' });
+    expect(picture.querySelectorAll('title')).toHaveLength(2);
+    await userEvent.hover(picture.querySelector('title') as Element);
+    expect(onPreview).toHaveBeenCalledWith(expect.objectContaining({ direction: 'outgoing' }));
   });
 
   it('says where the passage sits in its chapter', () => {
@@ -140,6 +162,52 @@ describe('PassageCard', () => {
     expect(screen.getByText(/But God proves His love/)).toBeDefined();
     await userEvent.click(pauline);
     expect(pauline.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('names the books the links reach, with counts, as pills that narrow the list', async () => {
+    renderPanel();
+    const pills = screen.getByRole('group', { name: 'Narrow to a book' });
+    const romans = within(pills).getByRole('button', { name: 'Romans: 1' });
+    expect(romans.getAttribute('aria-pressed')).toBe('false');
+    await userEvent.click(romans);
+    expect(romans.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText(/But God proves His love/)).toBeDefined();
+    await userEvent.click(romans);
+    expect(romans.getAttribute('aria-pressed')).toBe('false');
+    // What points in reaches Genesis instead.
+    await userEvent.click(screen.getByRole('tab', { name: '1 points in' }));
+    expect(within(pills).getByRole('button', { name: 'Genesis: 1' })).toBeDefined();
+    expect(within(pills).queryByRole('button', { name: 'Romans: 1' })).toBeNull();
+  });
+
+  it('groups the list under the books it lands in, in the order of the canon', () => {
+    const data = createVizData(
+      [
+        { from: JOHN_3_16, to: ROM_5_8, votes: 50 },
+        { from: JOHN_3_16, to: GEN_1_1, votes: 10 },
+        { from: JOHN_3_16, to: verseIndex('Rom', 8, 32), votes: 60 },
+      ],
+      new Map([[JOHN_3_16, 'For God so loved the world…']]),
+    );
+    render(
+      <PassageCard
+        data={data}
+        passage={versePassage(JOHN_3_16)}
+        filter={DEFAULT_LINK_FILTER}
+        onSelect={vi.fn()}
+        onClose={vi.fn()}
+        shareUrl={() => 'https://example.org/'}
+      />,
+    );
+    const headings = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+    expect(headings).toEqual(['Genesis', 'Romans']);
+    // Within Romans, the surer link first.
+    const rows = screen
+      .getAllByRole('button', { name: /^(Genesis|Romans) / })
+      .map((b) => b.textContent);
+    expect(rows[0]).toMatch(/^Genesis 1:1/);
+    expect(rows[1]).toMatch(/^Romans 8:32/);
+    expect(rows[2]).toMatch(/^Romans 5:8/);
   });
 
   it('shows the first of a long list, and the rest on request', async () => {

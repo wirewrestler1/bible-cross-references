@@ -14,8 +14,6 @@ interface ArcsStageProps {
   readonly data: VizData;
   /** Whether it's on screen; hidden, it doesn't draw. */
   readonly active: boolean;
-  /** Whether the visit is arriving: then the arcs unfold when first shown. */
-  readonly arrival: boolean;
   /** Links that pass the filter, drawn as the background. */
   readonly linkIds: Int32Array;
   readonly filter: LinkFilter;
@@ -23,18 +21,28 @@ interface ArcsStageProps {
   /** A connection pointed at in the details panel: its arc and its whole passage stand out. */
   readonly preview: Connection | null;
   readonly onSelect: (passage: Passage | null) => void;
+  /** The window moved in or out: zoomed, the host offers a way back to the whole canon. */
+  readonly onZoomChange?: (zoomed: boolean) => void;
+  /** Hands the host what it can ask of the stage, once the stage is up. */
+  readonly onControls?: (controls: ArcsStageControls) => void;
+}
+
+export interface ArcsStageControls {
+  /** Back to the whole canon. */
+  readonly resetView: () => void;
 }
 
 /** The arc diagram: a WebGL layer for arcs, a 2D overlay for the axis, and a hover tooltip. */
 export function ArcsStage({
   data,
   active,
-  arrival,
   linkIds,
   filter,
   focus,
   preview,
   onSelect,
+  onZoomChange,
+  onControls,
 }: ArcsStageProps) {
   const { t, books, locale } = useLocalization();
   const genres = locale.genres;
@@ -47,6 +55,12 @@ export function ArcsStage({
   const controllerRef = useRef<ArcsController | null>(null);
   const size = useElementSize(containerRef);
   const [hover, setHover] = useState<ArcHover | null>(null);
+  const zoomChange = useEffectEvent((zoomed: boolean) => {
+    onZoomChange?.(zoomed);
+  });
+  const controls = useEffectEvent((given: ArcsStageControls) => {
+    onControls?.(given);
+  });
   const select = useEffectEvent((passage: Passage | null) => {
     onSelect(passage);
   });
@@ -62,7 +76,6 @@ export function ArcsStage({
       container,
       glCanvas,
       overlayCanvas,
-      arrival,
       versification: data.versification,
       names: namesRef.current.books,
       genreNames: namesRef.current.genres,
@@ -73,13 +86,21 @@ export function ArcsStage({
       onClear: () => {
         select(null);
       },
+      onViewChange: (full) => {
+        zoomChange(!full);
+      },
     });
     controllerRef.current = controller;
+    controls({
+      resetView: () => {
+        controller.resetView();
+      },
+    });
     return () => {
       controller.dispose();
       controllerRef.current = null;
     };
-  }, [data.versification, arrival]); // The arrival is decided once per visit: never a remake.
+  }, [data.versification]);
 
   useEffect(() => {
     namesRef.current = { books, genres };

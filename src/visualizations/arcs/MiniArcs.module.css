@@ -1,0 +1,20 @@
+/* The passage's own links as a small piece of the big picture, at the top of its card: the
+   first thing the sheet shows at its lowest height. */
+.frame {
+  position: relative;
+  flex: none;
+  inline-size: 100%;
+  block-size: 7.25rem;
+  margin-block-start: var(--space-1);
+}
+
+.canvas {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  touch-action: manipulation;
+}
+
+.canvas[data-pointing] {
+  cursor: pointer;
+}
