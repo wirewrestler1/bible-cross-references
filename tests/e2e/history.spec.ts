@@ -63,6 +63,9 @@ test.describe('browser history', () => {
   });
 
   test('Forward returns to the language that followed it', async ({ page }) => {
+    // Three full page loads, each fetching the merged links and a Bible: on a CI runner drawing
+    // with a software renderer that is more than the usual budget allows.
+    test.slow();
     await page.goto('./?lang=pt');
     await waitForApp(page);
     await chooseLanguage(page, 'en');
