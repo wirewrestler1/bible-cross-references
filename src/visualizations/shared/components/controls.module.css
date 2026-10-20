@@ -168,6 +168,15 @@
   font-size: 0.8125rem;
 }
 
+/* Beside a translation that carries the deuterocanon: the one thing that tells the texts apart
+   for a reader who came for those books. */
+.choiceNote {
+  padding-inline-start: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
 .indicator {
   inline-size: 0.4rem;
   block-size: 0.4rem;

@@ -71,6 +71,9 @@ export const uk: LocaleMessages = {
   'menu.filters.tip': 'Підказка: торкніться жанру в легенді, щоб приховати або показати його.',
   'menu.filters.reset': 'Скинути фільтри',
 
+  'attribution.web':
+    'Текст Писання: World English Bible (WEB), суспільне надбання, eBible.org. Із ' +
+    'второканонічними книгами в грецькій нумерації.',
   'attribution.bsb':
     'Біблійний текст: Berean Standard Bible (BSB), переданий у суспільне надбання.',
   'attribution.kjv':
@@ -97,6 +100,7 @@ export const uk: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, за ліцензією CC BY-SA 4.0. ' +
     'Зміни: в одному вірші пробіл перед двокрапкою пересунуто; жодного слова не змінено.',
   'license.publicDomain': 'Суспільне надбання',
+  'menu.translation.deuterocanon': 'із второканонічними книгами',
   'menu.translation': 'Переклад',
   'menu.translation.failed': (name) => `Не вдалося завантажити ${name}.`,
   'menu.translation.error': (message) => `${message} Перевірте з’єднання й спробуйте ще раз.`,

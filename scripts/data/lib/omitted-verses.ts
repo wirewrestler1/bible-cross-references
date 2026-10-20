@@ -65,8 +65,70 @@ export const CRITICAL_TEXT_OMISSIONS: ReadonlySet<string> = new Set([
  * compiler asks which of the two this edition is, which is a question whoever adds it can
  * answer and nobody else can.
  */
+/**
+ * Verse numbers the deuterocanon's Greek numbering skips, which the World English Bible leaves
+ * empty or out: twenty-four in Sirach written as empty lines, and fifteen more (three in Greek
+ * Esther, twelve in Sirach) absent from the file altogether. Standard editions keep the gaps
+ * so that every other verse keeps its number — Sirach 1:5 and 1:7 are the expansions of the
+ * longer Greek text, not in the earliest manuscripts — and so does the versification here.
+ * Listed verse by verse, as the omissions above are, so the import refuses any other blank.
+ */
+export const WEB_NUMBERING_GAPS: ReadonlySet<string> = new Set([
+  'EsthGr.4.6',
+  'EsthGr.9.5',
+  'EsthGr.9.30',
+  'Sir.1.5',
+  'Sir.1.7',
+  'Sir.1.21',
+  'Sir.3.19',
+  'Sir.10.21',
+  'Sir.11.15',
+  'Sir.11.16',
+  'Sir.13.14',
+  'Sir.16.15',
+  'Sir.16.16',
+  'Sir.17.5',
+  'Sir.17.9',
+  'Sir.17.16',
+  'Sir.17.18',
+  'Sir.17.21',
+  'Sir.18.3',
+  'Sir.19.18',
+  'Sir.19.19',
+  'Sir.19.21',
+  'Sir.20.3',
+  'Sir.20.32',
+  'Sir.22.9',
+  'Sir.22.10',
+  'Sir.23.28',
+  'Sir.24.18',
+  'Sir.24.24',
+  'Sir.25.12',
+  'Sir.26.19',
+  'Sir.26.20',
+  'Sir.26.21',
+  'Sir.26.22',
+  'Sir.26.23',
+  'Sir.26.24',
+  'Sir.26.25',
+  'Sir.26.26',
+  'Sir.26.27',
+]);
+
+/**
+ * The verse numbers a translation's file may leave out altogether, rather than write as empty
+ * lines: the gaps of the Greek numbering, which the WEB writes both ways. A critical-text
+ * omission is always an empty line in eBible's files, so it is not granted this.
+ */
+export function absentLinesAllowed(translationId: TranslationId): ReadonlySet<string> {
+  return translationId === 'web' ? WEB_NUMBERING_GAPS : NO_OMISSIONS;
+}
+
 const NO_OMISSIONS: ReadonlySet<string> = new Set();
 const OMISSIONS_ALLOWED: Readonly<Record<TranslationId, ReadonlySet<string>>> = {
+  // The WEB follows the critical text in the New Testament, and carries the deuterocanon with
+  // the Greek numbering's gaps.
+  web: new Set([...CRITICAL_TEXT_OMISSIONS, ...WEB_NUMBERING_GAPS]),
   bsb: CRITICAL_TEXT_OMISSIONS,
   vbl: CRITICAL_TEXT_OMISSIONS,
   kjv: NO_OMISSIONS,
@@ -95,14 +157,28 @@ export function omittedVerseNotices(
         `Textus Receptus edition it should have no blanks at all.`,
     );
   }
-  return omitted.length > 0
-    ? [
-        createNotice(
-          'info',
-          'Verses without text: the translation omits them (they are absent from the earliest ' +
-            'manuscripts) and gives them in footnotes instead.',
-          omitted,
-        ),
-      ]
-    : [];
+  const gaps = omitted.filter((osisId) => WEB_NUMBERING_GAPS.has(osisId));
+  const critical = omitted.filter((osisId) => !WEB_NUMBERING_GAPS.has(osisId));
+  return [
+    ...(critical.length > 0
+      ? [
+          createNotice(
+            'info',
+            'Verses without text: the translation omits them (they are absent from the earliest ' +
+              'manuscripts) and gives them in footnotes instead.',
+            critical,
+          ),
+        ]
+      : []),
+    ...(gaps.length > 0
+      ? [
+          createNotice(
+            'info',
+            'Verse numbers the Greek numbering of the deuterocanon skips; kept as empty verses ' +
+              'so that every other verse keeps its number.',
+            gaps,
+          ),
+        ]
+      : []),
+  ];
 }

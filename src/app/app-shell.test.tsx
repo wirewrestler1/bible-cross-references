@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DebugPage } from '../features/debug/DebugPage.tsx';
 import { debugDataLoader } from '../features/debug/debug-data.ts';
 import { mount } from '../shared/lib/mount.tsx';
+import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import {
   createCrossReferenceColumns,
   createTranslationFile,
@@ -47,9 +48,10 @@ function serve({ failing = false } = {}) {
     if (failing) {
       return Promise.reject(new Error('offline'));
     }
+    // The debug page loads the default translation, which the fixture file has to name.
     const body = String(input).includes('cross-references')
       ? CROSS_REFERENCES
-      : createTranslationFile();
+      : { ...createTranslationFile(), translationId: DEFAULT_TRANSLATION_ID };
     return Promise.resolve(new Response(JSON.stringify(body)));
   });
   vi.stubGlobal('fetch', fetch);
@@ -272,7 +274,7 @@ describe('the debug dataset loader', () => {
     const fetch = serve();
     debugDataLoader.reset();
     const data = await debugDataLoader.load();
-    expect(data.translation.translation.manifest.id).toBe('bsb');
+    expect(data.translation.translation.manifest.id).toBe(DEFAULT_TRANSLATION_ID);
     expect(data.crossReferences).toHaveLength(1);
     expect(fetch).toHaveBeenCalledTimes(2);
   });

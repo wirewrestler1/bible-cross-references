@@ -139,9 +139,9 @@ describe('explorerUrl', () => {
 
   it('names the translation unless it is the default, so a shared link keeps it', () => {
     const passage = { passage: JOHN_3_16, filter: DEFAULT_LINK_FILTER, locale: 'en' } as const;
-    expect(explorerUrl(ROUTES[0], { ...passage, translation: 'bsb' }, '/', kjv)).toBe(
-      '/?ref=John.3.16',
-    );
+    expect(
+      explorerUrl(ROUTES[0], { ...passage, translation: DEFAULT_TRANSLATION_ID }, '/', kjv),
+    ).toBe('/?ref=John.3.16');
     expect(explorerUrl(ROUTES[0], { ...passage, translation: 'kjv' }, '/', kjv)).toBe(
       '/?ref=John.3.16&t=kjv',
     );
@@ -159,24 +159,24 @@ describe('explorerUrl', () => {
       locale: 'en',
     } as const;
     // A quote of the default translation has to open in it, whatever its reader usually reads.
-    expect(explorerUrl(ROUTES[0], quoted, '/', kjv, null)).toBe('/?ref=John.3.16&t=bsb');
-    expect(parse('/?ref=John.3.16&t=bsb', '/', 'kjv').translation).toBe('bsb');
+    expect(explorerUrl(ROUTES[0], quoted, '/', kjv, null)).toBe('/?ref=John.3.16&t=web');
+    expect(parse('/?ref=John.3.16&t=web', '/', 'kjv').translation).toBe('web');
   });
 
   it('keeps a URL on the text it shows, whichever translation the reader prefers', () => {
-    // Someone who usually reads the KJV, following a link into the BSB: every link the app then
-    // builds has to carry the BSB, or going back or reloading would switch the text under them.
+    // Someone who usually reads the KJV, following a link into the WEB: every link the app then
+    // builds has to carry the WEB, or going back or reloading would switch the text under them.
     const reading = {
       passage: JOHN_3_16,
       filter: DEFAULT_LINK_FILTER,
-      translation: 'bsb',
+      translation: 'web',
       locale: 'en',
     } as const;
     const url = explorerUrl(ROUTES[0], reading, '/', kjv, plainTranslationFor('kjv'));
-    expect(url).toBe('/?ref=John.3.16&t=bsb');
-    expect(parse(url, '/', 'kjv').translation).toBe('bsb');
+    expect(url).toBe('/?ref=John.3.16&t=web');
+    expect(parse(url, '/', 'kjv').translation).toBe('web');
     // While a reader is on their own translation, their links stay plain.
-    expect(plainTranslationFor('bsb')).toBe('bsb');
+    expect(plainTranslationFor('web')).toBe('web');
     expect(plainTranslationFor('kjv')).toBeNull();
   });
 

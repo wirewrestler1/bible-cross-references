@@ -45,6 +45,9 @@ export const pt: LocaleMessages = {
   'menu.filters.tip': 'Dica: toque num gênero na legenda para ocultá-lo ou exibi-lo.',
   'menu.filters.reset': 'Restaurar filtros',
 
+  'attribution.web':
+    'Texto bíblico: World English Bible (WEB), domínio público, eBible.org. Com os ' +
+    'deuterocanônicos, numerados como o grego os numera.',
   'attribution.bsb': 'Texto bíblico: Berean Standard Bible (BSB), dedicada ao domínio público.',
   'attribution.kjv':
     'Texto bíblico: King James Version (Authorized Version), texto de 1769. Em domínio público ' +
@@ -72,6 +75,7 @@ export const pt: LocaleMessages = {
     'Alterações: um espaço antes dos dois-pontos foi movido em um versículo; nenhuma palavra ' +
     'foi alterada.',
   'license.publicDomain': 'Domínio público',
+  'menu.translation.deuterocanon': 'com os deuterocanônicos',
   'menu.translation': 'Tradução',
   'menu.translation.failed': (name) => `Não foi possível carregar ${name}.`,
   'menu.translation.error': (message) => `${message} Verifique sua conexão e tente novamente.`,

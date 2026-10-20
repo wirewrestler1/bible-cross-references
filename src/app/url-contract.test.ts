@@ -69,7 +69,7 @@ const DEFAULTS: UrlState = {
   ref: null,
   minVotes: 4,
   hidden: [],
-  translation: 'bsb',
+  translation: DEFAULT_TRANSLATION_ID,
   locale: 'en',
 };
 
@@ -137,6 +137,7 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   // The translation.
   ['/bible-cross-references/?t=kjv', { translation: 'kjv' }],
   ['/bible-cross-references/?t=bsb', { translation: 'bsb' }],
+  ['/bible-cross-references/?t=web', { translation: 'web' }],
   ['/bible-cross-references/?t=blivre', { translation: 'blivre' }],
   ['/bible-cross-references/?t=luther1912', { translation: 'luther1912' }],
   ['/bible-cross-references/?t=riveduta1927', { translation: 'riveduta1927' }],

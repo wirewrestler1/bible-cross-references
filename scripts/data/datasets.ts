@@ -72,6 +72,7 @@ function ebibleTranslation(id: TranslationId): DatasetBuilder {
 
 /** One builder per translation: the compiler enforces that every translation ID has one. */
 const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
+  web: ebibleTranslation('web'),
   bsb: {
     outputPath: translationDatasetPath('bsb'),
     build: async (readSource) => {

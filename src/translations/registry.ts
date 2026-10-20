@@ -2,6 +2,30 @@ import type { TranslationId } from '../core/datasets/ids.ts';
 import type { TranslationManifest } from './translation-manifest.ts';
 
 const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
+  web: {
+    id: 'web',
+    name: 'World English Bible',
+    abbreviation: 'WEB',
+    language: 'en',
+    direction: 'ltr',
+    versification: 'kjv-dc',
+    license: {
+      name: 'Public domain',
+      url: 'https://ebible.org/Scriptures/details.php?id=eng-web',
+      publicDomain: true,
+    },
+    // The one English text here with the whole Orthodox canon, which is why it is the default:
+    // the deuterocanon is the point of this edition of the app, and the text a reader lands on
+    // should have it. "World English Bible" is a trademark of eBible.org, which asks that a
+    // changed text not be called by that name; nothing in the wording is changed here (see
+    // data/raw/README.md for what the build does to it).
+    attribution:
+      'Scripture text: World English Bible (WEB), public domain, eBible.org. With the ' +
+      'deuterocanon, numbered as the Greek numbers it.',
+    homepage: 'https://ebible.org/Scriptures/details.php?id=eng-web',
+    deuterocanon: true,
+    access: 'bundled',
+  },
   bsb: {
     id: 'bsb',
     name: 'Berean Standard Bible',
@@ -141,7 +165,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
 export const TRANSLATION_MANIFESTS: readonly TranslationManifest[] = Object.values(TRANSLATIONS);
 
 /** The translation shown when the user has not picked one. */
-export const DEFAULT_TRANSLATION_ID: TranslationId = 'bsb';
+export const DEFAULT_TRANSLATION_ID: TranslationId = 'web';
 
 export function getTranslationManifest(id: TranslationId): TranslationManifest {
   return TRANSLATIONS[id];

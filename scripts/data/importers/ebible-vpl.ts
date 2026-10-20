@@ -1,5 +1,5 @@
 import { DEUTEROCANONICAL_BOOKS, type BookId } from '../../../src/core/bible/books.ts';
-import { toOsisId, type VerseIndex } from '../../../src/core/bible/verse-ref.ts';
+import { parseOsisId, toOsisId, type VerseIndex } from '../../../src/core/bible/verse-ref.ts';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { getTranslationManifest } from '../../../src/translations/registry.ts';
 import {
@@ -14,8 +14,9 @@ import { BOOK_CODES } from './ebible-book-codes.ts';
 export { BOOK_CODES, DEUTEROCANON_BOOK_CODES, PROTESTANT_BOOK_CODES } from './ebible-book-codes.ts';
 import { stripByteOrderMark } from '../lib/files.ts';
 import { createNotice } from '../lib/notices.ts';
-import { omittedVerseNotices } from '../lib/omitted-verses.ts';
+import { absentLinesAllowed, omittedVerseNotices } from '../lib/omitted-verses.ts';
 import { defectsFor } from '../lib/source-defects.ts';
+import { numberingFor } from '../lib/source-numbering.ts';
 
 /**
  * Importer for eBible.org's verse-per-line editions (`<id>_vpl.zip` → `<id>_vpl.txt`), which every
@@ -133,6 +134,9 @@ export function importEbibleVerseLines(
   /** Verses the edition numbers differently, whose own number was taken out of the text. */
   const renumbered: VerseIndex[] = [];
   const defects = defectsFor(translationId);
+  const numbering = numberingFor(translationId);
+  /** Verses the edition files under another number, as `source → here`. */
+  const refiled: string[] = [];
   /** Verses an entry in `source-defects.ts` took something out of. */
   const corrected: VerseIndex[] = [];
   /** Lines of books outside the canon, by the book's name. */
@@ -161,7 +165,22 @@ export function importEbibleVerseLines(
       if (book === undefined) {
         throw new Error(`${translationId} line ${lineNumber}: unknown book code "${code}".`);
       }
-      const ref = { book, chapter: Number(chapter), verse: Number(verse) };
+      const sourceRef = { book, chapter: Number(chapter), verse: Number(verse) };
+      const sourceId = toOsisId(sourceRef);
+      if (numbering.placeholders.has(sourceId)) {
+        if (verseText.trim() !== '') {
+          throw new Error(
+            `${translationId} line ${lineNumber}: ${sourceId} is listed as an empty placeholder ` +
+              `in source-numbering.ts but carries text: "${verseText.slice(0, 60)}".`,
+          );
+        }
+        return;
+      }
+      const refiledTo = numbering.remaps.get(sourceId);
+      const ref = refiledTo === undefined ? sourceRef : (parseOsisId(refiledTo) ?? sourceRef);
+      if (refiledTo !== undefined) {
+        refiled.push(`${sourceId} → ${refiledTo}`);
+      }
       const index = versification.indexOf(ref);
       if (index === undefined) {
         // Translations that number verses differently (e.g. the World English Bible moves the
@@ -253,14 +272,18 @@ export function importEbibleVerseLines(
     absent.fill(1, range.start, range.end + 1);
   }
 
+  // A verse number the file has no line for at all. Allowed only where the edition's numbering
+  // is known to skip it (the Greek numbering's gaps, some of which the WEB leaves out rather
+  // than writing as empty lines); it then becomes an empty verse, reported with the rest.
+  const absentLines = absentLinesAllowed(translationId);
+  const osisIdAt = (index: VerseIndex) => toOsisId(versification.refAt(index));
   const missing: VerseIndex[] = [];
   const complete = verses.map((verseText, index) => {
-    if (verseText === undefined && absent[index] !== 1) {
+    if (verseText === undefined && absent[index] !== 1 && !absentLines.has(osisIdAt(index))) {
       missing.push(index);
     }
     return verseText ?? '';
   });
-  const osisIdAt = (index: VerseIndex) => toOsisId(versification.refAt(index));
   if (missing.length > 0) {
     throw new Error(
       `${translationId}: ${missing.length} verses are missing, ` +
@@ -271,6 +294,16 @@ export function importEbibleVerseLines(
   // No notice for the books the translation lacks: its manifest already says so, and the
   // verses are left empty rather than reported as omitted.
   const notices: ImportNotice[] = [];
+  if (refiled.length > 0) {
+    notices.push(
+      createNotice(
+        'info',
+        'Verses the edition numbers differently, filed here under the KJV number (see ' +
+          'scripts/data/lib/source-numbering.ts).',
+        refiled,
+      ),
+    );
+  }
   for (const [name, count] of skipped) {
     notices.push(
       createNotice(

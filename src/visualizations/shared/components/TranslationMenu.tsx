@@ -128,6 +128,9 @@ export function TranslationMenu({
                   }}
                 />
                 {translation.name}
+                {translation.deuterocanon && (
+                  <span className={styles.choiceNote}>{t('menu.translation.deuterocanon')}</span>
+                )}
                 <span className={styles.choiceAbbreviation}>{translation.abbreviation}</span>
               </label>
             ))}

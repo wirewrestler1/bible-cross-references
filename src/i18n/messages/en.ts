@@ -59,6 +59,9 @@ export const en = {
   'menu.filters.tip': 'Tip: tap a genre in the legend to hide or show it.',
   'menu.filters.reset': 'Reset filters',
 
+  'attribution.web':
+    'Scripture text: World English Bible (WEB), public domain, eBible.org. With the ' +
+    'deuterocanon, numbered as the Greek numbers it.',
   'attribution.bsb': 'Scripture text: Berean Standard Bible (BSB), dedicated to the public domain.',
   'attribution.kjv':
     'Scripture text: King James Version (Authorized Version), the 1769 text. Public domain in ' +
@@ -85,6 +88,8 @@ export const en = {
     'Changed: a space before a colon was moved in one verse; no word was altered.',
   'license.publicDomain': 'Public domain',
   'menu.translation': 'Translation',
+  // Beside a translation that carries the deuterocanonical books.
+  'menu.translation.deuterocanon': 'with the deuterocanon',
   'menu.translation.failed': (name: string) => `${name} could not be loaded.`,
   'menu.translation.error': (message: string) => `${message} Check your connection and try again.`,
   'menu.language': 'Language',

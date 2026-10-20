@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { BOOKS, PROTESTANT_BOOKS } from '../../../src/core/bible/books.ts';
 import { KJV_CHAPTER_VERSE_COUNTS } from '../../../src/core/bible/kjv-versification.ts';
-import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
+import {
+  CANONICAL_CHAPTER_VERSE_COUNTS,
+  CANONICAL_VERSIFICATION,
+} from '../../../src/core/bible/versification.ts';
+import { WEB_NUMBERING_GAPS } from '../lib/omitted-verses.ts';
 import { PROVENANCE, verseIndex } from '../../../src/test-utils/fixtures.ts';
 import { BOOK_CODES, importEbibleVerseLines } from './ebible-vpl.ts';
 
@@ -376,6 +380,87 @@ describe('the deuterocanon', () => {
     expect(() =>
       importEbibleVerseLines(`${createVerseLines()}TOB 1:1 Tobit.\r\n`, 'kjv', PROVENANCE),
     ).toThrow(/carries Tobit, but the translation's manifest says it has no deuterocanon/);
+  });
+});
+
+/**
+ * The whole canon in the World English Bible's own shape: the deuterocanon present with the
+ * Greek numbering's gaps as empty lines, and the doxology of Romans filed at the end of
+ * chapter 14 with an empty line where the KJV's 16:25 would be.
+ */
+function createWebLines(transform: (line: string) => string | null = (line) => line): string {
+  const refiled = new Map([
+    ['Rom.16.25', 'ROM 14:24'],
+    ['Rom.16.26', 'ROM 14:25'],
+    ['Rom.16.27', 'ROM 14:26'],
+  ]);
+  const lines = BOOKS.flatMap((book) =>
+    CANONICAL_CHAPTER_VERSE_COUNTS[book.id].flatMap((verseCount, chapterOffset) =>
+      Array.from({ length: verseCount }, (_, verseOffset) => {
+        const osisId = `${book.id}.${String(chapterOffset + 1)}.${String(verseOffset + 1)}`;
+        const reference =
+          refiled.get(osisId) ??
+          `${BOOK_CODES[book.id]} ${String(chapterOffset + 1)}:${String(verseOffset + 1)}`;
+        return transform(
+          WEB_NUMBERING_GAPS.has(osisId) ? reference : `${reference} Text of ${reference}.`,
+        );
+      }),
+    ),
+  ).filter((line) => line !== null);
+  return [...lines, 'ROM 16:25', ''].join('\n');
+}
+
+describe('the World English Bible', () => {
+  it('files the doxology of Romans under the KJV numbers, and says so', () => {
+    const file = importEbibleVerseLines(createWebLines(), 'web', PROVENANCE);
+    expect(file.verses[verseIndex('Rom', 16, 25)]).toBe('Text of ROM 14:24.');
+    expect(file.verses[verseIndex('Rom', 16, 27)]).toBe('Text of ROM 14:26.');
+    expect(file.verses[verseIndex('Rom', 14, 23)]).toBe('Text of ROM 14:23.');
+    expect(file.notices[0]).toMatchObject({
+      level: 'info',
+      count: 3,
+      examples: ['Rom.14.24 → Rom.16.25', 'Rom.14.25 → Rom.16.26', 'Rom.14.26 → Rom.16.27'],
+    });
+  });
+
+  it('keeps the gaps of the Greek numbering as empty verses, apart from the omissions', () => {
+    const file = importEbibleVerseLines(createWebLines(), 'web', PROVENANCE);
+    expect(file.verses[verseIndex('Sir', 1, 5)]).toBe('');
+    expect(file.verses[verseIndex('Sir', 1, 6)]).toBe('Text of SIR 1:6.');
+    expect(file.verses[verseIndex('Tob', 4, 15)]).toBe('Text of TOB 4:15.');
+    expect(file.notices).toHaveLength(2);
+    expect(file.notices[1]?.message).toContain('Greek numbering');
+    expect(file.notices[1]?.count).toBe(WEB_NUMBERING_GAPS.size);
+  });
+
+  it('accepts a gap of the Greek numbering left out of the file altogether', () => {
+    const file = importEbibleVerseLines(
+      createWebLines((line) => (line === 'SIR 1:5' ? null : line)),
+      'web',
+      PROVENANCE,
+    );
+    expect(file.verses[verseIndex('Sir', 1, 5)]).toBe('');
+    expect(file.notices[1]?.count).toBe(WEB_NUMBERING_GAPS.size);
+  });
+
+  it('still refuses any other verse left out of the file', () => {
+    expect(() =>
+      importEbibleVerseLines(
+        createWebLines((line) => (line.startsWith('SIR 1:6 ') ? null : line)),
+        'web',
+        PROVENANCE,
+      ),
+    ).toThrow(/1 verses are missing, e\.g\. Sir\.1\.6/);
+  });
+
+  it('refuses a placeholder line that carries text', () => {
+    expect(() =>
+      importEbibleVerseLines(
+        createWebLines().replace('ROM 16:25\n', 'ROM 16:25 Stray words.\n'),
+        'web',
+        PROVENANCE,
+      ),
+    ).toThrow(/Rom\.16\.25 is listed as an empty placeholder/);
   });
 });
 

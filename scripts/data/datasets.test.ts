@@ -2,9 +2,12 @@ import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { isDeuterocanonical } from '../../src/core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
-import { toOsisId } from '../../src/core/bible/verse-ref.ts';
+import { parseOsisId, toOsisId } from '../../src/core/bible/verse-ref.ts';
 import type { TranslationId } from '../../src/core/datasets/ids.ts';
-import { defectsFor } from './lib/source-defects.ts';
+import { defectsFor, type DefectiveTranslationId } from './lib/source-defects.ts';
+import { SOURCE_NUMBERING } from './lib/source-numbering.ts';
+import { WEB_NUMBERING_GAPS } from './lib/omitted-verses.ts';
+import { getTranslationManifest } from '../../src/translations/registry.ts';
 import { DATASET_BUILDERS, type RawSourceContent } from './datasets.ts';
 import { BOOK_CODES as KJV_CODES } from './importers/ebible-vpl.ts';
 import { expectMember, findSource, readSources, type RawSource } from './lib/sources.ts';
@@ -34,12 +37,14 @@ function source(id: string): RawSource {
 }
 
 /**
- * One line per verse of the 66 books, which is what every importer insists on; the
- * deuterocanon is left out, since none of these translations carries it.
+ * One line per verse of the books a translation carries, which is what every importer insists
+ * on: the 66 for most of them, the whole canon for the one with the deuterocanon.
  */
-function everyVerse(render: (index: number) => string): string {
+function everyVerse(render: (index: number) => string, deuterocanon = false): string {
   return Array.from({ length: CANONICAL_VERSIFICATION.verseCount }, (_, index) => index)
-    .filter((index) => !isDeuterocanonical(CANONICAL_VERSIFICATION.bookAt(index).id))
+    .filter(
+      (index) => deuterocanon || !isDeuterocanonical(CANONICAL_VERSIFICATION.bookAt(index).id),
+    )
     .map(render)
     .join('\n');
 }
@@ -68,19 +73,45 @@ const BSB = everyVerse((index) => {
  */
 function verseLines(id: TranslationId): string {
   const defects = defectsFor(id);
-  return everyVerse((index) => {
+  const manifest = getTranslationManifest(id);
+  const { remaps, placeholders } = SOURCE_NUMBERING[id as DefectiveTranslationId];
+  // The edition's own numbering: a verse this app keys to one number may be filed under
+  // another in the source, with an empty line left where the app's number would be.
+  const sourceIdOf = new Map([...remaps].map(([source, here]) => [here, source]));
+  const gaps = OMISSIONS_ALLOWED_FOR_FIXTURES[id];
+  const lines = everyVerse((index) => {
     const ref = CANONICAL_VERSIFICATION.refAt(index);
-    const code = KJV_CODES[CANONICAL_VERSIFICATION.bookAt(index).id];
-    const defect = defects.get(toOsisId(ref));
+    const osisId = toOsisId(ref);
+    const source = parseOsisId(sourceIdOf.get(osisId) ?? osisId) ?? ref;
+    const code = KJV_CODES[source.book];
+    const defect = defects.get(osisId);
+    const text = gaps.has(osisId) ? '' : ` ${id} ${String(index)}.`;
     return (
-      `${code} ${String(ref.chapter)}:${String(ref.verse)} ${id} ${String(index)}.` +
+      `${code} ${String(source.chapter)}:${String(source.verse)}${text}` +
       (defect === undefined ? '' : defect.remove)
     );
+  }, manifest.deuterocanon);
+  const placeholderLines = [...placeholders].map((osisId) => {
+    const ref = parseOsisId(osisId);
+    return ref ? `${KJV_CODES[ref.book]} ${String(ref.chapter)}:${String(ref.verse)}` : '';
   });
+  return [lines, ...placeholderLines].join('\n');
 }
+
+/** The blanks each fixture carries: the WEB's are the gaps of the Greek numbering. */
+const OMISSIONS_ALLOWED_FOR_FIXTURES: Readonly<Record<TranslationId, ReadonlySet<string>>> = {
+  web: WEB_NUMBERING_GAPS,
+  bsb: new Set(),
+  kjv: new Set(),
+  blivre: new Set(),
+  luther1912: new Set(),
+  riveduta1927: new Set(),
+  vbl: new Set(),
+};
 
 const CONTENT: Readonly<Record<string, string | Uint8Array>> = {
   bsb: `The Holy Bible, Berean Standard Bible\nVerse\tBerean Standard Bible\n${BSB}`,
+  web: zipSync({ 'eng-web_vpl.txt': strToU8(verseLines('web')) }),
   kjv: zipSync({ 'eng-kjv2006_vpl.txt': strToU8(verseLines('kjv')) }),
   blivre: zipSync({ 'bliv-tr_vpl.txt': strToU8(verseLines('blivre')) }),
   luther1912: zipSync({ 'deu1912_vpl.txt': strToU8(verseLines('luther1912')) }),
@@ -126,6 +157,7 @@ const readSource = (id: string): Promise<RawSourceContent> => {
 describe('DATASET_BUILDERS', () => {
   it('has one builder per dataset the app loads', () => {
     expect(DATASET_BUILDERS.map((builder) => builder.outputPath)).toEqual([
+      'data/translations/web.json',
       'data/translations/bsb.json',
       'data/translations/kjv.json',
       'data/translations/blivre.json',

@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { parseOsisId } from '../../../src/core/bible/verse-ref.ts';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
-import { CRITICAL_TEXT_OMISSIONS, omittedVerseNotices } from './omitted-verses.ts';
+import {
+  CRITICAL_TEXT_OMISSIONS,
+  omittedVerseNotices,
+  WEB_NUMBERING_GAPS,
+} from './omitted-verses.ts';
 
 describe('omittedVerseNotices', () => {
   it('says nothing about a translation with no blank verses', () => {
@@ -89,10 +93,41 @@ describe('omittedVerseNotices', () => {
       },
     );
 
-    it.each(['bsb', 'vbl'] as const)('allows it in %s, which leaves them out', (id) => {
+    it.each(['bsb', 'vbl', 'web'] as const)('allows it in %s, which leaves them out', (id) => {
       const notices = omittedVerseNotices(id, ['Matt.17.21']);
       expect(notices).toHaveLength(1);
       expect(notices[0]?.message).toMatch(/earliest manuscripts/);
+    });
+  });
+
+  /**
+   * The deuterocanon's Greek numbering skips verse numbers, and only the one translation that
+   * carries those books may leave them blank; in the others a blank there could only be a
+   * fault, since the books are not present to begin with.
+   */
+  describe('the gaps of the Greek numbering', () => {
+    it('allows them in the WEB, reported apart from the critical-text omissions', () => {
+      const notices = omittedVerseNotices('web', ['Matt.17.21', 'Sir.1.5', 'EsthGr.9.5']);
+      expect(notices).toHaveLength(2);
+      expect(notices[0]).toMatchObject({ count: 1, examples: ['Matt.17.21'] });
+      expect(notices[1]).toMatchObject({ count: 2, examples: ['Sir.1.5', 'EsthGr.9.5'] });
+      expect(notices[1]?.message).toMatch(/Greek numbering/);
+    });
+
+    it('refuses any other blank in the deuterocanon', () => {
+      expect(() => omittedVerseNotices('web', ['Sir.1.6'])).toThrow(/Sir\.1\.6/);
+    });
+
+    it('refuses them in a translation without the deuterocanon', () => {
+      expect(() => omittedVerseNotices('kjv', ['Sir.1.5'])).toThrow(/Sir\.1\.5/);
+    });
+
+    it('names only verses that exist', () => {
+      for (const osisId of WEB_NUMBERING_GAPS) {
+        const ref = parseOsisId(osisId);
+        expect(ref, osisId).toBeDefined();
+        expect(ref && CANONICAL_VERSIFICATION.indexOf(ref), osisId).toBeDefined();
+      }
     });
   });
 });

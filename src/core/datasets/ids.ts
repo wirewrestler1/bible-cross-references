@@ -6,6 +6,7 @@
  */
 
 export const TRANSLATION_IDS = [
+  'web',
   'bsb',
   'kjv',
   'blivre',

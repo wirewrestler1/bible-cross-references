@@ -48,6 +48,9 @@ export const de: LocaleMessages = {
     'Tipp: Tippen Sie in der Legende auf eine Gattung, um sie aus- oder einzublenden.',
   'menu.filters.reset': 'Filter zurücksetzen',
 
+  'attribution.web':
+    'Bibeltext: World English Bible (WEB), gemeinfrei, eBible.org. Mit den deuterokanonischen ' +
+    'Büchern in der Zählung der Septuaginta.',
   'attribution.bsb':
     'Bibeltext: Berean Standard Bible (BSB), von den Herausgebern gemeinfrei gestellt.',
   'attribution.kjv':
@@ -75,6 +78,7 @@ export const de: LocaleMessages = {
     'Geändert: In einem Vers wurde ein Leerzeichen vor einem Doppelpunkt verschoben; kein Wort ' +
     'wurde verändert.',
   'license.publicDomain': 'Gemeinfrei',
+  'menu.translation.deuterocanon': 'mit den deuterokanonischen Büchern',
   'menu.translation': 'Übersetzung',
   'menu.translation.failed': (name) => `${name} konnte nicht geladen werden.`,
   'menu.translation.error': (message) =>
