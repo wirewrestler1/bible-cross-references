@@ -1,13 +1,13 @@
 import { GENRES, type GenreId } from '../../core/bible/genres.ts';
 
 /** Background of every visualization (the dark theme's `--color-background`). */
-export const VIZ_SURFACE = '#0d0d0d';
+export const VIZ_SURFACE = '#05070d';
 
 /**
  * Genre colors for the dark surface, in canonical genre order: warm Old Testament, cool New
  * Testament, and a crimson for the deuterocanon between them.
  *
- * Validated with the dataviz skill's palette validator (`--mode dark --surface #0d0d0d`), all
+ * Validated with the dataviz skill's palette validator (`--mode dark --surface #05070d`), all
  * eleven in this order:
  * - lightness band and chroma floor pass;
  * - worst adjacent-genre CVD ΔE is 8.0 (target ≥ 8), and worst normal-vision ΔE is 15.3 (floor ≥ 15);

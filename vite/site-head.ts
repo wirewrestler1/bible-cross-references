@@ -18,6 +18,7 @@ import {
   ROOT_DIR,
   SITE_ORIGIN,
   socialImageOf,
+  SURFACE,
   translationsOf,
   type Page,
 } from './site.ts';
@@ -51,7 +52,7 @@ export function siteHead(): Plugin {
         { tag: 'link', attrs: { rel: 'icon', href: `${base}favicon.ico`, sizes: '32x32' } },
         { tag: 'link', attrs: { rel: 'icon', href: `${base}favicon.svg`, type: 'image/svg+xml' } },
         { tag: 'link', attrs: { rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png` } },
-        { tag: 'meta', attrs: { name: 'theme-color', content: '#0d0d0d' } },
+        { tag: 'meta', attrs: { name: 'theme-color', content: SURFACE } },
       ];
       // The datasets start downloading with the page instead of after the scripts have run. Not
       // when the offline cache serves the page: it has them already, and Chrome can't hand a

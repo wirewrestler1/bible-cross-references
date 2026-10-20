@@ -1,13 +1,7 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { SITE_COPY } from '../src/i18n/site-copy.ts';
-import { atEndOfHead, pageOf, ROOT_DIR } from './site.ts';
-
-/** The logo's strokes (two arcs over a baseline), read from the favicon, its single source. */
-const LOGO_PATHS = [
-  ...readFileSync(resolve(ROOT_DIR, 'public/favicon.svg'), 'utf8').matchAll(/\sd="([^"]+)"/g),
-].map((match) => match[1] ?? '');
+import { MARK_PATHS, MARK_VIEWBOX } from '../src/shared/ui/mark-paths.ts';
+import { atEndOfHead, pageOf, SURFACE } from './site.ts';
 
 function escapeText(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -15,12 +9,13 @@ function escapeText(value: string): string {
 
 /** Styles for the first frame, inlined so that it needs no stylesheet or script. */
 const FIRST_FRAME_CSS = `
-html{background:#0d0d0d;color-scheme:dark}
+html{background:${SURFACE};color-scheme:dark}
 body{margin:0}
-.first-frame{position:fixed;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;color:#ecebe6;font:500 19px/1.3 'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif}
+.first-frame{position:fixed;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;color:#e8e6df;font:500 19px/1.3 'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif}
 .first-frame svg{width:76px;height:76px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .first-frame .arc{stroke-dasharray:1;animation:first-frame-draw 2s ease-in-out infinite}
 .first-frame .arc+.arc{animation-delay:.3s}
+.first-frame .arc+.arc+.arc{animation-delay:.6s}
 @keyframes first-frame-draw{0%{stroke-dashoffset:1}45%,65%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
 @media (prefers-reduced-motion:reduce){.first-frame .arc{animation:none}}
 noscript{position:fixed;inset-inline:0;bottom:32px;padding:0 24px;color:#9a9890;font:14px/1.5 system-ui,sans-serif;text-align:center}
@@ -55,10 +50,12 @@ export function firstFrame(): Plugin {
             `${context.path}: expected an empty ${root} to fill with the first frame.`,
           );
         }
-        const [arc = '', innerArc = '', baseline = ''] = LOGO_PATHS;
+        // The arcs draw themselves, outermost first; the baseline and the cross stand still.
         const logo =
-          `<svg viewBox="0 0 32 32" aria-hidden="true"><path class="arc" pathLength="1" d="${arc}"/>` +
-          `<path class="arc" pathLength="1" d="${innerArc}"/><path d="${baseline}"/></svg>`;
+          `<svg viewBox="${MARK_VIEWBOX}" aria-hidden="true">` +
+          MARK_PATHS.arcs.map((d) => `<path class="arc" pathLength="1" d="${d}"/>`).join('') +
+          [MARK_PATHS.baseline, ...MARK_PATHS.cross].map((d) => `<path d="${d}"/>`).join('') +
+          '</svg>';
         const stylesheets: string[] = [];
         const withoutStylesheets = html.replace(/\s*<link rel="stylesheet"[^>]*>/g, (link) => {
           stylesheets.push(link.trim());

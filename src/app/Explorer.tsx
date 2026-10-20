@@ -17,6 +17,7 @@ import { DEFAULT_LINK_FILTER } from '../visualizations/shared/link-filter.ts';
 import { Credits } from '../visualizations/shared/components/Credits.tsx';
 import { TranslationMenu } from '../visualizations/shared/components/TranslationMenu.tsx';
 import { FirstVisitGuide } from '../shared/ui/FirstVisitGuide.tsx';
+import { Mark } from '../shared/ui/Mark.tsx';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
 import {
   resetTranslation,
@@ -225,6 +226,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
           setGeneration((value) => value + 1);
         }}
       >
+        <Mark className={styles.mark} />
         <span className={styles.fullName}>{t('app.name')}</span>
         <span className={styles.shortName}>{t('app.name.short')}</span>
       </InAppLink>

@@ -1,13 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <style>
-    .mark { stroke: #0d0d0d; }
+    .mark { stroke: #0b0e18; }
     @media (prefers-color-scheme: dark) {
-      .mark { stroke: #f5f5f4; }
+      .mark { stroke: #e8e6df; }
     }
   </style>
-  <g class="mark" stroke-width="2.6" stroke-linecap="round">
-    <path d="M3.5 18.5a9.5 9.5 0 0 1 19 0" />
-    <path d="M13 18.5a7.75 7.75 0 0 1 15.5 0" />
-    <path d="M3 23h26" />
+  <g class="mark" stroke-width="2.4" stroke-linecap="round">
+    <path d="M3.5 19.5a12.5 12.5 0 0 1 25 0" />
+    <path d="M8.5 19.5a7.5 7.5 0 0 1 15 0" />
+    <path d="M12.5 19.5a3.5 3.5 0 0 1 7 0" />
+    <path d="M3 24h26" />
+    <path d="M16 2v4.5" />
+    <path d="M13.75 3.75h4.5" />
   </g>
 </svg>

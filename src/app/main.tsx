@@ -1,3 +1,4 @@
+import '@fontsource-variable/fraunces/wght.css';
 import { translationDatasetPath } from '../core/datasets/paths.ts';
 import { mount } from '../shared/lib/mount.tsx';
 import { VizDataBoundary } from '../visualizations/shared/components/VizDataBoundary.tsx';

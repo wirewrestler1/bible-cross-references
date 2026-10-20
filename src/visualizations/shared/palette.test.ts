@@ -42,6 +42,7 @@ describe('the genre palette', () => {
   });
 
   it('draws on the dark surface the app uses', () => {
-    expect(VIZ_SURFACE).toBe('#0d0d0d');
+    // The same value as `--color-background` (dark) in global.css and SURFACE in vite/site.ts.
+    expect(VIZ_SURFACE).toBe('#05070d');
   });
 });

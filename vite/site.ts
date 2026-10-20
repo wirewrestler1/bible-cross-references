@@ -71,6 +71,14 @@ export const ORIGINAL = {
  */
 export const SOCIAL_IMAGE_SIZE = { width: 2400, height: 1260 } as const;
 
+/**
+ * The page's surface: a near-black blue, deep space for the arcs to be the light in. The same
+ * value as `--color-background` (dark) in global.css and `VIZ_SURFACE` in palette.ts, which
+ * the WebGL clear colour and the glow's composite use; written out where no stylesheet reaches —
+ * the first frame, the manifest and the theme-color meta.
+ */
+export const SURFACE = '#05070d';
+
 interface AnyPage {
   /** The HTML file, relative to the project root, e.g. `pt/threads/index.html`. */
   readonly entry: string;

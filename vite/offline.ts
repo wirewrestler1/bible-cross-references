@@ -8,7 +8,7 @@ import { sharedDatasetPaths } from '../src/visualizations/shared/viz-datasets.ts
 import { LOCALE_IDS, type LocaleId } from '../src/i18n/locale-id.ts';
 import { localeManifestFileName, localePathSegment } from '../src/i18n/locale-path.ts';
 import { SITE_COPY } from '../src/i18n/site-copy.ts';
-import { atEndOfHead, PAGE_LIST, pageOf, ROOT_DIR } from './site.ts';
+import { atEndOfHead, PAGE_LIST, pageOf, ROOT_DIR, SURFACE } from './site.ts';
 
 /** Files from `public/` that the offline cache keeps with each version. */
 const OFFLINE_PUBLIC_FILES = [
@@ -54,8 +54,8 @@ function webAppManifest(locale: LocaleId) {
     scope: './',
     lang: SITE_COPY[locale].hreflang,
     display: 'standalone',
-    background_color: '#0d0d0d',
-    theme_color: '#0d0d0d',
+    background_color: SURFACE,
+    theme_color: SURFACE,
     icons: [
       { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
       { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

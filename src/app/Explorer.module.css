@@ -12,19 +12,31 @@
 
 .title {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: 1.125rem;
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
   font-weight: 500;
+  letter-spacing: -0.005em;
   white-space: nowrap;
 }
 
 .home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   color: inherit;
   text-decoration: none;
 }
 
 .home:hover {
   color: var(--color-text-muted);
+}
+
+/* The mark, a little taller than a capital, in the accent: the one warm light in the chrome. */
+.mark {
+  flex: none;
+  inline-size: 1.5em;
+  block-size: 1.5em;
+  color: var(--color-accent);
 }
 
 /* The name is the one part of the header that can give way: below this the switch, the search
