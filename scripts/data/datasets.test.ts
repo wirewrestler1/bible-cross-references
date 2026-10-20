@@ -1,4 +1,5 @@
 import { strToU8, zipSync } from 'fflate';
+import { createZTextModule } from './lib/ztext-module.ts';
 import { describe, expect, it } from 'vitest';
 import { isDeuterocanonical } from '../../src/core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
@@ -122,6 +123,18 @@ const CONTENT: Readonly<Record<string, string | Uint8Array>> = {
       'From Verse\tTo Verse\tVotes\t# CC-BY 2026-01-01\nGen.1.1\tJohn.1.1\t5',
     ),
   }),
+  swe1917: createZTextModule({
+    ot: [
+      '<div type="book" osisID="Gen"/>',
+      '<chapter osisID="Gen.1"/>',
+      'I begynnelsen<note type="crossReference"><reference osisRef="John.1.1">Joh 1,1</reference></note>',
+    ],
+    nt: [
+      '<div type="book" osisID="John"/>',
+      '<chapter osisID="John.1"/>',
+      'I begynnelsen var Ordet',
+    ],
+  }),
   'stepbible-tagnt-mat-jhn': 'Mat.1.1#01=NKO\tx\ty\tG0976=N-NSF\tz',
   'stepbible-tagnt-act-rev': '',
   'stepbible-tahot-gen-deu': 'Gen.1.1#01=L\tx\ty\tz\t{H7225G}\tHNcfsa',
@@ -165,6 +178,7 @@ describe('DATASET_BUILDERS', () => {
       'data/translations/riveduta1927.json',
       'data/translations/vbl.json',
       'data/cross-references/openbible.json',
+      'data/cross-references/swe1917.json',
       'data/words/stepbible.json',
     ]);
   });

@@ -7,6 +7,14 @@
       "sourceRows": 344799
     }
   },
+  "data/cross-references/swe1917.json": {
+    "sha256": "3362a85512c54577f9614465c640b2b93ac1bffbea65b13533bfb01f1ba24095",
+    "bytes": 323639,
+    "shape": {
+      "links": 10940,
+      "sourceRows": 11284
+    }
+  },
   "data/translations/blivre.json": {
     "sha256": "d136fbb261acc4ca16356d77ee289ee48dba3e65740baae1d98ca6dabea5018d",
     "bytes": 3985599,

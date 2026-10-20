@@ -7,6 +7,11 @@ import {
   type ImportNotice,
 } from '../../../src/core/datasets/formats.ts';
 import { getCrossReferenceSourceManifest } from '../../../src/cross-references/registry.ts';
+import {
+  buildCrossReferenceColumns,
+  linkKey,
+  type VerseLink,
+} from '../lib/cross-reference-columns.ts';
 import { stripByteOrderMark } from '../lib/files.ts';
 import { createNotice } from '../lib/notices.ts';
 
@@ -29,22 +34,6 @@ const VERSE_REMAPS: ReadonlyMap<string, string> = new Map([
   // Some modern editions split 3 John 1:14 into verses 14 and 15; the KJV versification does not.
   ['3John.1.15', '3John.1.14'],
 ]);
-
-interface Link {
-  readonly from: VerseIndex;
-  readonly targetStart: VerseIndex;
-  readonly targetEnd: VerseIndex;
-  readonly votes: number;
-}
-
-function compareLinks(a: Link, b: Link): number {
-  return (
-    a.from - b.from ||
-    b.votes - a.votes ||
-    a.targetStart - b.targetStart ||
-    a.targetEnd - b.targetEnd
-  );
-}
 
 export function importOpenBibleCrossReferences(
   text: string,
@@ -71,7 +60,7 @@ export function importOpenBibleCrossReferences(
     return index;
   };
 
-  const links: Link[] = [];
+  const links: VerseLink[] = [];
   const seen = new Set<string>();
   const duplicates: string[] = [];
   let sourceRowCount = 0;
@@ -90,7 +79,7 @@ export function importOpenBibleCrossReferences(
       throw new Error(`OpenBible line ${lineNumber}: malformed row "${row}".`);
     }
 
-    const link: Link = {
+    const link: VerseLink = {
       from: resolveVerse(fromId, lineNumber),
       targetStart: resolveVerse(targetStartId, lineNumber),
       targetEnd: resolveVerse(targetEndId, lineNumber),
@@ -99,7 +88,7 @@ export function importOpenBibleCrossReferences(
     if (link.targetStart > link.targetEnd) {
       throw new Error(`OpenBible line ${lineNumber}: reversed range "${targetId}".`);
     }
-    const key = `${link.from}:${link.targetStart}:${link.targetEnd}`;
+    const key = linkKey(link);
     if (seen.has(key)) {
       duplicates.push(`line ${lineNumber}: ${fromId} → ${targetId}`);
       return;
@@ -107,15 +96,6 @@ export function importOpenBibleCrossReferences(
     seen.add(key);
     links.push(link);
   });
-
-  links.sort(compareLinks);
-  const offsets = new Array<number>(versification.verseCount + 1).fill(0);
-  for (const link of links) {
-    offsets[link.from + 1] = (offsets[link.from + 1] ?? 0) + 1;
-  }
-  for (let verse = 0; verse < versification.verseCount; verse += 1) {
-    offsets[verse + 1] = (offsets[verse + 1] ?? 0) + (offsets[verse] ?? 0);
-  }
 
   const notices: ImportNotice[] = [];
   if (snapshotDate === null) {
@@ -147,11 +127,6 @@ export function importOpenBibleCrossReferences(
     // say whose data it is and under what licence.
     license: OPENBIBLE.license,
     attribution: OPENBIBLE.attribution,
-    links: {
-      offsets,
-      targetStart: links.map((link) => link.targetStart),
-      targetEnd: links.map((link) => link.targetEnd),
-      votes: links.map((link) => link.votes),
-    },
+    links: buildCrossReferenceColumns(links, versification),
   };
 }

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DebugPage } from '../features/debug/DebugPage.tsx';
 import { debugDataLoader } from '../features/debug/debug-data.ts';
 import { mount } from '../shared/lib/mount.tsx';
+import { CROSS_REFERENCE_SOURCE_MANIFESTS } from '../cross-references/registry.ts';
 import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import {
   createCrossReferenceColumns,
@@ -49,8 +50,10 @@ function serve({ failing = false } = {}) {
       return Promise.reject(new Error('offline'));
     }
     // The debug page loads the default translation, which the fixture file has to name.
-    const body = String(input).includes('cross-references')
-      ? CROSS_REFERENCES
+    // Every registered source is served the same links, under its own id.
+    const url = String(input);
+    const body = url.includes('cross-references')
+      ? { ...CROSS_REFERENCES, sourceId: url.includes('swe1917') ? 'swe1917' : 'openbible' }
       : { ...createTranslationFile(), translationId: DEFAULT_TRANSLATION_ID };
     return Promise.resolve(new Response(JSON.stringify(body)));
   });
@@ -275,8 +278,8 @@ describe('the debug dataset loader', () => {
     debugDataLoader.reset();
     const data = await debugDataLoader.load();
     expect(data.translation.translation.manifest.id).toBe(DEFAULT_TRANSLATION_ID);
-    expect(data.crossReferences).toHaveLength(1);
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(data.crossReferences).toHaveLength(CROSS_REFERENCE_SOURCE_MANIFESTS.length);
+    expect(fetch).toHaveBeenCalledTimes(1 + CROSS_REFERENCE_SOURCE_MANIFESTS.length);
   });
 });
 

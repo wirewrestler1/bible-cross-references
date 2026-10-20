@@ -18,6 +18,27 @@ const CROSS_REFERENCE_SOURCES: Readonly<
     versification: 'kjv-dc',
     enabledByDefault: true,
   },
+  swe1917: {
+    id: 'swe1917',
+    name: 'Swedish Bible 1917 cross-references',
+    description:
+      'The parallel-passage apparatus of the Swedish Bible of 1917 with its Apocrypha of 1921, ' +
+      'from CrossWire’s Swe1917 module: about 11,000 references, some 2,800 of them into or ' +
+      'out of the deuterocanon, where no other open compilation reaches.',
+    license: {
+      name: 'Public domain',
+      url: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=Swe1917',
+      publicDomain: true,
+    },
+    attribution:
+      'Cross-reference data: the apparatus of the Swedish Bible 1917 (Apocrypha 1921), public ' +
+      'domain, from CrossWire’s Swe1917 module (v2.0.1, text by Projekt Runeberg). Modified: ' +
+      're-indexed to this app’s verse numbering; references into chapters the edition numbers ' +
+      'differently are left out.',
+    homepage: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=Swe1917',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
 };
 
 export const CROSS_REFERENCE_SOURCE_MANIFESTS: readonly CrossReferenceSourceManifest[] =

@@ -86,6 +86,16 @@
       "homepage": "https://www.openbible.info/labs/cross-references/"
     },
     {
+      "id": "swe1917",
+      "description": "Swedish Bible 1917 with the 1921 Apocrypha, CrossWire SWORD module (zText) whose cross-reference notes reach the deuterocanon",
+      "url": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/Swe1917.zip",
+      "fileName": "Swe1917.zip",
+      "sha256": "cbee2b4301a6b6b9e11629f7f2ed9e63f877140ea6f83f45a83378680deb2236",
+      "retrievedAt": "2026-10-19",
+      "license": "Public domain",
+      "homepage": "https://crosswire.org/sword/modules/ModInfo.jsp?modName=Swe1917"
+    },
+    {
       "id": "stepbible-tagnt-mat-jhn",
       "description": "Translators Amalgamated Greek NT (Matthew-John), word-per-line with Strongs",
       "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAGNT%20Mat-Jhn%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",

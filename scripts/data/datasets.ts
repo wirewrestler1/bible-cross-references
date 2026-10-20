@@ -16,6 +16,7 @@ import {
 import { importBsbText } from './importers/bsb.ts';
 import { importEbibleVerseLines } from './importers/ebible-vpl.ts';
 import { importOpenBibleCrossReferences } from './importers/openbible.ts';
+import { importSwe1917CrossReferences } from './importers/swe1917.ts';
 import { getWordSourceManifest } from '../../src/words/registry.ts';
 import { importStepBibleWords, type TaggedLanguage } from './importers/stepbible.ts';
 import { expectMember } from './lib/sources.ts';
@@ -110,6 +111,13 @@ const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetB
       const { source, content } = await readSource('openbible');
       const text = extractZipTextEntry(content, 'cross_references.txt');
       return importOpenBibleCrossReferences(text, provenanceOf(source));
+    },
+  },
+  swe1917: {
+    outputPath: crossReferencesDatasetPath('swe1917'),
+    build: async (readSource) => {
+      const { source, content } = await readSource('swe1917');
+      return importSwe1917CrossReferences(content, provenanceOf(source));
     },
   },
 };
