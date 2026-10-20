@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { versePassage, type Passage } from '../core/bible/passage.ts';
-import { KJV_VERSIFICATION as kjv } from '../core/bible/versification.ts';
+import { CANONICAL_VERSIFICATION as kjv } from '../core/bible/versification.ts';
 import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import {
   createLinkFilter,

@@ -15,7 +15,7 @@ export interface VerseRef {
  */
 export type VerseIndex = number;
 
-const OSIS_VERSE_ID_PATTERN = /^([1-3]?[A-Za-z]+)\.(\d+)\.(\d+)$/;
+const OSIS_VERSE_ID_PATTERN = /^([1-4]?[A-Za-z]+)\.(\d+)\.(\d+)$/;
 
 /** Formats a verse as an OSIS ID, e.g. `Gen.1.1`. */
 export function toOsisId(ref: VerseRef): string {

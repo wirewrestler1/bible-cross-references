@@ -1,9 +1,15 @@
 import { elementAt } from '../lib/array.ts';
 import { BOOKS, type Book, type BookId } from './books.ts';
+import { DEUTEROCANON_CHAPTER_VERSE_COUNTS } from './deuterocanon-versification.ts';
 import { KJV_CHAPTER_VERSE_COUNTS } from './kjv-versification.ts';
 import type { VerseIndex, VerseRef } from './verse-ref.ts';
 
-export type VersificationId = 'kjv';
+/**
+ * `kjv-dc`: the KJV numbering for the 66 books, and for the deuterocanon the numbering of the
+ * World English Bible, which follows the Greek. One id for the whole, because a dataset is
+ * either keyed to all of it or to none of it.
+ */
+export type VersificationId = 'kjv-dc';
 
 /** An inclusive range of verse indices. */
 export interface VerseIndexRange {
@@ -63,7 +69,8 @@ export class Versification {
     this.#chapterStarts = chapterStarts;
     this.#bookRanges = bookRanges;
 
-    // Chapter and verse numbers of real versifications fit in a byte (max 150 and 176).
+    // Chapter and verse numbers of real versifications fit in a byte (max 150 and 176; nothing
+    // in the deuterocanon goes past 51 chapters or 97 verses).
     this.#verseBookOrdinals = new Uint8Array(verseCount);
     this.#verseChapters = new Uint8Array(verseCount);
     this.#verseNumbers = new Uint8Array(verseCount);
@@ -148,10 +155,14 @@ export class Versification {
   }
 }
 
-export const KJV_VERSIFICATION = new Versification('kjv', KJV_CHAPTER_VERSE_COUNTS);
+/** The whole canon's table: the KJV counts for the 66 books and the WEB's for the deuterocanon. */
+export const CANONICAL_CHAPTER_VERSE_COUNTS: Readonly<Record<BookId, readonly number[]>> = {
+  ...KJV_CHAPTER_VERSE_COUNTS,
+  ...DEUTEROCANON_CHAPTER_VERSE_COUNTS,
+};
 
 /**
  * The project's canonical coordinate system. Cross-references, analytics, URLs and stored user
  * state are expressed in it, independently of the translation being displayed.
  */
-export const CANONICAL_VERSIFICATION = KJV_VERSIFICATION;
+export const CANONICAL_VERSIFICATION = new Versification('kjv-dc', CANONICAL_CHAPTER_VERSE_COUNTS);

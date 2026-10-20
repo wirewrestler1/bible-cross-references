@@ -1,4 +1,4 @@
-import { BOOKS, type BookId } from '../../../src/core/bible/books.ts';
+import { PROTESTANT_BOOKS, type BookId } from '../../../src/core/bible/books.ts';
 import type { LicenseInfo } from '../../../src/core/datasets/metadata.ts';
 import type { VerseIndex } from '../../../src/core/bible/verse-ref.ts';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
@@ -118,7 +118,7 @@ const LEXICON = {
   gloss: 6,
 } as const;
 
-/** STEPBible's three-letter book codes, in the canonical order of `BOOKS`. */
+/** STEPBible's three-letter book codes, in the canonical order of `PROTESTANT_BOOKS` (it tags the 66). */
 // prettier-ignore
 export const STEP_BOOK_CODES = [
   'Gen', 'Exo', 'Lev', 'Num', 'Deu', 'Jos', 'Jdg', 'Rut', '1Sa', '2Sa', '1Ki', '2Ki', '1Ch', '2Ch',
@@ -129,12 +129,12 @@ export const STEP_BOOK_CODES = [
 ] as const;
 
 function bookIdsByStepCode(): ReadonlyMap<string, BookId> {
-  if (STEP_BOOK_CODES.length !== BOOKS.length) {
+  if (STEP_BOOK_CODES.length !== PROTESTANT_BOOKS.length) {
     throw new Error('STEPBible: the book-code list and the canon have drifted apart.');
   }
   const byCode = new Map<string, BookId>();
   STEP_BOOK_CODES.forEach((code, ordinal) => {
-    const book = BOOKS[ordinal];
+    const book = PROTESTANT_BOOKS[ordinal];
     if (!book) {
       throw new Error(`STEPBible: no book at canonical position ${String(ordinal)}.`);
     }

@@ -1,3 +1,4 @@
+import { isDeuterocanonical, type BookId } from '../core/bible/books.ts';
 import type { VerseIndex } from '../core/bible/verse-ref.ts';
 import type { Versification } from '../core/bible/versification.ts';
 import type {
@@ -65,13 +66,23 @@ export class Translation {
     return this.#verses.length;
   }
 
-  /** Text of the verse, or an empty string if the translation omits it. */
+  /** Text of the verse, or an empty string if the translation omits it or lacks its book. */
   verseText(index: VerseIndex): string {
     return elementAt(this.#verses, index);
   }
 
   isOmitted(index: VerseIndex): boolean {
     return this.verseText(index) === '';
+  }
+
+  /** Whether the translation carries the book at all (every one has the 66; see the manifest). */
+  hasBook(book: BookId): boolean {
+    return this.manifest.deuterocanon || !isDeuterocanonical(book);
+  }
+
+  /** Whether the verse is in a book the translation does not carry. */
+  isAbsent(index: VerseIndex): boolean {
+    return !this.hasBook(this.versification.bookAt(index).id);
   }
 
   /** Finds verses containing `query` (case-insensitive, ignoring quote styles). */

@@ -15,7 +15,7 @@ const WORD_SOURCES: Readonly<Record<WordSourceId, WordSourceManifest>> = {
       'Cambridge. Modified: reduced to the dictionary forms used in each verse, keyed to KJV ' +
       'verse numbering, with psalm superscriptions left out.',
     homepage: 'https://www.STEPBible.org',
-    versification: 'kjv',
+    versification: 'kjv-dc',
   },
 };
 

@@ -37,7 +37,7 @@ export function createCrossReferenceDataset(links: readonly LinkSpec[]): CrossRe
       license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
       attribution: 'Cross-reference data: OpenBible.info (CC BY 4.0).',
       homepage: 'https://www.openbible.info/labs/cross-references/',
-      versification: 'kjv',
+      versification: 'kjv-dc',
       enabledByDefault: true,
     },
     provenance: PROVENANCE,

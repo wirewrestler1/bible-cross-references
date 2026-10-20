@@ -13,7 +13,7 @@ export function createRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
   return renderer;
 }
 
-/** Genre palette as a `vec3[10]` uniform value. */
+/** Genre palette as a `vec3[GENRES.length]` uniform value. */
 export function genrePaletteUniform(): Vector3[] {
   return GENRE_RGB.map(([red, green, blue]) => new Vector3(red, green, blue));
 }

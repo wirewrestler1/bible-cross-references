@@ -1,3 +1,4 @@
+import { getBook } from '../../../core/bible/books.ts';
 import { useMemo } from 'react';
 import { formatDecimal, formatInteger, formatShare } from '../../../shared/lib/format.ts';
 import { KeyValueList } from '../../../shared/ui/KeyValueList.tsx';
@@ -52,7 +53,13 @@ export function TranslationSection({ id, translation }: TranslationSectionProps)
         <h3 className={styles.subheading}>Text statistics</h3>
         <KeyValueList
           items={[
-            { label: 'Books', value: formatInteger(stats.bookCount) },
+            {
+              label: 'Books',
+              value:
+                stats.absentBooks.length === 0
+                  ? formatInteger(stats.bookCount)
+                  : `${formatInteger(stats.bookCount)} of ${formatInteger(stats.bookCount + stats.absentBooks.length)} (no ${stats.absentBooks.map((id) => getBook(id).name).join(', ')})`,
+            },
             { label: 'Chapters', value: formatInteger(stats.chapterCount) },
             { label: 'Verses', value: formatInteger(stats.verseCount) },
             {

@@ -14,6 +14,8 @@ describe('normalizeBookName', () => {
 
   it('turns a leading roman numeral into a digit', () => {
     expect(normalizeBookName('II Kings')).toBe('2kings');
+    expect(normalizeBookName('IV Maccabees')).toBe('4maccabees');
+    expect(normalizeBookName('Ester (griechisch)')).toBe('estergriechisch');
     expect(normalizeBookName('Isaiah')).toBe('isaiah');
   });
 });

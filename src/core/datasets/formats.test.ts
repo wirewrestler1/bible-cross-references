@@ -7,23 +7,23 @@ const roundTrip = (value: unknown): unknown => JSON.parse(JSON.stringify(value))
 describe('dataset file parsing', () => {
   it('accepts a valid translation file', () => {
     const file = createTranslationFile();
-    expect(parseTranslationTextFile(roundTrip(file), { id: 'bsb', versification: 'kjv' })).toEqual(
-      file,
-    );
+    expect(
+      parseTranslationTextFile(roundTrip(file), { id: 'bsb', versification: 'kjv-dc' }),
+    ).toEqual(file);
   });
 
   it('rejects files from another schema version', () => {
-    const file = { ...createTranslationFile(), schemaVersion: 2 };
+    const file = { ...createTranslationFile(), schemaVersion: 3 };
     expect(() =>
-      parseTranslationTextFile(roundTrip(file), { id: 'bsb', versification: 'kjv' }),
-    ).toThrow('schemaVersion: expected one of 1, got 2');
+      parseTranslationTextFile(roundTrip(file), { id: 'bsb', versification: 'kjv-dc' }),
+    ).toThrow('schemaVersion: expected one of 2, got 3');
   });
 
   it('accepts a valid cross-reference file', () => {
     const file = {
       format: 'cross-references',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: {
         url: 'https://example.org',
         sha256: 'a'.repeat(64),
@@ -36,7 +36,7 @@ describe('dataset file parsing', () => {
       links: createCrossReferenceColumns([{ from: 0, to: 1, votes: 3 }], 2),
     };
     expect(
-      parseCrossReferencesFile(roundTrip(file), { id: 'openbible', versification: 'kjv' }),
+      parseCrossReferencesFile(roundTrip(file), { id: 'openbible', versification: 'kjv-dc' }),
     ).toEqual(file);
   });
 
@@ -45,8 +45,8 @@ describe('dataset file parsing', () => {
       parseCrossReferencesFile(
         {
           format: 'cross-references',
-          schemaVersion: 1,
-          versification: 'kjv',
+          schemaVersion: 2,
+          versification: 'kjv-dc',
           provenance: {
             url: '',
             sha256: '',
@@ -58,7 +58,7 @@ describe('dataset file parsing', () => {
           sourceRowCount: 0,
           links: { offsets: [0], targetStart: [], targetEnd: [], votes: ['1'] },
         },
-        { id: 'openbible', versification: 'kjv' },
+        { id: 'openbible', versification: 'kjv-dc' },
       ),
     ).toThrow('links.votes[0]: expected an integer');
   });

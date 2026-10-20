@@ -15,6 +15,7 @@ public/data/
 # Except these: 4-5 MB of archive apiece for one translation is not worth keeping in the
 # repository, so the build downloads them on demand and checks each against its pin in
 # data/sources.json.
+data/raw/eng-web_vpl.zip
 data/raw/eng-kjv2006_vpl.zip
 data/raw/deu1912_vpl.zip
 data/raw/ita1927_vpl.zip

@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { BOOKS } from '../../core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../core/bible/versification.ts';
 import { computeSpineLayout } from './spine-layout.ts';
 
 const layout = computeSpineLayout(CANONICAL_VERSIFICATION, 40, 840, { book: 1, genre: 6 });
 
 describe('computeSpineLayout', () => {
-  it('stacks all 66 books in order within the bounds', () => {
-    expect(layout.segments).toHaveLength(66);
+  it('stacks all the books in order within the bounds', () => {
+    expect(layout.segments).toHaveLength(BOOKS.length);
     expect(layout.segments[0]?.top).toBe(40);
     expect(layout.segments.at(-1)?.bottom).toBeCloseTo(840);
     layout.segments.forEach((segment, index) => {

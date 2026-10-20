@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatVerseIndexRange, formatVerseRange, formatVerseRef } from './reference-format.ts';
-import { KJV_VERSIFICATION } from './versification.ts';
+import { CANONICAL_VERSIFICATION } from './versification.ts';
 import { enBooks } from '../../i18n/books/en.ts';
 
 describe('reference formatting', () => {
@@ -29,7 +29,13 @@ describe('reference formatting', () => {
   });
 
   it('formats index ranges', () => {
-    expect(formatVerseIndexRange(KJV_VERSIFICATION, enBooks, 0, 2)).toBe('Genesis 1:1–3');
-    expect(formatVerseIndexRange(KJV_VERSIFICATION, enBooks, 31101)).toBe('Revelation 22:21');
+    expect(formatVerseIndexRange(CANONICAL_VERSIFICATION, enBooks, 0, 2)).toBe('Genesis 1:1–3');
+    expect(
+      formatVerseIndexRange(
+        CANONICAL_VERSIFICATION,
+        enBooks,
+        CANONICAL_VERSIFICATION.verseCount - 1,
+      ),
+    ).toBe('Revelation 22:21');
   });
 });

@@ -26,7 +26,7 @@ describe('buildArcInstances', () => {
     const instances = buildArcInstances(index, [0], computeVerseGenres(CANONICAL_VERSIFICATION));
     expect(instances.count).toBe(1);
     expect(Array.from(instances.endpoints)).toEqual([gen + 0.5, johnStart + 1.5]);
-    expect(Array.from(instances.genres)).toEqual([0, 5]); // Law → Gospels
+    expect(Array.from(instances.genres)).toEqual([0, 6]); // Law → Gospels
     expect(instances.weights[0]).toBeCloseTo(0.6);
   });
 });

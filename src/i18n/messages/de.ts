@@ -121,6 +121,8 @@ export const de: LocaleMessages = {
   'panel.copy.title': 'Mit Link kopieren',
   'panel.copied': (reference) => `${reference} kopiert`,
   'panel.omitted': (abbreviation) => `In der ${abbreviation} nicht enthalten.`,
+  'text.notInTranslation': (abbreviation) =>
+    `Nicht in der ${abbreviation}. Wählen Sie eine Übersetzung mit den deuterokanonischen Büchern.`,
   'panel.moreVerses': (count, plural) =>
     plural === 1 ? `+ ${count} weiterer Vers` : `+ ${count} weitere Verse`,
   'panel.showAll': (count) => `Alle ${count} anzeigen`,
@@ -177,7 +179,7 @@ export const de: LocaleMessages = {
   'threads.nextChapter': 'Nächstes Kapitel',
   'threads.stage':
     'Fäden von den Versen dieses Kapitels zu den Stellen in der Bibel, auf die ihre ' +
-    'Querverweise zeigen; die Bibel steht als senkrechter Balken aus allen 66 Büchern.',
+    'Querverweise zeigen; die Bibel steht als senkrechter Balken aus allen Büchern.',
   'arcs.connections': (count, plural) =>
     plural === 1 ? `${count} Verknüpfung` : `${count} Verknüpfungen`,
   'arcs.stage':

@@ -1,4 +1,9 @@
-import { BOOKS, getReferenceName, type BookId } from '../../../src/core/bible/books.ts';
+import {
+  BOOKS,
+  DEUTEROCANONICAL_BOOKS,
+  getReferenceName,
+  type BookId,
+} from '../../../src/core/bible/books.ts';
 import { toOsisId, type VerseIndex } from '../../../src/core/bible/verse-ref.ts';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { getTranslationManifest } from '../../../src/translations/registry.ts';
@@ -64,9 +69,15 @@ export function importBsbText(text: string, provenance: DatasetProvenance): Tran
     verses[index] = verseText.trim();
   });
 
+  // The BSB has no deuterocanon (its manifest says so); those verses are left empty.
+  const absent = new Uint8Array(versification.verseCount);
+  for (const book of DEUTEROCANONICAL_BOOKS) {
+    const range = versification.bookRange(book.id);
+    absent.fill(1, range.start, range.end + 1);
+  }
   const missing: VerseIndex[] = [];
   const complete = verses.map((verseText, index) => {
-    if (verseText === undefined) {
+    if (verseText === undefined && absent[index] !== 1) {
       missing.push(index);
     }
     return verseText ?? '';
@@ -79,7 +90,7 @@ export function importBsbText(text: string, provenance: DatasetProvenance): Tran
   }
 
   const omitted = complete.flatMap((verseText, index) =>
-    verseText === '' ? [osisIdAt(index)] : [],
+    verseText === '' && absent[index] !== 1 ? [osisIdAt(index)] : [],
   );
   return {
     format: 'translation-text',

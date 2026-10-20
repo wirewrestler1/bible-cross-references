@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { PROVENANCE, verseIndex } from '../../../src/test-utils/fixtures.ts';
 import { importOpenBibleCrossReferences } from './openbible.ts';
 
@@ -34,7 +35,7 @@ describe('importOpenBibleCrossReferences', () => {
       gen11,
     ]);
     expect(file.links.votes).toEqual([47, 10, 5]);
-    expect(file.links.offsets).toHaveLength(31103);
+    expect(file.links.offsets).toHaveLength(CANONICAL_VERSIFICATION.verseCount + 1);
     expect(file.links.offsets.slice(0, 2)).toEqual([0, 2]);
     expect(file.links.offsets[john11]).toBe(2);
     expect(file.links.offsets[john11 + 1]).toBe(3);

@@ -26,7 +26,7 @@ import {
   type IconComponent,
 } from '../../../shared/ui/icons.tsx';
 import type { Translation } from '../../../translations/translation.ts';
-import { verseTextOrNote } from '../../../translations/verse-text.ts';
+import { verseTextOrNote, type VerseNotes } from '../../../translations/verse-text.ts';
 import {
   collectConnections,
   groupByBook,
@@ -42,6 +42,14 @@ import { PanelSection } from './PanelSection.tsx';
 import type { VizData } from '../viz-data.ts';
 import { useLocalization, type Localization } from '../../../i18n/use-locale.tsx';
 import styles from './PassagePanel.module.css';
+
+/** The notes a verse without text shows, in the reader's language. */
+export function verseNotes(t: Localization['t']): VerseNotes {
+  return {
+    omitted: t('threads.omitted'),
+    notInTranslation: t('text.notInTranslation'),
+  };
+}
 
 interface PassagePanelProps {
   readonly data: VizData;
@@ -154,7 +162,7 @@ function ConnectionText({
   if (start === end) {
     return (
       <span className={styles.snippet} lang={lang} dir={dir}>
-        {verseTextOrNote(translation, start)}
+        {verseTextOrNote(translation, start, verseNotes(t))}
       </span>
     );
   }
@@ -175,7 +183,7 @@ function ConnectionText({
         return (
           <Fragment key={verse}>
             <sup className={styles.verseMark}>{mark}</sup>
-            {verseTextOrNote(translation, verse)}{' '}
+            {verseTextOrNote(translation, verse, verseNotes(t))}{' '}
           </Fragment>
         );
       })}
@@ -273,7 +281,7 @@ export function PassagePanel({
                 lang={translation.manifest.language}
                 dir={translation.manifest.direction}
               >
-                {verseTextOrNote(translation, passage.verse)}
+                {verseTextOrNote(translation, passage.verse, verseNotes(t))}
               </p>
               <CopyQuoteButton
                 reference={formatPassage(passage, versification, books)}
@@ -380,7 +388,9 @@ function ChapterVerses({
           }}
         >
           <span className={styles.verseNumber}>{offset + 1}</span>
-          <span className={styles.snippet}>{verseTextOrNote(translation, verse)}</span>
+          <span className={styles.snippet}>
+            {verseTextOrNote(translation, verse, verseNotes(t))}
+          </span>
           <span className={styles.count}>{n(counts.get(verse) ?? 0)}</span>
         </button>
       ))}

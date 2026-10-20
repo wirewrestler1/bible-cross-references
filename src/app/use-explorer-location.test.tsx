@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { versePassage } from '../core/bible/passage.ts';
-import { KJV_VERSIFICATION } from '../core/bible/versification.ts';
+import { CANONICAL_VERSIFICATION } from '../core/bible/versification.ts';
 import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import { DEFAULT_LINK_FILTER, createLinkFilter } from '../visualizations/shared/link-filter.ts';
 import type { ViewRoute } from './explorer-location.ts';
@@ -13,12 +13,14 @@ const ROUTES: readonly [ViewRoute<'arcs'>, ViewRoute<'threads'>] = [
 ];
 const BASE = import.meta.env.BASE_URL;
 const JOHN_3_16 = versePassage(
-  KJV_VERSIFICATION.indexOf({ book: 'John', chapter: 3, verse: 16 }) ?? 0,
+  CANONICAL_VERSIFICATION.indexOf({ book: 'John', chapter: 3, verse: 16 }) ?? 0,
 );
-const PS_23_1 = versePassage(KJV_VERSIFICATION.indexOf({ book: 'Ps', chapter: 23, verse: 1 }) ?? 0);
+const PS_23_1 = versePassage(
+  CANONICAL_VERSIFICATION.indexOf({ book: 'Ps', chapter: 23, verse: 1 }) ?? 0,
+);
 
 function useLocation() {
-  return useExplorerLocation(ROUTES, KJV_VERSIFICATION, () => DEFAULT_TRANSLATION_ID, 'en');
+  return useExplorerLocation(ROUTES, CANONICAL_VERSIFICATION, () => DEFAULT_TRANSLATION_ID, 'en');
 }
 
 beforeEach(() => {

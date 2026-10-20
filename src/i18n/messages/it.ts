@@ -118,6 +118,8 @@ export const it: LocaleMessages = {
   'panel.copy.title': 'Copia con il link',
   'panel.copied': (reference) => `${reference} copiato`,
   'panel.omitted': (abbreviation) => `Non presente nella ${abbreviation}.`,
+  'text.notInTranslation': (abbreviation) =>
+    `Non è nella ${abbreviation}. Scegli una traduzione che includa i deuterocanonici.`,
   'panel.moreVerses': (count, plural) =>
     plural === 1 ? `+ ${count} altro versetto` : `+ altri ${count} versetti`,
   'panel.showAll': (count) => `Mostra tutti i ${count}`,
@@ -175,7 +177,7 @@ export const it: LocaleMessages = {
   'threads.nextChapter': 'Capitolo successivo',
   'threads.stage':
     'Fili dai versetti di questo capitolo ai punti della Bibbia dove portano i loro riferimenti ' +
-    'incrociati; la Bibbia è la barra verticale con tutti i 66 libri.',
+    'incrociati; la Bibbia è la barra verticale con tutti i libri.',
   'arcs.connections': (count, plural) =>
     plural === 1 ? `${count} collegamento` : `${count} collegamenti`,
   'arcs.stage':

@@ -45,7 +45,7 @@ describe('computeCrossReferenceStats', () => {
     // Targets: John 1:1, Gen 1:1–3, Luke 3:23–38 (16 verses), Gen 50:26 and Exod 1:1.
     expect(stats.targetVerseCount).toBe(22);
     // Connected: those 22 plus the sources Matt 1:1 and Ps 1:1.
-    expect(stats.unconnectedVerses).toHaveLength(31102 - 24);
+    expect(stats.unconnectedVerses).toHaveLength(CANONICAL_VERSIFICATION.verseCount - 24);
   });
 
   it('summarizes votes', () => {

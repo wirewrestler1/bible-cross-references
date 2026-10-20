@@ -24,7 +24,7 @@ function createTranslation() {
 describe('Translation', () => {
   it('returns verse texts and flags omitted verses', () => {
     const translation = createTranslation();
-    expect(translation.verseCount).toBe(31102);
+    expect(translation.verseCount).toBe(CANONICAL_VERSIFICATION.verseCount);
     expect(translation.verseText(JOHN_3_16)).toBe('For God so loved the world…');
     expect(translation.isOmitted(MATT_17_21)).toBe(true);
     expect(translation.isOmitted(JOHN_3_16)).toBe(false);
@@ -34,7 +34,7 @@ describe('Translation', () => {
     const file = { ...createTranslationFile(), verses: ['only one verse'] };
     expect(
       () => new Translation(getTranslationManifest('bsb'), CANONICAL_VERSIFICATION, file),
-    ).toThrow('has 1 verses, expected 31102');
+    ).toThrow(`has 1 verses, expected ${String(CANONICAL_VERSIFICATION.verseCount)}`);
   });
 
   it('searches case-insensitively, ignoring quote styles', () => {
@@ -46,7 +46,7 @@ describe('Translation', () => {
   it('limits results but reports the total', () => {
     const result = createTranslation().search('verse number', 3);
     expect(result.verses).toEqual([1, 2, 3]);
-    expect(result.totalCount).toBe(31102 - 3);
+    expect(result.totalCount).toBe(CANONICAL_VERSIFICATION.verseCount - 3);
   });
 
   it('returns nothing for a blank query', () => {

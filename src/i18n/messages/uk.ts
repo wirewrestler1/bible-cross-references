@@ -146,6 +146,8 @@ export const uk: LocaleMessages = {
   'panel.copy.title': 'Копіювати з посиланням',
   'panel.copied': (reference) => `${reference} скопійовано`,
   'panel.omitted': (abbreviation) => `Відсутній у ${abbreviation}.`,
+  'text.notInTranslation': (abbreviation) =>
+    `Немає в ${abbreviation}. Виберіть переклад із второканонічними книгами.`,
   'panel.moreVerses': (count, plural) =>
     `+ ще ${count} ${formOf(plural, 'вірш', 'вірші', 'віршів')}`,
   'panel.showAll': (count) => `Показати всі ${count}`,
@@ -205,7 +207,7 @@ export const uk: LocaleMessages = {
   'threads.nextChapter': 'Наступна глава',
   'threads.stage':
     'Лінії від віршів цієї глави до місць у Біблії, куди ведуть їхні перехресні ' +
-    'посилання; Біблія показана вертикальною смугою з усіх 66 книг.',
+    'посилання; Біблія показана вертикальною смугою з усіх книг.',
   'arcs.connections': (count, plural) =>
     `${count} ${formOf(plural, 'зв’язок', 'зв’язки', 'зв’язків')}`,
   'arcs.stage':

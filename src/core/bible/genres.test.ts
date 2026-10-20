@@ -3,13 +3,14 @@ import { BOOKS } from './books.ts';
 import { GENRES, getBookGenre, getGenreBooks } from './genres.ts';
 
 describe('GENRES', () => {
-  it('has the 10 standard groups with the expected book counts', () => {
+  it('has the 10 standard groups and the deuterocanon, with the expected book counts', () => {
     expect(GENRES.map((genre) => [genre.id, getGenreBooks(genre.id).length])).toEqual([
       ['law', 5],
       ['history', 12],
       ['poetry', 5],
       ['major-prophets', 5],
       ['minor-prophets', 12],
+      ['deuterocanon', 14],
       ['gospels', 4],
       ['acts', 1],
       ['pauline-epistles', 13],

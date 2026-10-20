@@ -17,7 +17,7 @@ import type { LicenseInfo } from './metadata.ts';
  * File formats of the generated datasets, shared by the data pipeline (which writes them) and the
  * app (which validates them when loading). Bump `DATASET_SCHEMA_VERSION` on any breaking change.
  */
-export const DATASET_SCHEMA_VERSION = 1;
+export const DATASET_SCHEMA_VERSION = 2;
 
 /** Where a dataset came from, so that every number shown in the app can be traced back. */
 export interface DatasetProvenance {

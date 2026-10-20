@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { KJV_VERSIFICATION as kjv } from '../../core/bible/versification.ts';
+import { BOOKS } from '../../core/bible/books.ts';
+import { GENRES } from '../../core/bible/genres.ts';
+import { CANONICAL_VERSIFICATION as kjv } from '../../core/bible/versification.ts';
 import {
   arcPoint,
   bookSegments,
@@ -24,9 +26,9 @@ function seeded(seed: number): () => number {
 const verseGenres = computeVerseGenres(kjv);
 
 describe('bookSegments', () => {
-  it('lays the 66 books end to end across the whole axis', () => {
+  it('lays all the books end to end across the whole axis', () => {
     const segments = bookSegments(kjv);
-    expect(segments).toHaveLength(66);
+    expect(segments).toHaveLength(BOOKS.length);
     expect(segments[0]?.start).toBe(0);
     const last = segments.at(-1);
     expect((last?.start ?? 0) + (last?.width ?? 0)).toBeCloseTo(1, 10);
@@ -39,7 +41,7 @@ describe('bookSegments', () => {
   it('colors Genesis as Law and Revelation as Revelation', () => {
     const segments = bookSegments(kjv);
     expect(segments[0]?.genre).toBe(0);
-    expect(segments.at(-1)?.genre).toBe(9);
+    expect(segments.at(-1)?.genre).toBe(10);
   });
 });
 
@@ -54,7 +56,7 @@ describe('launchFlight', () => {
       expect(flight.to).toBeLessThanOrEqual(1);
       expect(Math.abs(flight.to - flight.from)).toBeGreaterThanOrEqual(0.03 - 1e-9);
       expect(flight.fromGenre).toBeGreaterThanOrEqual(0);
-      expect(flight.toGenre).toBeLessThanOrEqual(9);
+      expect(flight.toGenre).toBeLessThanOrEqual(GENRES.length - 1);
     }
   });
 

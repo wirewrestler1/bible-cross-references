@@ -1,4 +1,4 @@
-import { lookupBook } from './book-lookup.ts';
+import { lookupBook, normalizeBookName } from './book-lookup.ts';
 import type { BookId } from './books.ts';
 import type { BookNames } from '../../i18n/books/types.ts';
 import type { Versification } from './versification.ts';
@@ -36,7 +36,7 @@ export type ReferenceParseResult =
   | { readonly ok: false; readonly error: ReferenceParseError };
 
 /**
- * `<book> <chapter>[<separator><verse>]`, where the book may start with 1–3 or a roman numeral and
+ * `<book> <chapter>[<separator><verse>]`, where the book may start with 1–4 or a roman numeral and
  * the separator is `:`, `.` or whitespace. Matches e.g. `John 3:16`, `1 Cor 13`, `Gen.1.1`.
  *
  * The book is any letters, not only `a`–`z`: `Gênesis 1:1`, `João 3:16` and `Êxodo 3:14` are
@@ -47,12 +47,13 @@ export type ReferenceParseResult =
  * - apostrophes and hyphens, which several languages put inside a book's own name
  *   (`Mısır'dan Çıkış`, `Об'явлення`, `1-а Самуїлова`);
  * - the ordinal markers a numeral takes in Portuguese (`1º Coríntios`);
+ * - parentheses, which several catalogues use for a qualifier (`Ester (griechisch) 1:1`);
  * - the comma German and much of continental Europe put between chapter and verse (`Joh 3,16`).
  *   A comma cannot be part of a book name, so it can only ever mean the separator, and without
  *   it a German reader typing the citation their own Bible prints is told there is no such book.
  */
 const REFERENCE_PATTERN =
-  /^(?<book>(?:[1-3][º°ª]?[\s.-]*)?[\p{L}\p{M}][\p{L}\p{M}\s.'’‘ʼ-]*?)\s*(?<chapter>\d+)(?:\s*[:.,\s]\s*(?<verse>\d+))?$/iu;
+  /^(?<book>(?:[1-4][º°ª]?[\s.-]*)?[\p{L}\p{M}][\p{L}\p{M}\s.'’‘ʼ()-]*?)\s*(?<chapter>\d+)(?:\s*[:.,\s]\s*(?<verse>\d+))?$/iu;
 
 /**
  * The book a reference names, as typed: `1º Coríntios 13` → `1º Coríntios`, `Joh 3,16` → `Joh`.
@@ -73,6 +74,44 @@ function failure(error: ReferenceParseError): ReferenceParseResult {
 }
 
 /**
+ * Parts of the deuterocanon that readers cite as books of their own, though here they are
+ * chapters of a larger one: the Letter of Jeremiah is Baruch 6, and Greek Daniel holds the Song
+ * of the Three (chapter 3), Susanna (13) and Bel and the Dragon (14). `Susanna 1:5` is Greek
+ * Daniel 13:5, and `Susanna 1` the whole chapter; a chapter other than 1 is refused, since each
+ * of these has only the one.
+ *
+ * In English only. These names are typed in English wherever the interface is in another
+ * language, because that is how the sections are known; a localized catalogue may add its own
+ * spellings as aliases of the book itself.
+ */
+const SECTION_CHAPTERS: ReadonlyMap<string, { readonly book: BookId; readonly chapter: number }> =
+  new Map(
+    (
+      [
+        [['Letter of Jeremiah', 'Epistle of Jeremiah', 'EpJer', 'Ep Jer', 'LJe'], 'Bar', 6],
+        [
+          ['Song of the Three', 'Song of the Three Children', 'Song of the Three Young Men'],
+          'DanGr',
+          3,
+        ],
+        [['Prayer of Azariah', 'Azariah', 'PrAzar', 'SgThree', 'Sg Three'], 'DanGr', 3],
+        [['Susanna', 'Sus'], 'DanGr', 13],
+        [['Bel', 'Bel and the Dragon'], 'DanGr', 14],
+      ] as const
+    ).flatMap(([spellings, book, chapter]) =>
+      spellings.map((spelling): [string, { book: BookId; chapter: number }] => [
+        normalizeBookName(spelling),
+        { book, chapter },
+      ]),
+    ),
+  );
+
+/** Psalm 151 is its own book here (`AddPs`), but a reader cites it as a psalm. */
+function resolveChapter(book: BookId, chapter: number): { book: BookId; chapter: number } {
+  return book === 'Ps' && chapter === 151 ? { book: 'AddPs', chapter: 1 } : { book, chapter };
+}
+
+/**
  * Parses a human-typed Bible reference such as `John 3:16`, `jn 3 16`, `1co13`, `Gen.1.1` or
  * `Gênesis 1:1`, and checks that the chapter and verse exist in the given versification.
  */
@@ -86,6 +125,18 @@ export function parseReference(
     return failure({ kind: 'unreadable' });
   }
   const { book: bookQuery = '', chapter: chapterText = '', verse: verseText } = match.groups;
+
+  const section = SECTION_CHAPTERS.get(normalizeBookName(bookQuery));
+  if (section !== undefined) {
+    if (Number(chapterText) !== 1) {
+      return failure({ kind: 'no-such-chapter', book: section.book, chapters: 1 });
+    }
+    return parseReference(
+      `${section.book}.${String(section.chapter)}${verseText === undefined ? '' : `.${verseText}`}`,
+      versification,
+      names,
+    );
+  }
 
   const lookup = lookupBook(bookQuery, names);
   switch (lookup.kind) {
@@ -101,23 +152,22 @@ export function parseReference(
       break;
   }
 
-  const { book } = lookup;
-  const chapter = Number(chapterText);
-  const verseCount = versification.verseCountOf(book.id, chapter);
+  const { book, chapter } = resolveChapter(lookup.book.id, Number(chapterText));
+  const verseCount = versification.verseCountOf(book, chapter);
   if (verseCount === undefined) {
     return failure({
       kind: 'no-such-chapter',
-      book: book.id,
-      chapters: versification.chapterCountOf(book.id),
+      book,
+      chapters: versification.chapterCountOf(book),
     });
   }
 
   if (verseText === undefined) {
-    return { ok: true, reference: { book: book.id, chapter, verse: undefined } };
+    return { ok: true, reference: { book, chapter, verse: undefined } };
   }
   const verse = Number(verseText);
   if (verse < 1 || verse > verseCount) {
-    return failure({ kind: 'no-such-verse', book: book.id, chapter, verses: verseCount });
+    return failure({ kind: 'no-such-verse', book, chapter, verses: verseCount });
   }
-  return { ok: true, reference: { book: book.id, chapter, verse } };
+  return { ok: true, reference: { book, chapter, verse } };
 }

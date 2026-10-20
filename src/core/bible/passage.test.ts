@@ -10,7 +10,7 @@ import {
   versePassage,
   type Passage,
 } from './passage.ts';
-import { KJV_VERSIFICATION as kjv } from './versification.ts';
+import { CANONICAL_VERSIFICATION as kjv } from './versification.ts';
 import { enBooks } from '../../i18n/books/en.ts';
 
 const JOHN_3_16 = kjv.indexOf({ book: 'John', chapter: 3, verse: 16 }) ?? -1;

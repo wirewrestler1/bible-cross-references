@@ -29,8 +29,8 @@ export function createTranslationFile(
 ): TranslationTextFile {
   return {
     format: 'translation-text',
-    schemaVersion: 1,
-    versification: 'kjv',
+    schemaVersion: 2,
+    versification: 'kjv-dc',
     provenance: PROVENANCE,
     notices: [],
     translationId: 'bsb',

@@ -10,7 +10,7 @@ export type Passage =
   | { readonly kind: 'verse'; readonly verse: VerseIndex }
   | { readonly kind: 'chapter'; readonly book: BookId; readonly chapter: number };
 
-const OSIS_CHAPTER_ID_PATTERN = /^([1-3]?[A-Za-z]+)\.(\d+)$/;
+const OSIS_CHAPTER_ID_PATTERN = /^([1-4]?[A-Za-z]+)\.(\d+)$/;
 
 export function versePassage(verse: VerseIndex): Passage {
   return { kind: 'verse', verse };

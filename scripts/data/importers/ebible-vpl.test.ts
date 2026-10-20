@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { BOOKS } from '../../../src/core/bible/books.ts';
+import { BOOKS, PROTESTANT_BOOKS } from '../../../src/core/bible/books.ts';
 import { KJV_CHAPTER_VERSE_COUNTS } from '../../../src/core/bible/kjv-versification.ts';
+import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { PROVENANCE, verseIndex } from '../../../src/test-utils/fixtures.ts';
 import { BOOK_CODES, importEbibleVerseLines } from './ebible-vpl.ts';
 
 /** Builds a complete eBible-style file; `transform` may rewrite or drop (return `null`) lines. */
 function createVerseLines(transform: (line: string) => string | null = (line) => line): string {
-  const lines = BOOKS.flatMap((book) =>
+  const lines = PROTESTANT_BOOKS.flatMap((book) =>
     KJV_CHAPTER_VERSE_COUNTS[book.id].flatMap((verseCount, chapterOffset) =>
       Array.from({ length: verseCount }, (_, verseOffset) => {
         const reference = `${BOOK_CODES[book.id]} ${chapterOffset + 1}:${verseOffset + 1}`;
@@ -23,13 +24,15 @@ describe('importEbibleVerseLines', () => {
     expect(file).toMatchObject({
       format: 'translation-text',
       translationId: 'kjv',
-      versification: 'kjv',
+      versification: 'kjv-dc',
       provenance: PROVENANCE,
+      // The KJV has no deuterocanon (its manifest says so): those verses are simply empty.
       notices: [],
     });
-    expect(file.verses).toHaveLength(31102);
+    expect(file.verses).toHaveLength(CANONICAL_VERSIFICATION.verseCount);
     expect(file.verses[0]).toBe('Text of GEN 1:1.');
     expect(file.verses[verseIndex('Ps', 23, 1)]).toBe('Text of PSA 23:1.');
+    expect(file.verses[verseIndex('Sir', 24, 1)]).toBe('');
     expect(file.verses.at(-1)).toBe('Text of REV 22:21.');
   });
 
@@ -355,6 +358,27 @@ describe('importEbibleVerseLines', () => {
   });
 });
 
+describe('the deuterocanon', () => {
+  it('leaves 2 Esdras out by name, which eBible carries and the canon here does not', () => {
+    const file = importEbibleVerseLines(
+      `${createVerseLines()}4ES 1:1 Text of 4ES 1:1.\r\n4ES 1:2 Text of 4ES 1:2.\r\n`,
+      'kjv',
+      PROVENANCE,
+    );
+    expect(file.verses).toHaveLength(CANONICAL_VERSIFICATION.verseCount);
+    expect(file.notices).toEqual([
+      expect.objectContaining({ level: 'info', count: 1, examples: ['2 Esdras'] }),
+    ]);
+    expect(file.notices[0]?.message).toContain('2 Esdras is in the source but not in the canon');
+  });
+
+  it('refuses a file carrying a deuterocanonical book its manifest does not claim', () => {
+    expect(() =>
+      importEbibleVerseLines(`${createVerseLines()}TOB 1:1 Tobit.\r\n`, 'kjv', PROVENANCE),
+    ).toThrow(/carries Tobit, but the translation's manifest says it has no deuterocanon/);
+  });
+});
+
 describe('BOOK_CODES', () => {
   it('gives every book a code of its own', () => {
     const codes = Object.values(BOOK_CODES);
@@ -390,7 +414,7 @@ describe('BOOK_CODES', () => {
 
   it('pins every book that no count can tell apart from another', () => {
     const byShape = new Map<string, string[]>();
-    for (const book of BOOKS) {
+    for (const book of PROTESTANT_BOOKS) {
       const shape = JSON.stringify(KJV_CHAPTER_VERSE_COUNTS[book.id]);
       byShape.set(shape, [...(byShape.get(shape) ?? []), book.id]);
     }

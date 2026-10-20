@@ -10,8 +10,8 @@ import {
 function translation(verses: readonly string[]): DatasetFile {
   return {
     format: 'translation-text',
-    schemaVersion: 1,
-    versification: 'kjv',
+    schemaVersion: 2,
+    versification: 'kjv-dc',
     provenance: {
       url: 'https://example.org/t',
       sha256: 'a'.repeat(64),
@@ -59,8 +59,8 @@ describe('fingerprintDataset', () => {
   it('describes the links in a cross-reference file', () => {
     const dataset: DatasetFile = {
       format: 'cross-references',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: {
         url: 'https://example.org/x',
         sha256: 'b'.repeat(64),
@@ -81,8 +81,8 @@ describe('fingerprintDataset', () => {
   it('describes the words in an original-words file', () => {
     const dataset: DatasetFile = {
       format: 'original-words',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: {
         url: 'https://example.org/w',
         sha256: 'c'.repeat(64),

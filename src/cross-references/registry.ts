@@ -15,7 +15,7 @@ const CROSS_REFERENCE_SOURCES: Readonly<
       'Cross-reference data: OpenBible.info (CC BY 4.0), largely from the public-domain ' +
       'Treasury of Scripture Knowledge. Modified: re-indexed to KJV verse numbering.',
     homepage: 'https://www.openbible.info/labs/cross-references/',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     enabledByDefault: true,
   },
 };

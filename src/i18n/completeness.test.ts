@@ -12,6 +12,8 @@ import {
   type Problem,
 } from './completeness.ts';
 import { contestedSpellings } from '../core/bible/book-lookup.ts';
+import { BOOKS } from '../core/bible/books.ts';
+import { GENRES } from '../core/bible/genres.ts';
 import { DEFAULT_LOCALE_ID, LOCALE_IDS, type LocaleId } from './locale-id.ts';
 import { getLocale } from './registry.ts';
 import { SAME_AS_ENGLISH } from './same-as-english.ts';
@@ -544,11 +546,11 @@ describe('the gate catches a language that is not finished', () => {
     const where = (name: string) => problems.filter((problem) => problem.where === name).length;
     expect(where('messages')).toBeGreaterThan(100);
     // A name left in English for each and a short form missing for each — English itself needs
-    // none, so a language that copied it has sixty-six books labelled by their OSIS ids — plus
-    // the two the whole catalogue is judged on: Psalms' citation name, still English, and the
-    // short forms taken together.
-    expect(where('books')).toBe(134);
-    expect(where('genres')).toBe(10);
+    // none, so a language that copied it has every book labelled by its OSIS id — plus the
+    // three the whole catalogue is judged on: the citation names of Psalms and Wisdom, still
+    // English, and the short forms taken together.
+    expect(where('books')).toBe(BOOKS.length * 2 + 3);
+    expect(where('genres')).toBe(GENRES.length);
   });
 
   /**
@@ -634,10 +636,10 @@ describe('the gate catches a language that is not finished', () => {
     const where = (name: string) => problems.filter((problem) => problem.where === name).length;
     expect(where('messages')).toBeGreaterThan(100);
     // A name left in English for each and a short form missing for each — English itself needs
-    // none, so a language that copied it has sixty-six books labelled by their OSIS ids — plus
-    // the two the whole catalogue is judged on: Psalms' citation name, still English, and the
-    // short forms taken together.
-    expect(where('books')).toBe(134);
-    expect(where('genres')).toBe(10);
+    // none, so a language that copied it has every book labelled by its OSIS id — plus the
+    // three the whole catalogue is judged on: the citation names of Psalms and Wisdom, still
+    // English, and the short forms taken together.
+    expect(where('books')).toBe(BOOKS.length * 2 + 3);
+    expect(where('genres')).toBe(GENRES.length);
   });
 });

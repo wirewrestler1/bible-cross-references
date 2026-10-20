@@ -8,10 +8,11 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'BSB',
     language: 'en',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: { name: 'Public domain', url: 'https://berean.bible/terms.htm', publicDomain: true },
     attribution: 'Scripture text: Berean Standard Bible (BSB), dedicated to the public domain.',
     homepage: 'https://berean.bible/',
+    deuterocanon: false,
     access: 'bundled',
   },
   kjv: {
@@ -20,7 +21,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'KJV',
     language: 'en',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: {
       name: 'Public domain',
       url: 'https://ebible.org/Scriptures/details.php?id=eng-kjv2006',
@@ -34,6 +35,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'the right to print it to the Crown’s patentees — Cambridge University Press, Oxford ' +
       'University Press and Collins.',
     homepage: 'https://ebible.org/Scriptures/details.php?id=eng-kjv2006',
+    deuterocanon: false,
     access: 'bundled',
   },
   blivre: {
@@ -42,7 +44,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'BLIVRE',
     language: 'pt-BR',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: {
       name: 'CC BY 3.0 BR',
       url: 'https://creativecommons.org/licenses/by/3.0/br/',
@@ -55,6 +57,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'February 2018 (Textus Receptus edition), https://sites.google.com/site/biblialivre/. ' +
       'Changed: whitespace was normalized; no word was altered.',
     homepage: 'https://sites.google.com/site/biblialivre/',
+    deuterocanon: false,
     access: 'bundled',
   },
   luther1912: {
@@ -66,7 +69,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'LUT',
     language: 'de',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: {
       name: 'Public domain',
       url: 'https://ebible.org/Scriptures/details.php?id=deu1912',
@@ -77,6 +80,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'translation. Public domain. Changed: the edition’s own verse numbers were taken out of ' +
       '358 verses and a corrupt token out of Judges 11:25; no word was altered.',
     homepage: 'https://ebible.org/Scriptures/details.php?id=deu1912',
+    deuterocanon: false,
     access: 'bundled',
   },
   riveduta1927: {
@@ -85,7 +89,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'RIV',
     language: 'it',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: {
       name: 'Public domain',
       url: 'https://ebible.org/Scriptures/details.php?id=ita1927',
@@ -101,6 +105,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'a running head out of three and a stray character out of 2 Samuel 20:26; no word was ' +
       'altered.',
     homepage: 'https://ebible.org/Scriptures/details.php?id=ita1927',
+    deuterocanon: false,
     access: 'bundled',
   },
   vbl: {
@@ -112,7 +117,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     abbreviation: 'VBL',
     language: 'es',
     direction: 'ltr',
-    versification: 'kjv',
+    versification: 'kjv-dc',
     license: {
       name: 'CC BY-SA 4.0',
       url: 'https://creativecommons.org/licenses/by-sa/4.0/',
@@ -127,6 +132,7 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'https://ebible.org/Scriptures/details.php?id=spavbl, licensed under CC BY-SA 4.0. ' +
       'Changed: a space before a colon was moved in one verse; no word was altered.',
     homepage: 'https://ebible.org/Scriptures/details.php?id=spavbl',
+    deuterocanon: false,
     access: 'bundled',
   },
 };

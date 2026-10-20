@@ -326,7 +326,10 @@ export function ThreadsStage({
                     {offset + 1}
                   </button>
                   <span className={text ? styles.text : `${styles.text} ${styles.omitted}`}>
-                    {text || t('threads.omitted')(translation.manifest.abbreviation)}
+                    {text ||
+                      (translation.isAbsent(verse)
+                        ? t('text.notInTranslation')(translation.manifest.abbreviation)
+                        : t('threads.omitted')(translation.manifest.abbreviation))}
                   </span>
                   <span className={styles.count} title={t('arcs.connections')(n(count), count)}>
                     {count > 0 ? n(count) : ''}

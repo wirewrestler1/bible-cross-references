@@ -253,7 +253,7 @@ describe('importStepBibleWords', () => {
   it('rejects a verse number the chapter does not reach', () => {
     // Genesis 1 has 31 verses; a reference past the end would otherwise land silently nowhere.
     const text = [hebrew('Gen.1.1#01=L', '{H1961}'), hebrew('Gen.1.99#01=L', '{H1961}')].join('\n');
-    expect(() => build([{ language: 'hebrew', text }])).toThrow(/outside the kjv versification/);
+    expect(() => build([{ language: 'hebrew', text }])).toThrow(/outside the kjv-dc versification/);
   });
 
   it('passes over a lexicon row with no dictionary form or no gloss', () => {

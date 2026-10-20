@@ -3,6 +3,7 @@ import { formatPassage, versePassage, type Passage } from '../../../core/bible/p
 import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import { ExpandIcon, WordsIcon } from '../../../shared/ui/icons.tsx';
 import { verseTextOrNote } from '../../../translations/verse-text.ts';
+import { verseNotes } from './PassagePanel.tsx';
 import type { OriginalWordsDataset } from '../../../words/load-original-words.ts';
 import { originalWordsIfLoaded, originalWordsLoader, resetOriginalWords } from '../viz-data.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
@@ -122,7 +123,9 @@ export function OriginalWordsSection({
                     <span className={styles.itemRef}>
                       <strong>{formatPassage(versePassage(other), versification, books)}</strong>
                     </span>
-                    <span className={styles.snippet}>{verseTextOrNote(translation, other)}</span>
+                    <span className={styles.snippet}>
+                      {verseTextOrNote(translation, other, verseNotes(t))}
+                    </span>
                   </button>
                 ))}
             </div>

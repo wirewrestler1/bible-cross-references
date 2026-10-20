@@ -7,8 +7,13 @@ interface GenreDefinition {
 }
 
 /**
- * The standard Protestant grouping of the 66 books into 10 genres, in canonical order.
- * Every genre is a contiguous run of books, so genres can be laid out as segments or regions.
+ * The standard Protestant grouping of the 66 books into 10 genres, in canonical order, with the
+ * deuterocanon as an eleventh between the Minor Prophets and the Gospels. Every genre is a
+ * contiguous run of books, so genres can be laid out as segments or regions.
+ *
+ * The deuterocanon is one genre rather than being split among History, Poetry and the Prophets
+ * because the books stand together as one block in the canon order (see `books.ts`); were they
+ * ever interleaved in Septuagint order, they would be absorbed into those genres instead.
  */
 const GENRE_DEFINITIONS = [
   { id: 'law', name: 'Law', testament: 'OT' },
@@ -16,6 +21,7 @@ const GENRE_DEFINITIONS = [
   { id: 'poetry', name: 'Poetry & Wisdom', testament: 'OT' },
   { id: 'major-prophets', name: 'Major Prophets', testament: 'OT' },
   { id: 'minor-prophets', name: 'Minor Prophets', testament: 'OT' },
+  { id: 'deuterocanon', name: 'Deuterocanon', testament: 'OT' },
   { id: 'gospels', name: 'Gospels', testament: 'NT' },
   { id: 'acts', name: 'Acts', testament: 'NT' },
   { id: 'pauline-epistles', name: 'Pauline Epistles', testament: 'NT' },
@@ -76,6 +82,20 @@ const BOOK_GENRES: Readonly<Record<BookId, GenreId>> = {
   Hag: 'minor-prophets',
   Zech: 'minor-prophets',
   Mal: 'minor-prophets',
+  '1Esd': 'deuterocanon',
+  PrMan: 'deuterocanon',
+  Tob: 'deuterocanon',
+  Jdt: 'deuterocanon',
+  EsthGr: 'deuterocanon',
+  '1Macc': 'deuterocanon',
+  '2Macc': 'deuterocanon',
+  '3Macc': 'deuterocanon',
+  AddPs: 'deuterocanon',
+  Wis: 'deuterocanon',
+  Sir: 'deuterocanon',
+  Bar: 'deuterocanon',
+  DanGr: 'deuterocanon',
+  '4Macc': 'deuterocanon',
   Matt: 'gospels',
   Mark: 'gospels',
   Luke: 'gospels',

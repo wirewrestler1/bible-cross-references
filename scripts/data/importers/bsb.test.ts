@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { BOOKS, getReferenceName } from '../../../src/core/bible/books.ts';
+import { PROTESTANT_BOOKS, getReferenceName } from '../../../src/core/bible/books.ts';
 import { KJV_CHAPTER_VERSE_COUNTS } from '../../../src/core/bible/kjv-versification.ts';
+import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { PROVENANCE, verseIndex } from '../../../src/test-utils/fixtures.ts';
 import { importBsbText } from './bsb.ts';
 
@@ -10,7 +11,7 @@ const HEADER = 'Verse\tBerean Standard Bible';
 
 /** Builds a complete BSB-style file; `transform` may rewrite or drop (return `null`) lines. */
 function createBsbText(transform: (line: string) => string | null = (line) => line): string {
-  const lines = BOOKS.flatMap((book) =>
+  const lines = PROTESTANT_BOOKS.flatMap((book) =>
     KJV_CHAPTER_VERSE_COUNTS[book.id].flatMap((verseCount, chapterOffset) =>
       Array.from({ length: verseCount }, (_, verseOffset) => {
         const reference = `${getReferenceName(book)} ${chapterOffset + 1}:${verseOffset + 1}`;
@@ -27,11 +28,13 @@ describe('importBsbText', () => {
     expect(file).toMatchObject({
       format: 'translation-text',
       translationId: 'bsb',
-      versification: 'kjv',
+      versification: 'kjv-dc',
       provenance: PROVENANCE,
+      // The BSB has no deuterocanon (its manifest says so): those verses are simply empty.
       notices: [],
     });
-    expect(file.verses).toHaveLength(31102);
+    expect(file.verses).toHaveLength(CANONICAL_VERSIFICATION.verseCount);
+    expect(file.verses[verseIndex('Sir', 24, 1)]).toBe('');
     expect(file.verses[0]).toBe('Text of Genesis 1:1.');
     expect(file.verses[verseIndex('Ps', 23, 1)]).toBe('Text of Psalm 23:1.');
     expect(file.verses.at(-1)).toBe('Text of Revelation 22:21.');

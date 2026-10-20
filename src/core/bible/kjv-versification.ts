@@ -1,15 +1,16 @@
-import type { BookId } from './books.ts';
+import type { ProtestantBookId } from './books.ts';
 
 /**
- * Number of verses in each chapter of each book in the KJV versification (the standard English
- * versification: 1,189 chapters, 31,102 verses).
+ * Number of verses in each chapter of each of the 66 books in the KJV versification (the standard
+ * English versification: 1,189 chapters, 31,102 verses).
  *
- * This is the project's canonical coordinate system: cross-references, analytics, URLs and user
- * state all address verses in this scheme. It was cross-checked against two independent sources
- * (the Berean Standard Bible text and the CrossReferences.org KJV verse list), and the data
- * pipeline validates every imported dataset against it.
+ * Together with the deuterocanon's table (`deuterocanon-versification.ts`) this is the project's
+ * canonical coordinate system: cross-references, analytics, URLs and user state all address
+ * verses in this scheme. It was cross-checked against two independent sources (the Berean
+ * Standard Bible text and the CrossReferences.org KJV verse list), and the data pipeline
+ * validates every imported dataset against it.
  */
-export const KJV_CHAPTER_VERSE_COUNTS: Readonly<Record<BookId, readonly number[]>> = {
+export const KJV_CHAPTER_VERSE_COUNTS: Readonly<Record<ProtestantBookId, readonly number[]>> = {
   Gen: [
     31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67,
     34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22,

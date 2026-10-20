@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GENRES } from '../core/bible/genres.ts';
 import { toPassageOsisId } from '../core/bible/passage.ts';
-import { KJV_VERSIFICATION as kjv } from '../core/bible/versification.ts';
+import { CANONICAL_VERSIFICATION as kjv } from '../core/bible/versification.ts';
 import { LOCALE_IDS, type LocaleId } from '../i18n/locale-id.ts';
 import { TRANSLATION_MANIFESTS, DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import { DEFAULT_LINK_FILTER, VOTE_THRESHOLDS } from '../visualizations/shared/link-filter.ts';
@@ -108,6 +108,7 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?hide=law,history,poetry', { hidden: ['history', 'law', 'poetry'] }],
   ['/bible-cross-references/?hide=major-prophets', { hidden: ['major-prophets'] }],
   ['/bible-cross-references/?hide=minor-prophets', { hidden: ['minor-prophets'] }],
+  ['/bible-cross-references/?hide=deuterocanon', { hidden: ['deuterocanon'] }],
   ['/bible-cross-references/?hide=gospels', { hidden: ['gospels'] }],
   ['/bible-cross-references/?hide=acts', { hidden: ['acts'] }],
   ['/bible-cross-references/?hide=pauline-epistles', { hidden: ['pauline-epistles'] }],
@@ -115,10 +116,11 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?hide=revelation', { hidden: ['revelation'] }],
   [
     // Every genre hidden at once, which the legend lets a reader do.
-    '/bible-cross-references/?hide=law,history,poetry,major-prophets,minor-prophets,gospels,acts,pauline-epistles,general-epistles,revelation',
+    '/bible-cross-references/?hide=law,history,poetry,major-prophets,minor-prophets,deuterocanon,gospels,acts,pauline-epistles,general-epistles,revelation',
     {
       hidden: [
         'acts',
+        'deuterocanon',
         'general-epistles',
         'gospels',
         'history',

@@ -72,6 +72,7 @@ export default defineConfig(({ command, isPreview = false }) => ({
         'src/features/debug/main.tsx',
         'scripts/data/build.ts',
         'scripts/data/fetch.ts',
+        'scripts/data/derive-versification.ts',
         // Drawing code that needs a GPU: a WebGL context, shaders and canvas painting cannot be
         // exercised in this environment, and a mock of them would test the mock.
         'src/visualizations/arcs/arc-scene.ts',

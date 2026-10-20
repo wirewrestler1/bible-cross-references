@@ -20,7 +20,7 @@ describe('summarizeLinks', () => {
     );
     const summary = summarizeLinks(index, [0, 1], computeVerseGenres(CANONICAL_VERSIFICATION));
     expect(summary).toEqual({
-      verseCount: 31102,
+      verseCount: CANONICAL_VERSIFICATION.verseCount,
       shownLinks: 2,
       totalLinks: 3,
       connectedVerses: 5, // Gen 1:1, Ps 23:1 and John 1:1–3

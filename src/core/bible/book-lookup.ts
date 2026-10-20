@@ -23,9 +23,10 @@ const FOLDED_LETTERS: readonly (readonly [RegExp, string])[] = [
 
 /**
  * Normalizes a book name for lookup: composed (NFC), lowercase, a leading roman numeral followed
- * by a space turned into a digit ("II Kings" → "2kings"), and the punctuation that only ever
+ * by a space turned into a digit ("II Kings" → "2kings", "IV Maccabees" → "4maccabees"), and the punctuation that only ever
  * separates parts of a name removed: spaces, dots, hyphens, apostrophes in any of the shapes a
- * keyboard produces, and the ordinal markers Portuguese writes after a numeral ("1º Coríntios").
+ * keyboard produces, the ordinal markers Portuguese writes after a numeral ("1º Coríntios"), and
+ * the parentheses around a qualifier ("Ester (griechisch)").
  * Dropping them means a reader may type the apostrophe or leave it out. Accents are kept.
  *
  * The NFC pass matters because the same accented letter has two spellings in Unicode — `ó` as one
@@ -37,8 +38,10 @@ export function normalizeBookName(value: string): string {
     .normalize('NFC')
     .trim()
     .toLowerCase()
-    .replace(/^(i{1,3})\s+/, (_match: string, numeral: string) => String(numeral.length))
-    .replace(/[\s.\-'’‘ʼº°ª]+/gu, '');
+    .replace(/^(i{1,3}|iv)\s+/, (_match: string, numeral: string) =>
+      numeral === 'iv' ? '4' : String(numeral.length),
+    )
+    .replace(/[\s.\-'’‘ʼº°ª()]+/gu, '');
 }
 
 /**

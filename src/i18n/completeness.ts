@@ -2,7 +2,7 @@ import { bookNameCollisions, foldBookName, normalizeBookName } from '../core/bib
 import { BOOKS } from '../core/bible/books.ts';
 import { GENRES, type GenreId } from '../core/bible/genres.ts';
 import { bookPartOf, parseReference } from '../core/bible/reference-parse.ts';
-import { KJV_VERSIFICATION } from '../core/bible/versification.ts';
+import { CANONICAL_VERSIFICATION } from '../core/bible/versification.ts';
 import { INSTALL_PLATFORMS } from '../shared/lib/install-platform.ts';
 import type { AcceptanceCase } from './books/acceptance.ts';
 import type { BookNames } from './books/types.ts';
@@ -613,7 +613,7 @@ function checkAcceptance(bundle: LocaleBundle): Problem[] {
 
 /** What the real parser makes of a typed reference, in the shape an acceptance case states. */
 export function resolve(typed: string, names: BookNames): string {
-  const result = parseReference(typed, KJV_VERSIFICATION, names);
+  const result = parseReference(typed, CANONICAL_VERSIFICATION, names);
   if (result.ok) {
     const { book, chapter, verse } = result.reference;
     return verse === undefined

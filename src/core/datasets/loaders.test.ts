@@ -56,8 +56,8 @@ describe('loadCrossReferences', () => {
   function file() {
     return {
       format: 'cross-references',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: PROVENANCE,
       notices: [],
       sourceId: manifest?.id,
@@ -93,8 +93,8 @@ describe('loadOriginalWords', () => {
   it('indexes the words it downloads', async () => {
     serve({
       format: 'original-words',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: PROVENANCE,
       notices: [],
       sourceId: 'stepbible',
@@ -118,8 +118,8 @@ describe('loadOriginalWords', () => {
   it('refuses a file whose verses are outside the versification', async () => {
     serve({
       format: 'original-words',
-      schemaVersion: 1,
-      versification: 'kjv',
+      schemaVersion: 2,
+      versification: 'kjv-dc',
       provenance: PROVENANCE,
       notices: [],
       sourceId: 'stepbible',

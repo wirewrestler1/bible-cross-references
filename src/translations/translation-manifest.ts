@@ -15,6 +15,12 @@ export interface TranslationManifest {
   readonly direction: 'ltr' | 'rtl';
   /** Verse numbering used by the translation's own text. */
   readonly versification: VersificationId;
+  /**
+   * Whether the text carries the deuterocanonical books. One that does not leaves their verses
+   * empty, and the app says so wherever it would show them; the importer refuses a file that
+   * disagrees with this either way.
+   */
+  readonly deuterocanon: boolean;
   readonly license: LicenseInfo;
   /** Credit line to display wherever the text is shown. */
   readonly attribution: string;

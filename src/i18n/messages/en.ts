@@ -133,6 +133,9 @@ export const en = {
   'panel.copy.title': 'Copy with a link',
   'panel.copied': (reference: string) => `${reference} copied`,
   'panel.omitted': (abbreviation: string) => `Omitted in the ${abbreviation}.`,
+  // A deuterocanonical book in a translation that does not have it.
+  'text.notInTranslation': (abbreviation: string) =>
+    `Not in the ${abbreviation}. Choose a translation that includes the deuterocanon.`,
   'panel.moreVerses': (count: string, plural: number) =>
     plural === 1 ? `+ ${count} more verse` : `+ ${count} more verses`,
   'panel.showAll': (count: string) => `Show all ${count}`,
@@ -191,7 +194,7 @@ export const en = {
   'threads.nextChapter': 'Next chapter',
   'threads.stage':
     'Threads from the verses of this chapter to where their cross-references land in the Bible, ' +
-    'shown as a vertical bar of all 66 books.',
+    'shown as a vertical bar of all the books.',
   'arcs.connections': (count: string, plural: number) =>
     plural === 1 ? `${count} connection` : `${count} connections`,
   'arcs.stage':

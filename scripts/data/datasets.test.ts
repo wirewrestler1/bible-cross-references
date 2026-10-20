@@ -1,5 +1,6 @@
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
+import { isDeuterocanonical } from '../../src/core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
 import { toOsisId } from '../../src/core/bible/verse-ref.ts';
 import type { TranslationId } from '../../src/core/datasets/ids.ts';
@@ -10,6 +11,7 @@ import { expectMember, findSource, readSources, type RawSource } from './lib/sou
 
 /** The archive entry each zipped source pins, mirroring `data/sources.json`. */
 const MEMBERS: Readonly<Record<string, string>> = {
+  web: 'eng-web_vpl.txt',
   kjv: 'eng-kjv2006_vpl.txt',
   luther1912: 'deu1912_vpl.txt',
   riveduta1927: 'ita1927_vpl.txt',
@@ -31,11 +33,15 @@ function source(id: string): RawSource {
   };
 }
 
-/** One line per verse of the whole canon, which is what every importer insists on. */
+/**
+ * One line per verse of the 66 books, which is what every importer insists on; the
+ * deuterocanon is left out, since none of these translations carries it.
+ */
 function everyVerse(render: (index: number) => string): string {
-  return Array.from({ length: CANONICAL_VERSIFICATION.verseCount }, (_, index) =>
-    render(index),
-  ).join('\n');
+  return Array.from({ length: CANONICAL_VERSIFICATION.verseCount }, (_, index) => index)
+    .filter((index) => !isDeuterocanonical(CANONICAL_VERSIFICATION.bookAt(index).id))
+    .map(render)
+    .join('\n');
 }
 
 /**
@@ -142,8 +148,8 @@ describe('DATASET_BUILDERS', () => {
     'builds %s from its pinned sources',
     async (_path, builder) => {
       const dataset = await builder.build(readSource);
-      expect(dataset.versification).toBe('kjv');
-      expect(dataset.schemaVersion).toBe(1);
+      expect(dataset.versification).toBe('kjv-dc');
+      expect(dataset.schemaVersion).toBe(2);
       expect(dataset.provenance.sha256).toHaveLength(64);
       expect(dataset.provenance.url).toContain('https://example.org/');
       expect(Array.isArray(dataset.notices)).toBe(true);

@@ -21,8 +21,8 @@ const GEN_1_1 = verseIndex('Gen', 1, 1);
 
 const CROSS_REFERENCES = {
   format: 'cross-references',
-  schemaVersion: 1,
-  versification: 'kjv',
+  schemaVersion: 2,
+  versification: 'kjv-dc',
   provenance: PROVENANCE,
   notices: [],
   sourceId: 'openbible',
@@ -32,8 +32,8 @@ const CROSS_REFERENCES = {
 
 const WORDS = {
   format: 'original-words',
-  schemaVersion: 1,
-  versification: 'kjv',
+  schemaVersion: 2,
+  versification: 'kjv-dc',
   provenance: PROVENANCE,
   notices: [],
   sourceId: 'stepbible',

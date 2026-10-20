@@ -20,8 +20,8 @@ const GEN_1_1 = verseIndex('Gen', 1, 1);
 
 const CROSS_REFERENCES = {
   format: 'cross-references',
-  schemaVersion: 1,
-  versification: 'kjv',
+  schemaVersion: 2,
+  versification: 'kjv-dc',
   provenance: PROVENANCE,
   notices: [],
   sourceId: 'openbible',
@@ -89,13 +89,13 @@ describe('VizDataBoundary', () => {
     await renderSuspending(
       <VizDataBoundary>{(core) => <p>{core.versification.verseCount} verses</p>}</VizDataBoundary>,
     );
-    expect(screen.getByText(/31102 verses/)).toBeDefined();
+    expect(screen.getByText(/37128 verses/)).toBeDefined();
   });
 
   it('waits with a loading screen that says what is coming', () => {
     serve();
     render(<VizDataBoundary>{() => <p>done</p>}</VizDataBoundary>);
-    expect(screen.getByText(/Loading 31,102 verses/)).toBeDefined();
+    expect(screen.getByText(/Loading 37,128 verses/)).toBeDefined();
   });
 
   it('explains a failed download and offers to try again', async () => {

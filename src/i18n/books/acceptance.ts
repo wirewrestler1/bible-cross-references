@@ -112,6 +112,16 @@ export const BOOK_ACCEPTANCE: Readonly<Record<LocaleId, readonly AcceptanceCase[
     { typed: '1joao 1:1', expect: '1John.1.1', note: '1 João, typed without its accent.' },
     { typed: '2joao 1:1', expect: '2John.1.1', note: '2 João, typed without its accent.' },
     { typed: '3joao 1:1', expect: '3John.1.1', note: '3 João, typed without its accent.' },
+    {
+      typed: 'Oracao de Manasses 1:5',
+      expect: 'PrMan.1.5',
+      note: 'The Prayer of Manasseh typed without its accents, as a phone keyboard has it.',
+    },
+    {
+      typed: 'Eclesiastico 24:1',
+      expect: 'Sir.24.1',
+      note: 'Sirach under its Latin name, typed without the accent.',
+    },
   ],
   de: [
     { typed: 'Joh 3,16', expect: 'John.3.16', note: 'German cites with a comma, not a colon.' },
@@ -158,6 +168,14 @@ export const BOOK_ACCEPTANCE: Readonly<Record<LocaleId, readonly AcceptanceCase[
     { typed: 'spruche 3,5', expect: 'Prov.3.5', note: 'Sprüche, typed without its umlaut.' },
     { typed: 'matthaus 5,9', expect: 'Matt.5.9', note: 'Matthäus, typed without its umlaut.' },
     { typed: 'romer 8,28', expect: 'Rom.8.28', note: 'Römer, typed without its umlaut.' },
+    {
+      typed: '1 Makkabaer 2:52',
+      expect: '1Macc.2.52',
+      note: '1. Makkabäer typed with “ae” for the umlaut, as it is without a German keyboard.',
+    },
+    { typed: '2 Makkabaer 7:9', expect: '2Macc.7.9', note: 'The same for 2. Makkabäer.' },
+    { typed: '3 Makkabaer 6:1', expect: '3Macc.6.1', note: 'The same for 3. Makkabäer.' },
+    { typed: '4 Makkabaer 1:1', expect: '4Macc.1.1', note: 'The same for 4. Makkabäer.' },
   ],
   it: [
     { typed: 'Gv 3:16', expect: 'John.3.16', note: 'The plain case: the usual abbreviation.' },
@@ -247,6 +265,18 @@ export const BOOK_ACCEPTANCE: Readonly<Record<LocaleId, readonly AcceptanceCase[
     { typed: 'malaquias 3:10', expect: 'Mal.3.10', note: 'Malaquías, typed without its accent.' },
     { typed: 'ga 2:20', expect: 'Gal.2.20', note: 'Gá, typed without its accent.' },
     { typed: 'filemon 1:6', expect: 'Phlm.1.6', note: 'Filemón, typed without its accent.' },
+    {
+      typed: 'Oracion de Manases 1:5',
+      expect: 'PrMan.1.5',
+      note: 'The Prayer of Manasseh typed without its accents.',
+    },
+    { typed: 'Tobias 4:15', expect: 'Tob.4.15', note: 'Tobías typed without its accent.' },
+    { typed: 'Sabiduria 7:26', expect: 'Wis.7.26', note: 'Sabiduría typed without its accent.' },
+    {
+      typed: 'Eclesiastico 28:2',
+      expect: 'Sir.28.2',
+      note: 'Sirach under its Latin name, typed without the accent.',
+    },
   ],
   uk: [
     // Ukrainian folds further than most: `ї` becomes `і` and `й` becomes `и`, so three of the
@@ -350,5 +380,19 @@ export const BOOK_ACCEPTANCE: Readonly<Record<LocaleId, readonly AcceptanceCase[
     { typed: 'плач єреміі 3:22', expect: 'Lam.3.22', note: 'Плач Єремії, typed with і for ї.' },
     { typed: '1самуілова 1:1', expect: '1Sam.1.1', note: '1 Самуїлова, typed with і for ї.' },
     { typed: '2самуілова 1:1', expect: '2Sam.1.1', note: '2 Самуїлова, typed with і for ї.' },
+    {
+      typed: 'Молитва Манасіі 1:5',
+      expect: 'PrMan.1.5',
+      note: 'The Prayer of Manasseh with «і» for «ї», which folding treats as the same letter.',
+    },
+    { typed: '1 Маккавеів 2:52', expect: '1Macc.2.52', note: 'The same for 1 Маккавеїв.' },
+    { typed: '2 Маккавеів 7:9', expect: '2Macc.7.9', note: 'The same for 2 Маккавеїв.' },
+    { typed: '3 Маккавеів 6:1', expect: '3Macc.6.1', note: 'The same for 3 Маккавеїв.' },
+    { typed: '4 Маккавеів 1:1', expect: '4Macc.1.1', note: 'The same for 4 Маккавеїв.' },
+    {
+      typed: 'Даниіл грецькии 13:1',
+      expect: 'DanGr.13.1',
+      note: 'Greek Daniel with «і» and «и» for «ї» and «й», and without the parentheses.',
+    },
   ],
 };

@@ -1,4 +1,4 @@
-import type { BookId } from '../../../src/core/bible/books.ts';
+import { DEUTEROCANONICAL_BOOKS, type BookId } from '../../../src/core/bible/books.ts';
 import { toOsisId, type VerseIndex } from '../../../src/core/bible/verse-ref.ts';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
 import { getTranslationManifest } from '../../../src/translations/registry.ts';
@@ -9,6 +9,9 @@ import {
   type TranslationTextFile,
 } from '../../../src/core/datasets/formats.ts';
 import type { TranslationId } from '../../../src/core/datasets/ids.ts';
+import { BOOK_CODES } from './ebible-book-codes.ts';
+
+export { BOOK_CODES, DEUTEROCANON_BOOK_CODES, PROTESTANT_BOOK_CODES } from './ebible-book-codes.ts';
 import { stripByteOrderMark } from '../lib/files.ts';
 import { createNotice } from '../lib/notices.ts';
 import { omittedVerseNotices } from '../lib/omitted-verses.ts';
@@ -22,91 +25,17 @@ import { defectsFor } from '../lib/source-defects.ts';
  * Books are named with the three-letter codes BibleWorks uses, listed below in canonical order.
  */
 
-/**
- * eBible's book code for each book, keyed by the book it names.
- *
- * Keyed rather than listed in canonical order. As a list, the code and the book it belongs to
- * were held together by nothing but their position, and the only check was that there were 66 of
- * each — so exchanging two entries produced an import that succeeds, fills all 31,102 verses,
- * duplicates nothing and reports nothing, with one book's text filed under another's name.
- * Philemon and Jude make that concrete: they are the canon's only pair with the same shape (one
- * chapter, twenty-five verses), so no count anywhere in the pipeline can tell them apart. Here a
- * swap is a visible diff and a wrong key is a compile error.
- */
-export const BOOK_CODES: Readonly<Record<BookId, string>> = {
-  Gen: 'GEN',
-  Exod: 'EXO',
-  Lev: 'LEV',
-  Num: 'NUM',
-  Deut: 'DEU',
-  Josh: 'JOS',
-  Judg: 'JDG',
-  Ruth: 'RUT',
-  '1Sam': '1SA',
-  '2Sam': '2SA',
-  '1Kgs': '1KI',
-  '2Kgs': '2KI',
-  '1Chr': '1CH',
-  '2Chr': '2CH',
-  Ezra: 'EZR',
-  Neh: 'NEH',
-  Esth: 'EST',
-  Job: 'JOB',
-  Ps: 'PSA',
-  Prov: 'PRO',
-  Eccl: 'ECC',
-  Song: 'SOL',
-  Isa: 'ISA',
-  Jer: 'JER',
-  Lam: 'LAM',
-  Ezek: 'EZE',
-  Dan: 'DAN',
-  Hos: 'HOS',
-  Joel: 'JOE',
-  Amos: 'AMO',
-  Obad: 'OBA',
-  Jonah: 'JON',
-  Mic: 'MIC',
-  Nah: 'NAH',
-  Hab: 'HAB',
-  Zeph: 'ZEP',
-  Hag: 'HAG',
-  Zech: 'ZEC',
-  Mal: 'MAL',
-  Matt: 'MAT',
-  Mark: 'MAR',
-  Luke: 'LUK',
-  John: 'JOH',
-  Acts: 'ACT',
-  Rom: 'ROM',
-  '1Cor': '1CO',
-  '2Cor': '2CO',
-  Gal: 'GAL',
-  Eph: 'EPH',
-  Phil: 'PHI',
-  Col: 'COL',
-  '1Thess': '1TH',
-  '2Thess': '2TH',
-  '1Tim': '1TI',
-  '2Tim': '2TI',
-  Titus: 'TIT',
-  Phlm: 'PHM',
-  Heb: 'HEB',
-  Jas: 'JAM',
-  '1Pet': '1PE',
-  '2Pet': '2PE',
-  '1John': '1JO',
-  '2John': '2JO',
-  '3John': '3JO',
-  Jude: 'JUD',
-  Rev: 'REV',
-};
-
 const BOOK_IDS_BY_CODE: ReadonlyMap<string, BookId> = new Map(
   Object.entries(BOOK_CODES).map(([id, code]) => [code, id as BookId]),
 );
 
 const VERSE_LINE_PATTERN = /^(\S+) (\d+):(\d+) ?(.*)$/;
+
+/**
+ * Books eBible publishes that the Orthodox canon does not have, skipped by name rather than by
+ * being unknown: an unknown code still stops the build, because it may be a book mis-coded.
+ */
+const BOOKS_OUTSIDE_THE_CANON: ReadonlyMap<string, string> = new Map([['4ES', '2 Esdras']]);
 
 /**
  * The number the source edition gives a verse, where that differs from the KJV number this file
@@ -206,6 +135,8 @@ export function importEbibleVerseLines(
   const defects = defectsFor(translationId);
   /** Verses an entry in `source-defects.ts` took something out of. */
   const corrected: VerseIndex[] = [];
+  /** Lines of books outside the canon, by the book's name. */
+  const skipped = new Map<string, number>();
 
   stripByteOrderMark(text)
     .split(/\r?\n/)
@@ -221,6 +152,11 @@ export function importEbibleVerseLines(
         );
       }
       const [, code = '', chapter = '', verse = '', verseText = ''] = match;
+      const outside = BOOKS_OUTSIDE_THE_CANON.get(code);
+      if (outside !== undefined) {
+        skipped.set(outside, (skipped.get(outside) ?? 0) + 1);
+        return;
+      }
       const book = BOOK_IDS_BY_CODE.get(code);
       if (book === undefined) {
         throw new Error(`${translationId} line ${lineNumber}: unknown book code "${code}".`);
@@ -289,9 +225,37 @@ export function importEbibleVerseLines(
     );
   }
 
+  // The deuterocanon: a translation either carries all of it or none of it, and its manifest
+  // says which. A file that disagrees with its manifest is refused, so a text that gained the
+  // books upstream is noticed rather than silently shipped without them (or, the other way,
+  // shipped with its deuterocanon blank and reported as omitted verses).
+  const absentBooks = DEUTEROCANONICAL_BOOKS.filter((book) => {
+    const range = versification.bookRange(book.id);
+    const present = verses.slice(range.start, range.end + 1).some((text) => text !== undefined);
+    if (present && !manifest.deuterocanon) {
+      throw new Error(
+        `${translationId}: the file carries ${book.name}, but the translation's manifest says ` +
+          `it has no deuterocanon. If it has gained the books, set \`deuterocanon: true\` and ` +
+          `grant the gaps its numbering leaves in OMISSIONS_ALLOWED.`,
+      );
+    }
+    if (!present && manifest.deuterocanon) {
+      throw new Error(
+        `${translationId}: ${book.name} is missing, but the translation's manifest says it ` +
+          `carries the deuterocanon.`,
+      );
+    }
+    return !present;
+  });
+  const absent = new Uint8Array(versification.verseCount);
+  for (const book of absentBooks) {
+    const range = versification.bookRange(book.id);
+    absent.fill(1, range.start, range.end + 1);
+  }
+
   const missing: VerseIndex[] = [];
   const complete = verses.map((verseText, index) => {
-    if (verseText === undefined) {
+    if (verseText === undefined && absent[index] !== 1) {
       missing.push(index);
     }
     return verseText ?? '';
@@ -304,7 +268,18 @@ export function importEbibleVerseLines(
     );
   }
 
+  // No notice for the books the translation lacks: its manifest already says so, and the
+  // verses are left empty rather than reported as omitted.
   const notices: ImportNotice[] = [];
+  for (const [name, count] of skipped) {
+    notices.push(
+      createNotice(
+        'info',
+        `${name} is in the source but not in the canon here, so its ${String(count)} verses were left out.`,
+        [name],
+      ),
+    );
+  }
   if (corrected.length > 0) {
     notices.push(
       createNotice(
@@ -328,7 +303,9 @@ export function importEbibleVerseLines(
   notices.push(
     ...omittedVerseNotices(
       translationId,
-      complete.flatMap((verseText, index) => (verseText === '' ? [osisIdAt(index)] : [])),
+      complete.flatMap((verseText, index) =>
+        verseText === '' && absent[index] !== 1 ? [osisIdAt(index)] : [],
+      ),
     ),
   );
   return {

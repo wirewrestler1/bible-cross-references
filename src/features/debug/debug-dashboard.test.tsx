@@ -84,8 +84,9 @@ describe('TranslationSection', () => {
   it('counts the books, chapters and verses of the text', () => {
     renderSection();
     expect(screen.getByText('Books')).toBeDefined();
-    expect(screen.getByText('66')).toBeDefined();
-    expect(screen.getByText('31,102')).toBeDefined();
+    // The fixture is the BSB, which has the 66 books of 80; the verses are the whole canon's.
+    expect(screen.getByText(/^66 of 80/)).toBeDefined();
+    expect(screen.getByText('37,128')).toBeDefined();
   });
 
   it('says the translation has no omitted verses when every verse has text', () => {

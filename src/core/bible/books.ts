@@ -7,16 +7,41 @@ interface BookDefinition {
   readonly name: string;
   /** Name used when citing a single passage, if it differs from `name` (e.g. `Psalm 23:1`). */
   readonly referenceName?: string;
+  /**
+   * The deuterocanonical books are Old Testament: that is their place in the Orthodox canon
+   * this app follows, and in the Septuagint they are interleaved with the rest of it. They
+   * stand together as one block here (see `BOOK_DEFINITIONS`) and have a genre of their own, so
+   * the distinction a reader sees is carried by `deuterocanonical` and the genre, not by a third
+   * testament.
+   */
   readonly testament: Testament;
+  /**
+   * Set on the books of the Orthodox canon that the Hebrew Bible and the Protestant 66 do not
+   * have. Translations that lack them leave their verses empty, and the cross-reference
+   * compilations built on the Treasury of Scripture Knowledge never reach them.
+   */
+  readonly deuterocanonical?: true;
   /** Extra spellings accepted when parsing user input, normalized (lowercase, no spaces or dots). */
   readonly aliases: readonly string[];
 }
 
 /**
- * The 66 books of the Protestant canon, in canonical order.
+ * The 80 books of the Orthodox canon, in canonical order: the 66 books of the Protestant canon in
+ * their usual order, then the fourteen deuterocanonical books as one block between Malachi and
+ * Matthew, then the New Testament.
+ *
+ * The block keeps the shape of the original visualization — every genre is a contiguous run of
+ * books — and lets the new material stand out as its own region. Inside it the books run
+ * history, wisdom, prophets, appendix, the order the Orthodox Study Bible would interleave them
+ * in. Nothing but this array's order decides where a book sits: verse indices are derived from
+ * it, and every dataset addresses verses by OSIS id, so a Septuagint order (Tobit after
+ * Nehemiah, Wisdom after the Song, Baruch after Lamentations) is a reorder of this list and
+ * nothing else.
  *
  * Book IDs follow the OSIS standard, which is also what the OpenBible.info
- * cross-reference dataset uses.
+ * cross-reference dataset uses. The Letter of Jeremiah is chapter 6 of Baruch, as in the
+ * Vulgate and the World English Bible; Greek Daniel carries the Prayer of Azariah and the Song
+ * of the Three in chapter 3, Susanna as chapter 13 and Bel and the Dragon as chapter 14.
  */
 const BOOK_DEFINITIONS = [
   { id: 'Gen', name: 'Genesis', testament: 'OT', aliases: ['ge', 'gn'] },
@@ -69,6 +94,122 @@ const BOOK_DEFINITIONS = [
   { id: 'Hag', name: 'Haggai', testament: 'OT', aliases: ['hg'] },
   { id: 'Zech', name: 'Zechariah', testament: 'OT', aliases: ['zec', 'zc'] },
   { id: 'Mal', name: 'Malachi', testament: 'OT', aliases: ['ml'] },
+  {
+    id: '1Esd',
+    name: '1 Esdras',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['1es', '1esdr', 'esdrasa', 'greekezra', '3esdras', '3esd'],
+  },
+  {
+    id: 'PrMan',
+    name: 'Prayer of Manasseh',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['man', 'manasseh', 'manasses', 'prayerofmanasses', 'prm', 'prmanasseh'],
+  },
+  {
+    id: 'Tob',
+    name: 'Tobit',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['tb', 'tobias', 'tobi', 'tobie'],
+  },
+  {
+    id: 'Jdt',
+    name: 'Judith',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['jth', 'jdth', 'judit'],
+  },
+  {
+    id: 'EsthGr',
+    name: 'Greek Esther',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: [
+      'esg',
+      'estgr',
+      'esthergreek',
+      'estherwithadditions',
+      'additionstoesther',
+      'addesth',
+      'restofesther',
+    ],
+  },
+  {
+    id: '1Macc',
+    name: '1 Maccabees',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['1ma', '1mac', '1mc', '1mak', '1mach'],
+  },
+  {
+    id: '2Macc',
+    name: '2 Maccabees',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['2ma', '2mac', '2mc', '2mak', '2mach'],
+  },
+  {
+    id: '3Macc',
+    name: '3 Maccabees',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['3ma', '3mac', '3mc', '3mak', '3mach'],
+  },
+  {
+    id: 'AddPs',
+    name: 'Psalm 151',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['ps151', 'psa151', 'psalm151', 'psx', 'ps2'],
+  },
+  {
+    id: 'Wis',
+    name: 'Wisdom of Solomon',
+    referenceName: 'Wisdom',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['ws', 'wisd', 'wisdom', 'wisdomofsolomon', 'sap', 'sapientia'],
+  },
+  {
+    id: 'Sir',
+    name: 'Sirach',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: [
+      'si',
+      'ecclus',
+      'ecclesiasticus',
+      'bensira',
+      'wisdomofsirach',
+      'wisdomofbensira',
+      'wisdomofjesusbensira',
+      'jesussirach',
+    ],
+  },
+  {
+    id: 'Bar',
+    name: 'Baruch',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['ba', 'bar'],
+  },
+  {
+    id: 'DanGr',
+    name: 'Greek Daniel',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['dag', 'dng', 'dangr', 'danielgreek', 'danielwithadditions', 'adddan'],
+  },
+  {
+    id: '4Macc',
+    name: '4 Maccabees',
+    testament: 'OT',
+    deuterocanonical: true,
+    aliases: ['4ma', '4mac', '4mc', '4mak', '4mach'],
+  },
   { id: 'Matt', name: 'Matthew', testament: 'NT', aliases: ['mt', 'mat'] },
   { id: 'Mark', name: 'Mark', testament: 'NT', aliases: ['mk', 'mr', 'mrk'] },
   { id: 'Luke', name: 'Luke', testament: 'NT', aliases: ['lk', 'luk'] },
@@ -100,6 +241,15 @@ const BOOK_DEFINITIONS = [
 
 export type BookId = (typeof BOOK_DEFINITIONS)[number]['id'];
 
+/** The fourteen books of the Orthodox canon that the Protestant 66 do not have. */
+export type DeuterocanonicalBookId = Extract<
+  (typeof BOOK_DEFINITIONS)[number],
+  { readonly deuterocanonical: true }
+>['id'];
+
+/** The 66 books every translation here carries. */
+export type ProtestantBookId = Exclude<BookId, DeuterocanonicalBookId>;
+
 export interface Book extends BookDefinition {
   readonly id: BookId;
   /** Zero-based position of the book in canonical order. */
@@ -116,6 +266,29 @@ const BOOKS_BY_ID: ReadonlyMap<string, Book> = new Map(BOOKS.map((book) => [book
 export function isBookId(value: string): value is BookId {
   return BOOKS_BY_ID.has(value);
 }
+
+export function isDeuterocanonical(id: BookId): id is DeuterocanonicalBookId {
+  return getBook(id).deuterocanonical === true;
+}
+
+export interface ProtestantBook extends Book {
+  readonly id: ProtestantBookId;
+}
+
+export interface DeuterocanonicalBook extends Book {
+  readonly id: DeuterocanonicalBookId;
+  readonly deuterocanonical: true;
+}
+
+/** The books of the Protestant canon, in canonical order. */
+export const PROTESTANT_BOOKS: readonly ProtestantBook[] = BOOKS.filter(
+  (book): book is ProtestantBook => book.deuterocanonical !== true,
+);
+
+/** The deuterocanonical books, in canonical order. */
+export const DEUTEROCANONICAL_BOOKS: readonly DeuterocanonicalBook[] = BOOKS.filter(
+  (book): book is DeuterocanonicalBook => book.deuterocanonical === true,
+);
 
 export function getBook(id: BookId): Book {
   const book = BOOKS_BY_ID.get(id);

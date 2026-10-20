@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEUTEROCANONICAL_BOOKS } from '../../../core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
 import { createTranslationFile, verseIndex } from '../../../test-utils/fixtures.ts';
 import { getTranslationManifest } from '../../../translations/registry.ts';
@@ -30,14 +31,17 @@ describe('computeTranslationStats', () => {
     );
     const stats = computeTranslationStats(translation);
 
-    // Every other verse reads "Verse number <n>." (3 words).
+    // Every other verse of the 66 books reads "Verse number <n>." (3 words); the fixture is
+    // the BSB, which has no deuterocanon, so those verses do not count whatever the file holds.
+    const { verseCount } = CANONICAL_VERSIFICATION;
     const regularVerseCount = 31102 - 3;
     expect(stats).toMatchObject({
-      verseCount: 31102,
+      verseCount,
       textVerseCount: 31101,
       omittedVerses: [omitted],
+      absentBooks: DEUTEROCANONICAL_BOOKS.map(({ id }) => id),
       bookCount: 66,
-      chapterCount: 1189,
+      chapterCount: CANONICAL_VERSIFICATION.chapterCount,
       wordCount: regularVerseCount * 3 + 10 + 2,
       longestVerse: { verse: 0, value: 10 },
       shortestVerse: { verse: shortest, value: 2 },
