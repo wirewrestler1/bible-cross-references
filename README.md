@@ -57,28 +57,34 @@ arcs](public/screenshots/arcs.jpg)
 
 ### Focus a passage
 
-![Arcs with John 3:16 focused: its connections highlighted, and a panel with its text and
+![Arcs with John 3:16 focused: its connections highlighted, and a card with its text and
 references](public/screenshots/arcs-verse.jpg)
 
-The details panel shows the passage's text, where its connections go by genre, and every reference
-with its text and a small tag saying which kind of link it is. Each one is a link: follow it to
-travel there. "Read in context" opens the passage in Threads.
+The passage opens as a card. Its own links are drawn small at the top — the whole canon as a
+line, the passage a point of gold on it — and under the headline and the text, chips choose
+what the list holds: where the passage points, what points at it, or a chapter's verses, each
+with how many links it has. A spectrum of the genres the list reaches narrows it to one. Every
+link is a row with a point of light in the colour of the genre it lands in, the reference, a
+thin tag saying which kind of link it is, and the text; the surest come first, and each one
+travels there. "Read the chapter" opens the passage in the Reader.
 
-A verse of the 66 books also lists the Hebrew or Greek words behind it — the dictionary form, how
-it is said and what it means — and, under each one, every other verse that uses the same word.
-It is a different kind of link from a cross-reference and is kept apart from it. The tagged
-original-language data stops at the 66 books, so the deuterocanon has no words section.
+A verse of the 66 books also has a Words chip: the Hebrew or Greek words behind it as pills —
+the dictionary form, how it is said and what it means — and, for the one opened, every other
+verse that uses the same word. It is a different kind of link from a cross-reference and is kept
+apart from it. The tagged original-language data stops at the 66 books, so the deuterocanon has
+no words.
 
-### Threads: read with the connections in view
+### The Reader: read with the connections in view
 
-![Threads: Psalm 23 with threads from each verse to where its cross-references
-land](public/screenshots/threads.jpg)
+![The Reader: Sirach 24 as a column of text, with threads from each verse to where its
+cross-references land on a spine of the whole Bible](public/screenshots/threads.jpg)
 
-- Read a chapter while each verse sends threads to where its cross-references land in the whole
-  canon, shown as a bar of all the books. Computed links are drawn dashed.
+- Read a chapter as a centred column while each verse sends threads to where its
+  cross-references land on a spine of all the books, lit in their genres' colours. Similar-wording
+  links are drawn dashed.
 - Switch between what a verse points to, what points to it, or both.
-- Tap a verse for its connections and follow them from passage to passage. "Show in Arcs" leads
-  back to the big picture.
+- Tap a verse for its card and follow its links from passage to passage. "See it in the arcs"
+  leads back to the big picture.
 
 ### On your phone
 
