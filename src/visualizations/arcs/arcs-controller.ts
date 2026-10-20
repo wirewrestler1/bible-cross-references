@@ -3,7 +3,7 @@ import type { GenreId } from '../../core/bible/genres.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
 import type { BookNames } from '../../i18n/books/types.ts';
 import { attachGestures, type GesturePoint, type PreviewInput } from '../shared/gestures.ts';
-import { INTRO_SESSION_KEY } from '../../shared/lib/preference-keys.ts';
+import { prefersReducedMotion } from '../../shared/lib/arrival.ts';
 import { animate, FrameScheduler, MAX_PIXEL_RATIO, spring } from '../shared/frames.ts';
 import type { ArcInstances } from './arc-instances.ts';
 import {
@@ -46,6 +46,8 @@ export interface ArcsControllerOptions {
   readonly container: HTMLElement;
   readonly glCanvas: HTMLCanvasElement;
   readonly overlayCanvas: HTMLCanvasElement;
+  /** Whether the visit is arriving: then the axis sweeps in and the arcs unfold when first shown. */
+  readonly arrival: boolean;
   readonly versification: Versification;
   /** Book and genre names for the axis; replaced when the reader changes language. */
   readonly names: BookNames;
@@ -68,41 +70,19 @@ export function glowCeiling(arcCount: number): number {
   return Math.max(arcCount / 320, 16);
 }
 
-/** Length of the intro that grows the arcs, in ms: quick, so it never holds anyone up. */
-const INTRO_MS = 800;
+/** The arrival: the axis sweeps in over this long, and the arcs grow out of it over the next. */
+const AXIS_SWEEP_MS = 1400;
+const INTRO_MS = 2400;
+/** The arcs start growing this long after the axis starts sweeping. */
+const INTRO_DELAY_MS = 500;
+/** A view that comes back into view grows its arcs again, briefly. */
+const RETURN_MS = 700;
 /** How long the focused links take to grow out of a touched passage, in ms. */
 const BLOOM_MS = 550;
 /** How long the ring that marks a landing takes to spread and fade, in ms. */
 const PULSE_MS = 700;
 /** How long the axis takes to settle on a new window, in ms (on a spring, see frames.ts). */
 const MOVE_MS = 650;
-
-/** Whether the reader has asked for less motion: then changes happen at once. */
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-/**
- * Whether the arcs have already unfolded in this visit. A phone that puts the page away and
- * brings it back often reloads it whole; that is a return, not an arrival, and the opening
- * reveal would be a flourish in the way. Storage can refuse (private browsing); then every
- * load is an arrival, which is no worse than before.
- */
-function introAlreadyPlayed(): boolean {
-  try {
-    return sessionStorage.getItem(INTRO_SESSION_KEY) !== null;
-  } catch {
-    return false;
-  }
-}
-
-function rememberIntroPlayed(): void {
-  try {
-    sessionStorage.setItem(INTRO_SESSION_KEY, 'played');
-  } catch {
-    // Nothing to do: next time is an arrival again.
-  }
-}
 
 /**
  * A finger put down this close to the axis line, or on its labels, previews at once: the axis
@@ -143,6 +123,10 @@ export class ArcsController {
   /** The intro that grows the first links from their sources; runs once, when they arrive. */
   #intro: 'pending' | 'running' | 'done' = 'pending';
   #cancelIntro: (() => void) | null = null;
+  #cancelSweep: (() => void) | null = null;
+  #introTimer: ReturnType<typeof setTimeout> | undefined;
+  /** How much of the axis has swept in, 0–1: the books light up from Genesis to Revelation. */
+  #axisReveal = 1;
   /** The focused links growing out of their passage, while they do. */
   #cancelBloom: (() => void) | null = null;
   /** The ring spreading from a landing, while it does: where, and how far along. */
@@ -329,6 +313,8 @@ export class ArcsController {
   dispose(): void {
     this.#cancelAnimation?.();
     this.#cancelIntro?.();
+    this.#cancelSweep?.();
+    clearTimeout(this.#introTimer);
     this.#cancelBloom?.();
     this.#cancelPulse?.();
     this.#stopEdgePan();
@@ -340,22 +326,50 @@ export class ArcsController {
   }
 
   /**
-   * Every arc grows from its source verse to its target while the glow fades in: the whole Bible's
-   * connections unfold at once, continuing the loading screen's arcs of light. Skipped for readers
-   * who prefer reduced motion.
+   * The arrival: the axis lights up book by book from Genesis to Revelation, and as it goes
+   * every arc grows from its source verse to its target while the glow fades in — the whole
+   * Bible's connections unfolding over a few seconds, continuing the loading screen's arcs of
+   * light. Once per visit (the host decides; see `arrival` in Explorer.tsx), and not at all for
+   * readers who prefer reduced motion.
    */
   #playIntro(): void {
-    if (prefersReducedMotion() || introAlreadyPlayed()) {
+    if (prefersReducedMotion() || !this.#options.arrival) {
       this.#intro = 'done';
       return;
     }
-    rememberIntroPlayed();
     this.#intro = 'running';
+    this.#axisReveal = 0;
     this.#scene.setReveal(0);
-    this.#cancelIntro = animate(INTRO_MS, (progress) => {
+    this.#cancelSweep = animate(AXIS_SWEEP_MS, (progress) => {
+      this.#axisReveal = progress;
+      this.#scheduler.request();
+    });
+    this.#introTimer = setTimeout(() => {
+      this.#cancelIntro = animate(
+        INTRO_MS,
+        (progress) => {
+          this.#scene.setReveal(progress);
+          if (progress >= 1) {
+            this.#intro = 'done';
+            this.#cancelIntro = null;
+          }
+          this.#scheduler.request();
+        },
+        spring,
+      );
+    }, INTRO_DELAY_MS);
+  }
+
+  /** Coming back into view, the arcs grow out again, briefly: the screen's own small arrival. */
+  #playReturn(): void {
+    if (prefersReducedMotion()) {
+      return;
+    }
+    this.#cancelIntro?.();
+    this.#scene.setReveal(0);
+    this.#cancelIntro = animate(RETURN_MS, (progress) => {
       this.#scene.setReveal(progress);
       if (progress >= 1) {
-        this.#intro = 'done';
         this.#cancelIntro = null;
       }
       this.#scheduler.request();
@@ -381,6 +395,8 @@ export class ArcsController {
       }
       if (this.#intro === 'pending' && this.#hasLinks) {
         this.#playIntro();
+      } else if (this.#intro === 'done' && this.#hasLinks) {
+        this.#playReturn();
       }
       this.#scheduler.request();
     } else {
@@ -403,6 +419,7 @@ export class ArcsController {
       focus: this.#focus,
       hover: this.#hover,
       passage: this.#linkPreview?.passage ?? null,
+      reveal: this.#axisReveal,
     });
     if (this.#pulse) {
       paintPulse(this.#overlay, this.#layout, this.#view, this.#pulse.range, this.#pulse.progress);

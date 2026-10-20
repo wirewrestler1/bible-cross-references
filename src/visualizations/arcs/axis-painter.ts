@@ -19,6 +19,8 @@ export interface AxisPaint {
   readonly hover: VerseIndexRange | null;
   /** A passage a previewed link points to: a band quieter than hover's, under the focus. */
   readonly passage: VerseIndexRange | null;
+  /** How much of the axis has arrived, 0–1, from its start; 1 (or absent) is the whole of it. */
+  readonly reveal?: number;
 }
 
 const TEXT = '#e8e6df';
@@ -66,17 +68,13 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
   const clampAlong = (value: number) => Math.min(Math.max(value, layout.axisStart), layout.axisEnd);
   const barFrom = layout.baseline + BAR_OFFSET;
   const barTo = barFrom + BAR_THICKNESS;
+  // Arriving: only the part of the axis up to here has lit, with a bright edge at the front.
+  const reveal = paint.reveal ?? 1;
+  const lit = layout.axisStart + (layout.axisEnd - layout.axisStart) * reveal;
 
   // Axis line.
   context.fillStyle = AXIS;
-  fillAlong(
-    context,
-    layout,
-    layout.axisStart,
-    layout.axisEnd,
-    layout.baseline,
-    layout.baseline + 1,
-  );
+  fillAlong(context, layout, layout.axisStart, lit, layout.baseline, layout.baseline + 1);
 
   // The books, as light along the axis: each bar casts a little of its colour around it, and
   // alternate books of a genre are dimmer so neighbours stay distinguishable.
@@ -84,17 +82,33 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
     const range = versification.bookRange(book.id);
     const from = along(range.start);
     const to = along(range.end + 1);
-    if (!visible(from, to)) continue;
+    if (!visible(from, to) || from > lit) continue;
     const gap = to - from > 4 ? 1 : 0;
     const color = elementAt(GENRE_HEX, getBookGenre(book.id).ordinal);
     context.globalAlpha = book.ordinal % 2 === 0 ? 0.95 : 0.7;
     context.fillStyle = color;
     context.shadowColor = color;
     context.shadowBlur = BAR_GLOW;
-    fillAlong(context, layout, clampAlong(from) + gap, clampAlong(to) - gap, barFrom, barTo);
+    fillAlong(
+      context,
+      layout,
+      clampAlong(from) + gap,
+      Math.min(clampAlong(to) - gap, lit),
+      barFrom,
+      barTo,
+    );
   }
   context.shadowBlur = 0;
   context.globalAlpha = 1;
+  if (reveal < 1) {
+    // The front of the sweep: a point of the mark's gold, with a glow.
+    context.fillStyle = FOCUS;
+    context.shadowColor = FOCUS;
+    context.shadowBlur = 16;
+    fillAlong(context, layout, lit - 2, lit + 2, barFrom - 3, barTo + 3);
+    context.shadowBlur = 0;
+    context.globalAlpha = reveal;
+  }
 
   // Chapters, as faint points under the books, once they are wide enough to tell apart.
   const chapterPixels = ((layout.axisEnd - layout.axisStart) / (view.end - view.start)) * 26;
@@ -134,6 +148,7 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
     paintGenreLabels(context, paint, along);
   }
   paintOverview(context, paint);
+  context.globalAlpha = 1;
 }
 
 function paintBookLabels(

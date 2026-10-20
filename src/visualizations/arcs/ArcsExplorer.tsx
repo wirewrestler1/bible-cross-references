@@ -33,6 +33,7 @@ const INSPIRATION = {
 export function ArcsExplorer({
   data,
   active,
+  arrival,
   passage,
   onNavigate,
   filter,
@@ -103,6 +104,7 @@ export function ArcsExplorer({
       <ArcsStage
         data={data}
         active={active}
+        arrival={arrival}
         linkIds={linkIds}
         filter={filter}
         focus={passage}

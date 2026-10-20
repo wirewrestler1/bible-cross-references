@@ -14,6 +14,8 @@ interface ArcsStageProps {
   readonly data: VizData;
   /** Whether it's on screen; hidden, it doesn't draw. */
   readonly active: boolean;
+  /** Whether the visit is arriving: then the arcs unfold when first shown. */
+  readonly arrival: boolean;
   /** Links that pass the filter, drawn as the background. */
   readonly linkIds: Int32Array;
   readonly filter: LinkFilter;
@@ -27,6 +29,7 @@ interface ArcsStageProps {
 export function ArcsStage({
   data,
   active,
+  arrival,
   linkIds,
   filter,
   focus,
@@ -59,6 +62,7 @@ export function ArcsStage({
       container,
       glCanvas,
       overlayCanvas,
+      arrival,
       versification: data.versification,
       names: namesRef.current.books,
       genreNames: namesRef.current.genres,
@@ -75,7 +79,7 @@ export function ArcsStage({
       controller.dispose();
       controllerRef.current = null;
     };
-  }, [data.versification]);
+  }, [data.versification, arrival]); // The arrival is decided once per visit: never a remake.
 
   useEffect(() => {
     namesRef.current = { books, genres };

@@ -23,6 +23,12 @@ export interface VisualizationProps {
    * hidden one should stop drawing (and start its intro once shown).
    */
   readonly active: boolean;
+  /**
+   * Whether this is the visit's arrival: the host decides once, when the page first opens, and
+   * the visualization shown then plays its opening reveal. A page a phone reloads on return
+   * is not arriving, and gets its visualization at once.
+   */
+  readonly arrival: boolean;
   /** The site's name, a link home, from the host. */
   readonly masthead: ReactNode;
   /** The host's switch between visualizations, placed by the page frame. */

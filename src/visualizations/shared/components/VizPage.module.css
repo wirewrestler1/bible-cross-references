@@ -308,3 +308,86 @@
     transition: none;
   }
 }
+
+/* The arrival. The arcs have the screen to themselves while they grow (the first two and a half
+   seconds); then the chrome comes in piece by piece over the next two: the header from above,
+   the card rising into place, the legend, the stats and the bar from where they sit. Set by the
+   host for the first seconds of a visit (see Explorer.tsx), and only once per visit: 'pending'
+   while the arcs build (the chrome unseen), then 'true' when their clock starts. */
+:global([data-arriving='pending']) .header,
+:global([data-arriving='pending']) .panel,
+:global([data-arriving='pending']) .stage > :not(canvas, [role='application']),
+:global([data-arriving='pending']) nav[aria-label] {
+  opacity: 0;
+}
+
+:global([data-arriving='true']) .header {
+  animation: arrive-down 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--arrive-header, 2.5s) both;
+}
+
+/* The card shares its everyday rise, so the arrival's end does not start it over. */
+:global([data-arriving='true']) .panel {
+  animation-duration: 1s;
+  animation-delay: var(--arrive-panel, 3.1s);
+  animation-fill-mode: both;
+}
+
+:global([data-arriving='true']) .stage > :not(canvas, [role='application']) {
+  animation: arrive-fade 0.9s ease-out var(--arrive-stage, 2.9s) both;
+}
+
+:global([data-arriving='true']) nav[aria-label] {
+  animation: arrive-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--arrive-nav, 2.7s) both;
+}
+
+/* The Reader has no arcs to wait for: its pieces come in at once, the threads drawing
+   themselves as the chapter settles (see ThreadsStage.tsx). */
+:global([data-view='threads'][data-arriving='true']) {
+  --arrive-header: 0.1s;
+  --arrive-stage: 0.25s;
+  --arrive-nav: 0.2s;
+  --arrive-panel: 0.5s;
+}
+
+@keyframes arrive-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes arrive-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes arrive-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* A card that opens later rises into place. */
+.panel {
+  animation: card-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global([data-arriving]) .header,
+  :global([data-arriving]) .panel,
+  :global([data-arriving]) .stage > :not(canvas, [role='application']),
+  :global([data-arriving]) nav[aria-label],
+  .panel {
+    animation: none;
+    opacity: 1;
+  }
+}

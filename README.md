@@ -134,6 +134,15 @@ dome — has one source, [`src/shared/ui/mark-paths.ts`](src/shared/ui/mark-path
 header, the first frame and the favicon draw from; `node scripts/icons.ts` rasterizes it into
 the app icons.
 
+The app arrives rather than appears. While the data loads, arcs of light connect verse to verse
+at random across an empty axis until the whole spectrum stands; then, once per visit, the axis
+lights up book by book from Genesis to Revelation, every arc grows from its source verse to its
+target, and the chrome comes in piece by piece over the next seconds. Each screen keeps a
+little of that: the Reader's threads draw themselves from the verses to the spine when a
+chapter opens, the verse card's miniature draws its arcs when it opens, and the arcs grow out
+again when you come back to them. A phone that reloads the page on return lands quietly, and
+readers who prefer reduced motion get every screen at once.
+
 ## Languages
 
 This release speaks English. The repository still holds the words of five more languages —

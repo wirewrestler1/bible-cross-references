@@ -72,15 +72,18 @@ export function MiniArcs({
       aria-label={label}
     >
       <line x1={INSET} x2={WIDTH - INSET} y1={BASELINE} y2={BASELINE} className={styles.miniAxis} />
-      {drawn.map((arc) => (
+      {drawn.map((arc, index) => (
         <path
           key={arc.key}
           d={arc.d}
+          pathLength={1}
           fill="none"
           stroke={arc.color}
           strokeWidth="0.8"
           opacity={arc.opacity}
           vectorEffect="non-scaling-stroke"
+          className={styles.miniArc}
+          style={{ animationDelay: `${String(Math.min(index * 14, 600))}ms` }}
         />
       ))}
       <rect

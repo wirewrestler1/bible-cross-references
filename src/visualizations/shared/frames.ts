@@ -54,7 +54,8 @@ export function animate(
 ): () => void {
   const start = performance.now();
   let frame = requestAnimationFrame(function step(now) {
-    const linear = Math.min((now - start) / durationMs, 1);
+    // A frame's timestamp can precede the start (it is the frame's, not the call's): hold at 0.
+    const linear = Math.min(Math.max((now - start) / durationMs, 0), 1);
     onFrame(easing(linear));
     if (linear < 1) {
       frame = requestAnimationFrame(step);

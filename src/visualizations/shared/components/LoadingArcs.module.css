@@ -8,33 +8,44 @@
   padding: var(--space-6);
   background: var(--color-background);
   /* It takes over from the page's static first frame (see vite/first-frame.ts) with a short fade. */
-  animation: appear 300ms ease-out both;
+  animation: appear 400ms ease-out both;
 }
 
-.mark {
-  inline-size: 6rem;
-  block-size: 6rem;
-  fill: none;
-  stroke: var(--color-accent);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 10px rgb(241 178 74 / 0.45));
+.stage {
+  position: relative;
+  inline-size: min(64rem, calc(100vw - 2rem));
+  aspect-ratio: 2.1;
 }
 
-.still {
-  stroke: var(--color-text);
+.canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
-.arc {
-  stroke-dasharray: 1;
-  animation: draw 2s ease-in-out infinite;
+/* The traces accumulate off screen; the picture draws them under the arcs in flight. */
+.hidden {
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+  visibility: hidden;
 }
 
 .name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin: var(--space-2) 0 0;
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 500;
+}
+
+.mark {
+  inline-size: 1.5em;
+  block-size: 1.5em;
+  color: var(--color-accent);
 }
 
 .label {
@@ -42,21 +53,6 @@
   color: var(--color-text-muted);
   font-size: 0.875rem;
   text-align: center;
-}
-
-@keyframes draw {
-  0% {
-    stroke-dashoffset: 1;
-  }
-
-  45%,
-  65% {
-    stroke-dashoffset: 0;
-  }
-
-  100% {
-    stroke-dashoffset: -1;
-  }
 }
 
 @keyframes appear {
@@ -72,10 +68,5 @@
 @media (prefers-reduced-motion: reduce) {
   .loader {
     animation: none;
-  }
-
-  .arc {
-    animation: none;
-    stroke-dasharray: none;
   }
 }

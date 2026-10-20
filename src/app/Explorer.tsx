@@ -18,6 +18,7 @@ import { Credits } from '../visualizations/shared/components/Credits.tsx';
 import { TranslationMenu } from '../visualizations/shared/components/TranslationMenu.tsx';
 import { FirstVisitGuide } from '../shared/ui/FirstVisitGuide.tsx';
 import { Mark } from '../shared/ui/Mark.tsx';
+import { hasArrived, rememberArrival } from '../shared/lib/arrival.ts';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
 import {
   resetTranslation,
@@ -49,7 +50,41 @@ const [HOME] = VIEWS;
  * keeps its own state (the arcs' zoom, the reading position, the filters). The site's name links
  * home and starts over: it remounts every view in its default state.
  */
+/** How long the arrival takes, from the arcs' first frame to the last piece of chrome in place. */
+const ARRIVAL_MS = 4800;
+
 export function Explorer({ core }: { readonly core: VizCore }) {
+  // The arrival: once per visit, the chrome comes in after the arcs have grown, piece by piece,
+  // over the first seconds (see VizPage.module.css); a return gets the page at once. Decided
+  // while rendering, before the arcs remember the arrival as theirs; the chrome waits unseen
+  // ('pending') through the arcs' first build, which can hold the page for a moment, and its
+  // clock starts on the first frame after, in step with the arcs' own.
+  const [arrival] = useState(() => !hasArrived());
+  const [arriving, setArriving] = useState<'pending' | 'true' | null>(arrival ? 'pending' : null);
+  useEffect(() => {
+    if (arrival) {
+      rememberArrival();
+    }
+  }, [arrival]);
+  useEffect(() => {
+    if (arriving === null) {
+      return undefined;
+    }
+    if (arriving === 'pending') {
+      const frame = requestAnimationFrame(() => {
+        setArriving('true');
+      });
+      return () => {
+        cancelAnimationFrame(frame);
+      };
+    }
+    const timer = setTimeout(() => {
+      setArriving(null);
+    }, ARRIVAL_MS);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [arriving]);
   const { t, books } = useLocalization();
   const [, rememberLocale] = useLocalePreference();
   // The fallback for an address that names no language — the reader's own, not the one the
@@ -253,6 +288,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
             key={`${view.id}:${String(generation)}`}
             className={styles.view}
             data-view={view.id}
+            data-arriving={arriving ?? undefined}
             data-active={isActive}
             inert={!isActive}
           >
@@ -274,6 +310,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
               <view.Component
                 data={data}
                 active={isActive}
+                arrival={arrival}
                 passage={passage}
                 onNavigate={(target) => {
                   navigate({ ...location, view: view.id, passage: target });

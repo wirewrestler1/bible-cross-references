@@ -10,6 +10,7 @@ import { GENRE_COLORS } from '../shared/palette.ts';
 import { useElementSize } from '../shared/use-element-size.ts';
 import type { VizData } from '../shared/viz-data.ts';
 import { FrameScheduler, MAX_PIXEL_RATIO } from '../shared/frames.ts';
+import { prefersReducedMotion } from '../../shared/lib/arrival.ts';
 import { computeSpineLayout } from './spine-layout.ts';
 import { drawThreads, spineBar, type VerseAnchor } from './threads-drawing.ts';
 import styles from './ThreadsStage.module.css';
@@ -34,6 +35,8 @@ interface ThreadsStageProps {
 
 /** Scroll distance after which the chapter header condenses into a slim sticky bar. */
 const CONDENSE_AFTER_PX = 72;
+/** How long a chapter's threads take to draw themselves when it opens. */
+const THREADS_ARRIVE_MS = 1300;
 
 /** Room for the spine bar and its labels, right of the thread area. */
 const SPINE_WIDTH = { wide: 96, compact: 18 } as const;
@@ -69,6 +72,8 @@ export function ThreadsStage({
   const [condensed, setCondensed] = useState(false);
   const [topVerse, setTopVerse] = useState<VerseIndex | null>(null);
   const [spineHover, setSpineHover] = useState<SpineHover | null>(null);
+  // When this chapter's threads started drawing themselves: a new chapter starts them over.
+  const arrivedAt = useRef({ key: '', at: 0 });
 
   const range = versification.chapterRange(book, chapter) ?? { start: 0, end: 0 };
   const { start, end } = range;
@@ -128,8 +133,15 @@ export function ThreadsStage({
     canvas.height = Math.round(canvasSize.height * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
 
+    const chapterKey = `${book}.${String(chapter)}`;
+    if (arrivedAt.current.key !== chapterKey) {
+      arrivedAt.current = { key: chapterKey, at: performance.now() };
+    }
     const scheduler = new FrameScheduler(() => {
       const top = canvas.getBoundingClientRect().top;
+      const reveal = prefersReducedMotion()
+        ? 1
+        : Math.min((performance.now() - arrivedAt.current.at) / THREADS_ARRIVE_MS, 1);
       // Verses scrolled under the sticky chapter header send no threads.
       const clipTop = (chapterHeaderRef.current?.getBoundingClientRect().bottom ?? top) - top;
       const anchors: VerseAnchor[] = [];
@@ -155,7 +167,11 @@ export function ThreadsStage({
         emphasizedVerse,
         emphasizedBook,
         emphasizedLink,
+        reveal,
       });
+      if (reveal < 1) {
+        scheduler.request(); // Still arriving: the next frame draws a little more.
+      }
     });
     scheduler.request();
     const onScroll = () => {
@@ -167,6 +183,8 @@ export function ThreadsStage({
       scheduler.dispose();
     };
   }, [
+    book,
+    chapter,
     canvasSize,
     gutterWidth,
     compact,

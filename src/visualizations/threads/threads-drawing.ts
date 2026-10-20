@@ -35,6 +35,8 @@ export interface ThreadsDrawing {
   readonly emphasizedBook: BookId | null;
   /** A link pointed at in the details panel: it alone stands out. */
   readonly emphasizedLink: number | null;
+  /** How far the threads have drawn themselves from the verses, 0–1; 1 (or absent) is all. */
+  readonly reveal?: number;
 }
 
 const TEXT = '#e8e6df';
@@ -81,6 +83,7 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
     alpha: number;
     emphasized: boolean;
     kind: number;
+    order: number;
   }[] = [];
   for (const anchor of drawing.anchors) {
     for (const connection of drawing.connectionsByVerse.get(anchor.verse) ?? []) {
@@ -103,17 +106,31 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
           (emphasized ? 1 : kindAlpha),
         emphasized,
         kind,
+        order: anchor.verse - drawing.chapter.start,
       });
     }
   }
   // Faint threads first, so emphasized ones are drawn on top.
   threads.sort((a, b) => Number(a.emphasized) - Number(b.emphasized));
   const bend = gutterWidth * 0.55;
+  const reveal = drawing.reveal ?? 1;
+  const verses = Math.max(1, drawing.chapter.end - drawing.chapter.start + 1);
   for (const thread of threads) {
+    // Arriving: each thread grows from its verse toward the spine, the first verses first.
+    const stagger = (thread.order / verses) * 0.5;
+    const progress = Math.min(Math.max((reveal - stagger) / 0.5, 0), 1);
+    if (progress <= 0) continue;
+    const length = Math.hypot(bar.left, thread.target - thread.y) * 1.15;
     context.globalAlpha = thread.alpha;
     context.strokeStyle = thread.color;
     context.lineWidth = thread.emphasized ? 1.6 : thread.kind === LINK_KINDS.computed ? 0.75 : 1;
-    context.setLineDash(thread.kind === LINK_KINDS.computed ? [3, 3] : []);
+    context.setLineDash(
+      progress < 1
+        ? [length * progress, length]
+        : thread.kind === LINK_KINDS.computed
+          ? [3, 3]
+          : [],
+    );
     context.beginPath();
     context.moveTo(0, thread.y);
     context.bezierCurveTo(
@@ -125,6 +142,7 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
       thread.target,
     );
     context.stroke();
+    if (progress < 1) continue;
     // A landing tick just left of the spine bar.
     context.fillStyle = thread.color;
     context.fillRect(bar.left - 4, thread.target - 0.5, 4, 1);

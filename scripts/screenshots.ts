@@ -20,7 +20,7 @@ async function settled(page: Page): Promise<void> {
   await page.locator('div[data-active="true"] canvas').first().waitFor({ state: 'attached' });
   await page.locator('div[data-active="true"] header').first().waitFor();
   // The arcs reveal themselves over a moment; let the intro finish.
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5500);
 }
 
 const browser = await chromium.launch({

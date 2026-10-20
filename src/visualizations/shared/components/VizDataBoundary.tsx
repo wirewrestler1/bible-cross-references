@@ -6,7 +6,7 @@ import { ErrorBoundary } from '../../../shared/ui/ErrorBoundary.tsx';
 import { RetryIcon } from '../../../shared/ui/icons.tsx';
 import { resetTranslations, vizCoreLoader, type VizCore } from '../viz-data.ts';
 import styles from './controls.module.css';
-import { LoadingMark } from './LoadingMark.tsx';
+import { LoadingArcs } from './LoadingArcs.tsx';
 
 interface VizDataBoundaryProps {
   readonly children: (core: VizCore) => ReactNode;
@@ -58,7 +58,7 @@ export function VizDataBoundary({ children }: VizDataBoundaryProps) {
     >
       <Suspense
         fallback={
-          <LoadingMark
+          <LoadingArcs
             label={t('loading.data')(n(CANONICAL_VERSIFICATION.verseCount), n(LINK_COUNT))}
           />
         }
