@@ -219,3 +219,31 @@ function paintOverview(
   if (horizontal) context.strokeRect(from - 0.5, 2.5, Math.max(to - from, 3) + 1, 10);
   else context.strokeRect(layout.width - 13.5, from - 0.5, 10, Math.max(to - from, 3) + 1);
 }
+
+/**
+ * A ring that spreads from a passage on the axis and fades as it goes: the moment a reader
+ * lands somewhere, so the eye finds it among the arcs. `progress` runs from 0 to 1.
+ */
+export function paintPulse(
+  context: CanvasRenderingContext2D,
+  layout: ArcLayout,
+  view: AxisView,
+  range: VerseIndexRange,
+  progress: number,
+): void {
+  const from = verseToAlong(layout, view, range.start);
+  const to = verseToAlong(layout, view, range.end + 1);
+  const along = Math.min(Math.max((from + to) / 2, layout.axisStart), layout.axisEnd);
+  const across = layout.baseline + BAR_OFFSET + BAR_THICKNESS / 2;
+  const [x, y] =
+    layout.orientation === 'horizontal' ? [along, across] : [2 * layout.baseline - across, along];
+  const radius = 6 + 34 * progress;
+  context.save();
+  context.globalAlpha = (1 - progress) * 0.7;
+  context.strokeStyle = TEXT;
+  context.lineWidth = 2;
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.stroke();
+  context.restore();
+}

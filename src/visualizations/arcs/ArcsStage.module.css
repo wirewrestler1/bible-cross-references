@@ -2,6 +2,11 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  /* A faint warmth where the arcs gather, so the dark reads as depth rather than as a flat
+     backdrop; the arcs' own glow sits on top of it. */
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 100%, rgb(245 158 11 / 0.06), transparent 70%),
+    radial-gradient(ellipse 90% 70% at 50% 60%, rgb(236 235 230 / 0.025), transparent 75%);
   outline: none;
   touch-action: none;
   cursor: crosshair;

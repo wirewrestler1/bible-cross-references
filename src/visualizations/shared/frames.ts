@@ -28,12 +28,34 @@ export class FrameScheduler {
   }
 }
 
-/** Runs `onFrame(progress)` with an ease-out curve over `durationMs`; returns a cancel function. */
-export function animate(durationMs: number, onFrame: (progress: number) => void): () => void {
+/** A curve from 0 to 1 over a time from 0 to 1. */
+export type Easing = (linear: number) => number;
+
+/** Quick to start, gentle to stop. */
+export const easeOut: Easing = (linear) => 1 - (1 - linear) ** 3;
+
+/**
+ * A critically damped spring: it sets off at once and comes to rest without overshooting, the
+ * motion of a thing with weight rather than of a value on a timer. Scaled so it ends at exactly
+ * 1, which the formula on its own only approaches.
+ */
+const SPRING_TENSION = 7;
+const SPRING_END = 1 - (1 + SPRING_TENSION) * Math.exp(-SPRING_TENSION);
+export const spring: Easing = (linear) =>
+  linear >= 1
+    ? 1
+    : (1 - (1 + SPRING_TENSION * linear) * Math.exp(-SPRING_TENSION * linear)) / SPRING_END;
+
+/** Runs `onFrame(progress)` along `easing` over `durationMs`; returns a cancel function. */
+export function animate(
+  durationMs: number,
+  onFrame: (progress: number) => void,
+  easing: Easing = easeOut,
+): () => void {
   const start = performance.now();
   let frame = requestAnimationFrame(function step(now) {
     const linear = Math.min((now - start) / durationMs, 1);
-    onFrame(1 - (1 - linear) ** 3);
+    onFrame(easing(linear));
     if (linear < 1) {
       frame = requestAnimationFrame(step);
     }

@@ -17,5 +17,12 @@ export const TRANSLATION_PREFERENCE = 'translation';
 /** Whether the reader has seen the first-visit guide; `'seen'` once they have dismissed it. */
 export const GUIDE_PREFERENCE = 'guide';
 
+/**
+ * Set in `sessionStorage` once the arcs have unfolded for this visit. A phone that puts the page
+ * away and brings it back often reloads it; the reader is returning, not arriving, so the
+ * opening reveal stays put.
+ */
+export const INTRO_SESSION_KEY = preferenceKey('intro');
+
 export const LOCALE_STORAGE_KEY = preferenceKey(LOCALE_PREFERENCE);
 export const TRANSLATION_STORAGE_KEY = preferenceKey(TRANSLATION_PREFERENCE);

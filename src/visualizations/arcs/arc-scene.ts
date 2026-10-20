@@ -1,4 +1,4 @@
-import type { InstancedBufferGeometry } from 'three';
+import type { InstancedBufferGeometry, IUniform } from 'three';
 import {
   AdditiveBlending,
   GLSL3,
@@ -58,6 +58,15 @@ type ArcObject =
 const DIMMED_GLOW = 0.28;
 /** The focused passage's links; faded while one link is previewed on its own. */
 const FOCUS_ALPHA = 0.95;
+
+/** Sets one of an object's own number uniforms, which Three.js types loosely. */
+function setUniform(object: ArcObject, name: string, value: number): void {
+  const uniforms = object.material.uniforms as Record<string, IUniform<number> | undefined>;
+  const uniform = uniforms[name];
+  if (uniform) {
+    uniform.value = value;
+  }
+}
 const FOCUS_ALPHA_UNDER_PREVIEW = 0.22;
 
 /**
@@ -147,6 +156,11 @@ export class ArcScene {
     this.#glow.invalidate();
   }
 
+  /** How much of the focused links is drawn (0–1): they grow out when a passage is touched. */
+  setFocusReveal(reveal: number): void {
+    setUniform(this.#focus, 'u_reveal', reveal);
+  }
+
   /** Dims the glow while something is focused, so the focused links stand out. */
   setDimmed(dimmed: boolean): void {
     this.#glow.setDim(dimmed ? DIMMED_GLOW : 1);
@@ -163,10 +177,7 @@ export class ArcScene {
   /** One link on its own, on top; the focused passage's links fade meanwhile. */
   setPreview(instances: ArcInstances | null): void {
     this.#replace(this.#preview, instances ?? EMPTY);
-    const alpha = this.#focus.material.uniforms['u_alpha'];
-    if (alpha) {
-      alpha.value = instances ? FOCUS_ALPHA_UNDER_PREVIEW : FOCUS_ALPHA;
-    }
+    setUniform(this.#focus, 'u_alpha', instances ? FOCUS_ALPHA_UNDER_PREVIEW : FOCUS_ALPHA);
   }
 
   render(): void {
@@ -197,7 +208,15 @@ export class ArcScene {
       glslVersion: GLSL3,
       vertexShader: kind === 'line' ? LINE_VERTEX_SHADER : RIBBON_VERTEX_SHADER,
       fragmentShader: kind === 'line' ? LINE_FRAGMENT_SHADER : RIBBON_FRAGMENT_SHADER,
-      uniforms: { ...this.#common, u_alpha: { value: alpha }, u_width: { value: width } },
+      uniforms: {
+        ...this.#common,
+        // The focused links reveal on their own, apart from the intro's reveal of the glow.
+        ...(scene === this.#overlayScene && kind === 'ribbon' && alpha === FOCUS_ALPHA
+          ? { u_reveal: { value: 1 } }
+          : {}),
+        u_alpha: { value: alpha },
+        u_width: { value: width },
+      },
       transparent: true,
       depthTest: false,
       depthWrite: false,

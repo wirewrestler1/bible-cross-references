@@ -3,7 +3,8 @@ import type { GenreId } from '../../core/bible/genres.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
 import type { BookNames } from '../../i18n/books/types.ts';
 import { attachGestures, type GesturePoint, type PreviewInput } from '../shared/gestures.ts';
-import { animate, FrameScheduler, MAX_PIXEL_RATIO } from '../shared/frames.ts';
+import { INTRO_SESSION_KEY } from '../../shared/lib/preference-keys.ts';
+import { animate, FrameScheduler, MAX_PIXEL_RATIO, spring } from '../shared/frames.ts';
 import type { ArcInstances } from './arc-instances.ts';
 import {
   alongOfPoint,
@@ -21,7 +22,7 @@ import {
   zoomView,
   type AxisView,
 } from './axis-view.ts';
-import { paintAxis } from './axis-painter.ts';
+import { paintAxis, paintPulse } from './axis-painter.ts';
 
 export interface ArcHover {
   readonly passage: Passage;
@@ -69,6 +70,39 @@ export function glowCeiling(arcCount: number): number {
 
 /** Length of the intro that grows the arcs, in ms: quick, so it never holds anyone up. */
 const INTRO_MS = 800;
+/** How long the focused links take to grow out of a touched passage, in ms. */
+const BLOOM_MS = 550;
+/** How long the ring that marks a landing takes to spread and fade, in ms. */
+const PULSE_MS = 700;
+/** How long the axis takes to settle on a new window, in ms (on a spring, see frames.ts). */
+const MOVE_MS = 650;
+
+/** Whether the reader has asked for less motion: then changes happen at once. */
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Whether the arcs have already unfolded in this visit. A phone that puts the page away and
+ * brings it back often reloads it whole; that is a return, not an arrival, and the opening
+ * reveal would be a flourish in the way. Storage can refuse (private browsing); then every
+ * load is an arrival, which is no worse than before.
+ */
+function introAlreadyPlayed(): boolean {
+  try {
+    return sessionStorage.getItem(INTRO_SESSION_KEY) !== null;
+  } catch {
+    return false;
+  }
+}
+
+function rememberIntroPlayed(): void {
+  try {
+    sessionStorage.setItem(INTRO_SESSION_KEY, 'played');
+  } catch {
+    // Nothing to do: next time is an arrival again.
+  }
+}
 
 /**
  * A finger put down this close to the axis line, or on its labels, previews at once: the axis
@@ -109,6 +143,11 @@ export class ArcsController {
   /** The intro that grows the first links from their sources; runs once, when they arrive. */
   #intro: 'pending' | 'running' | 'done' = 'pending';
   #cancelIntro: (() => void) | null = null;
+  /** The focused links growing out of their passage, while they do. */
+  #cancelBloom: (() => void) | null = null;
+  /** The ring spreading from a landing, while it does: where, and how far along. */
+  #pulse: { readonly range: VerseIndexRange; progress: number } | null = null;
+  #cancelPulse: (() => void) | null = null;
   /** Hidden (another view is shown), it draws nothing; the intro waits until it's shown. */
   #active = true;
   #hasLinks = false;
@@ -193,8 +232,37 @@ export class ArcsController {
       this.#animateTo(
         revealRange(this.#view, range.start, range.end + 1, this.#options.versification.verseCount),
       );
+      this.#land(range);
     }
     this.#scheduler.request();
+  }
+
+  /**
+   * Arriving on a passage: its links grow out of it, and a ring spreads from it on the axis, so
+   * the eye finds where it landed. Readers who prefer reduced motion see the links at once.
+   */
+  #land(range: VerseIndexRange): void {
+    this.#cancelBloom?.();
+    this.#cancelPulse?.();
+    if (prefersReducedMotion()) {
+      this.#scene.setFocusReveal(1);
+      this.#pulse = null;
+      return;
+    }
+    this.#scene.setFocusReveal(0);
+    this.#cancelBloom = animate(BLOOM_MS, (progress) => {
+      this.#scene.setFocusReveal(progress);
+      this.#scheduler.request();
+    });
+    const pulse = { range, progress: 0 };
+    this.#pulse = pulse;
+    this.#cancelPulse = animate(PULSE_MS, (progress) => {
+      pulse.progress = progress;
+      if (progress >= 1) {
+        this.#pulse = null;
+      }
+      this.#scheduler.request();
+    });
   }
 
   /** Shows one link and the whole passage it points to, over the focus (which stays as is). */
@@ -211,6 +279,8 @@ export class ArcsController {
   dispose(): void {
     this.#cancelAnimation?.();
     this.#cancelIntro?.();
+    this.#cancelBloom?.();
+    this.#cancelPulse?.();
     this.#stopEdgePan();
     this.#scheduler.dispose();
     this.#detachGestures();
@@ -224,10 +294,11 @@ export class ArcsController {
    * who prefer reduced motion.
    */
   #playIntro(): void {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (prefersReducedMotion() || introAlreadyPlayed()) {
       this.#intro = 'done';
       return;
     }
+    rememberIntroPlayed();
     this.#intro = 'running';
     this.#scene.setReveal(0);
     this.#cancelIntro = animate(INTRO_MS, (progress) => {
@@ -274,6 +345,9 @@ export class ArcsController {
       hover: this.#hover,
       passage: this.#linkPreview?.passage ?? null,
     });
+    if (this.#pulse) {
+      paintPulse(this.#overlay, this.#layout, this.#view, this.#pulse.range, this.#pulse.progress);
+    }
   }
 
   #verseAt(point: GesturePoint): number | null {
@@ -417,10 +491,19 @@ export class ArcsController {
   #animateTo(target: AxisView): void {
     this.#cancelAnimation?.();
     const from = this.#view;
-    this.#cancelAnimation = animate(450, (progress) => {
-      this.#view = interpolateView(from, target, progress);
+    if (prefersReducedMotion()) {
+      this.#view = target;
       this.#scheduler.request();
-    });
+      return;
+    }
+    this.#cancelAnimation = animate(
+      MOVE_MS,
+      (progress) => {
+        this.#view = interpolateView(from, target, progress);
+        this.#scheduler.request();
+      },
+      spring,
+    );
   }
 
   readonly #onKeyDown = (event: KeyboardEvent): void => {

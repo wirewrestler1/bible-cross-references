@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { animate, FrameScheduler, MAX_PIXEL_RATIO } from './frames.ts';
+import { animate, easeOut, FrameScheduler, MAX_PIXEL_RATIO, spring } from './frames.ts';
 
 let frames: (() => void)[] = [];
 
@@ -111,5 +111,42 @@ describe('animate', () => {
     cancel();
     runFrames();
     expect(onFrame).not.toHaveBeenCalled();
+  });
+});
+
+describe('the curves', () => {
+  it('both start at 0, end at exactly 1, and only ever climb', () => {
+    for (const easing of [easeOut, spring]) {
+      expect(easing(0)).toBe(0);
+      expect(easing(1)).toBe(1);
+      let previous = 0;
+      for (let step = 1; step <= 100; step += 1) {
+        const value = easing(step / 100);
+        expect(value).toBeGreaterThanOrEqual(previous);
+        expect(value).toBeLessThanOrEqual(1);
+        previous = value;
+      }
+    }
+  });
+
+  it('the spring sets off slower than the ease-out and never overshoots', () => {
+    expect(spring(0.05)).toBeLessThan(easeOut(0.05));
+    expect(spring(0.5)).toBeGreaterThan(0.8);
+    expect(spring(1.5)).toBe(1);
+  });
+
+  it('runs along the curve it is given', () => {
+    const seen: number[] = [];
+    let now = 1000;
+    vi.stubGlobal('performance', { now: () => now });
+    const captured: FrameRequestCallback[] = [];
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => captured.push(cb));
+    animate(100, (progress) => seen.push(progress), spring);
+    now = 1050;
+    captured[0]?.(now);
+    expect(seen[0]).toBeCloseTo(spring(0.5), 5);
+    now = 1100;
+    captured[1]?.(now);
+    expect(seen[1]).toBe(1);
   });
 });

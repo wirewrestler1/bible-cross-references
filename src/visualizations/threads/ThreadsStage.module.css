@@ -169,6 +169,21 @@
 .verse[data-selected='true'] {
   background: var(--color-surface-muted);
   box-shadow: inset 2px 0 0 var(--color-text);
+  /* Plays whenever a verse becomes the selected one: the eye finds where it landed. */
+  animation: land 0.9s ease-out;
+}
+
+@keyframes land {
+  from {
+    background: var(--color-accent-soft);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verse[data-selected='true'] {
+    animation: none;
+  }
 }
 
 .number {

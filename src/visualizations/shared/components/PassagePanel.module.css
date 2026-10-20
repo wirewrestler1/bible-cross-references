@@ -29,8 +29,10 @@
 
 .title {
   margin: 2px 0 0;
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .iconButton {
