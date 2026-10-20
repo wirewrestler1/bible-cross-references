@@ -91,7 +91,7 @@
   flex-direction: column;
   inline-size: min(26rem, 42vw);
   min-block-size: 0;
-  border-inline-start: 1px solid var(--color-border);
+  border-inline-start: 1px solid var(--color-hairline);
   background: var(--color-surface);
 }
 
@@ -191,7 +191,7 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: rgb(0 0 0 / 0.5);
+    background: rgb(5 7 13 / 0.55);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--sheet-motion);
@@ -211,10 +211,12 @@
     block-size: calc(100% - var(--sheet-gap));
     padding-block-end: env(safe-area-inset-bottom, 0px);
     border-inline-start: 0;
-    border-block-start: 1px solid var(--color-border);
-    border-radius: 0.875rem 0.875rem 0 0;
+    border-block-start: 1px solid var(--color-hairline);
+    border-radius: 1.25rem 1.25rem 0 0;
     /* Fills in below the sheet when it's stretched past its top. */
-    box-shadow: 0 3rem 0 var(--color-surface);
+    box-shadow:
+      0 3rem 0 var(--color-surface),
+      0 -1rem 3rem rgb(0 0 0 / 0.35);
     transform: translateY(calc(100% - var(--sheet-half)));
     transition: transform var(--sheet-motion);
   }
@@ -269,7 +271,7 @@
     block-size: 0.25rem;
     margin-inline: auto;
     border-radius: 999px;
-    background: var(--color-border);
+    background: rgb(232 230 223 / 0.22);
     content: '';
     transition: background-color 0.2s;
   }

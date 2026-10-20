@@ -48,10 +48,16 @@
 .select {
   inline-size: 100%;
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-glass);
   color: inherit;
+  transition: background-color 0.15s;
+}
+
+.input:hover,
+.select:hover {
+  background: var(--color-surface-muted);
 }
 
 .input:focus-visible,
@@ -79,26 +85,33 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  color: inherit;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-glass);
+  color: var(--color-text);
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.button:hover {
+  background: var(--color-surface-muted);
 }
 
 .button[aria-pressed='true'] {
-  border-color: var(--color-text-muted);
   background: var(--color-surface-muted);
+  color: var(--color-text);
 }
 
 .segmented {
   display: inline-flex;
   padding: 2px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-glass);
 }
 
 /* The frame's 2px padding and 1px border come off the buttons' own padding, so a segmented control
@@ -110,9 +123,13 @@
   color: var(--color-text-muted);
 }
 
+.segmented .button:hover {
+  color: var(--color-text);
+}
+
 .segmented .button[aria-pressed='true'],
 .segmented .button[aria-current='page'] {
-  background: var(--color-surface-muted);
+  background: rgb(232 230 223 / 0.12);
   color: var(--color-text);
 }
 
@@ -264,10 +281,12 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.5);
+  border: 1px solid var(--color-hairline);
+  border-radius: 1rem;
+  background: var(--color-glass-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.45);
   font-size: 0.875rem;
 }
 
@@ -275,6 +294,23 @@
   display: grid;
   gap: var(--space-1);
   font-size: 0.875rem;
+}
+
+/* A fieldset is a group, not a box: no frame, and its legend set as a small-caps heading. */
+fieldset.field {
+  margin: 0;
+  padding: var(--space-2) 0 0;
+  border: 0;
+  border-block-start: 1px solid var(--color-hairline);
+}
+
+fieldset.field > legend {
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* A message inside a menu, in the flow of the popover (unlike `.error`, which floats under the
@@ -373,8 +409,10 @@
     display: flex;
     align-items: stretch;
     padding-block-end: env(safe-area-inset-bottom, 0px);
-    border-block-start: 1px solid var(--color-border);
-    background: var(--color-surface);
+    border-block-start: 1px solid var(--color-hairline);
+    background: var(--color-glass-strong);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
   /* The switch's links stand in the bar as items of their own. */
@@ -399,6 +437,8 @@
     border: 0;
     border-radius: 0;
     background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     color: var(--color-text-muted);
     font-size: 0.6875rem;
     font-weight: 500;
@@ -408,9 +448,14 @@
     font-size: 1.375rem;
   }
 
+  .bar .button:hover {
+    background: none;
+  }
+
   .bar .button[aria-current='page'],
   .bar .button[aria-expanded='true'] {
-    color: var(--color-text);
+    background: none;
+    color: var(--color-accent);
   }
 
   .bar .menuLabel,
@@ -458,9 +503,12 @@
     inset-inline: 0;
     z-index: 30;
     padding: var(--space-4) var(--space-4) var(--space-6);
+    border-block-start: 1px solid var(--color-hairline);
     border-radius: 1rem 1rem 0 0;
-    background: var(--color-surface);
-    box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.5);
+    background: var(--color-glass-strong);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.45);
   }
 
   .searchSheet .search {

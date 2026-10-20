@@ -43,11 +43,14 @@
   min-inline-size: 2rem;
   block-size: 2rem;
   padding: 0 var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-glass);
   color: var(--color-text-muted);
   cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 
 @media (pointer: coarse) {
@@ -59,6 +62,7 @@
 
 .iconButton:hover:not(:disabled),
 .iconButton:focus-visible {
+  background: var(--color-surface-muted);
   color: var(--color-text);
 }
 
@@ -333,11 +337,15 @@
   gap: var(--space-1);
   justify-self: start;
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-glass);
   color: var(--color-text);
   cursor: pointer;
+}
+
+.more:hover {
+  background: var(--color-surface-muted);
 }
 
 .verseRow {
@@ -467,7 +475,8 @@
   min-block-size: var(--band-height);
   padding: var(--space-2) var(--space-4);
   border: 0;
-  border-block: 1px solid var(--color-border);
+  border-block: 1px solid var(--color-hairline);
+  /* Opaque, because the section's content scrolls under it; a shade up from the surface. */
   background: var(--color-surface-muted);
   color: inherit;
   cursor: pointer;
@@ -475,7 +484,7 @@
 }
 
 .sectionToggle:hover {
-  background: var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-muted), var(--color-text) 8%);
 }
 
 .sectionToggle:focus-visible {
@@ -485,9 +494,9 @@
 
 .sectionName {
   flex: none;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
 }
