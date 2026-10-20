@@ -57,6 +57,11 @@ export default defineConfig({
     },
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // Readers who prefer reduced motion: the app then skips the loading screen's hold, the
+    // arrival, the glide to a passage's reach and every draw-in, which on the software
+    // renderer below cost each test many seconds of GPU-bound frames before a click could
+    // land. The motion itself has a test of its own (arrival.spec.ts) that turns this off.
+    reducedMotion: 'reduce',
     // The software renderer: the arcs are WebGL, and CI machines have no GPU.
     launchOptions: {
       args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'],
