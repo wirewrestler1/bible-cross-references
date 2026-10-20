@@ -7,15 +7,60 @@
   gap: var(--space-2);
   max-inline-size: min(22rem, calc(100% - 2 * var(--space-3)));
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: rgb(13 13 13 / 0.82);
-  backdrop-filter: blur(6px);
+  border: 1px solid var(--color-hairline);
+  border-radius: 0.875rem;
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   font-size: 0.75rem;
 }
 
-.toggle {
+/* Folded: a pill of the genres' colours, nothing more. */
+.legend[data-open='false'] {
+  padding: 0;
+  border-radius: 999px;
+}
+
+.legend[data-open='false'] .columns,
+.legend[data-open='false'] .lines {
   display: none;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 2rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+.legend[data-open='true'] .toggle {
+  justify-self: end;
+  min-inline-size: 2rem;
+  padding: 0;
+}
+
+.dots {
+  display: flex;
+  gap: 0.3125rem;
+}
+
+.dot {
+  inline-size: 0.4375rem;
+  block-size: 0.4375rem;
+  border-radius: 999px;
+  box-shadow: 0 0 6px currentColor;
+  transition: opacity 0.2s;
+}
+
+.dot[data-hidden='true'] {
+  opacity: 0.25;
+  box-shadow: none;
 }
 
 .columns {
@@ -35,7 +80,7 @@
   color: var(--color-text-muted);
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -58,13 +103,16 @@
 
 .item[aria-pressed='false'] .key {
   opacity: 0.3;
+  box-shadow: none;
 }
 
+/* A genre's colour, as a point of light. */
 .key {
   flex: none;
-  inline-size: 0.875rem;
-  block-size: 0.1875rem;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
   border-radius: 999px;
+  box-shadow: 0 0 6px currentColor;
 }
 
 /* The line kinds: a sample of each, drawn as the stage draws it. */
@@ -72,8 +120,8 @@
   display: grid;
   grid-template-columns: repeat(2, auto);
   gap: 1px var(--space-4);
-  padding-block-start: var(--space-1);
-  border-block-start: 1px solid var(--color-border);
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--color-hairline);
 }
 
 .lines .heading {
@@ -106,48 +154,21 @@
   opacity: 0.6;
 }
 
-@media (max-width: 47.99rem) {
-  .legend[data-open='false'] .lines {
-    display: none;
-  }
-}
-
 /* Touch devices: taller rows are easier to hit. */
 @media (pointer: coarse) {
   .item {
     min-block-size: 2rem;
   }
+
+  .toggle {
+    min-block-size: 2.5rem;
+  }
 }
 
-/* Phones: the legend collapses to an icon button in the corner. */
 @media (max-width: 47.99rem) {
   .legend {
     inset-block-start: var(--space-2);
     inset-inline-start: var(--space-2);
-    justify-items: start;
     max-inline-size: calc(100% - 2 * var(--space-2));
-    padding: var(--space-1) var(--space-2);
-  }
-
-  .legend[data-open='false'] {
-    padding: 0;
-  }
-
-  .toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-inline-size: 2.5rem;
-    min-block-size: 2.5rem;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color-text);
-    cursor: pointer;
-    font-size: 0.9375rem;
-  }
-
-  .legend[data-open='false'] .columns {
-    display: none;
   }
 }

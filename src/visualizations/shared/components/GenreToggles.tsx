@@ -34,7 +34,10 @@ export function GenreToggles({ hiddenGenres, onToggle }: GenreTogglesProps) {
                 onToggle(genre.id);
               }}
             >
-              <span className={styles.key} style={{ background: GENRE_COLORS[genre.id] }} />
+              <span
+                className={styles.key}
+                style={{ background: GENRE_COLORS[genre.id], color: GENRE_COLORS[genre.id] }}
+              />
               {genreName(genre.id)}
             </button>
           ))}

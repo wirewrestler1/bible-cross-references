@@ -9,6 +9,11 @@
   backdrop-filter: blur(4px);
 }
 
+.guide:focus {
+  /* Focused by script when it opens, so its title is read; no ring for that. */
+  outline: none;
+}
+
 .guide {
   display: grid;
   gap: var(--space-2);

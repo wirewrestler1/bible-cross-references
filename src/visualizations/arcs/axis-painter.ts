@@ -21,12 +21,17 @@ export interface AxisPaint {
   readonly passage: VerseIndexRange | null;
 }
 
-const TEXT = '#ecebe6';
-const MUTED = '#9a9890';
-const AXIS = '#3a3935';
+const TEXT = '#e8e6df';
+const MUTED = 'rgb(232 230 223 / 0.55)';
+/** The focus: the one warm light on the axis, the colour of the mark. */
+const FOCUS = '#f1b24a';
+/** The axis itself is barely there; the books are the light along it. */
+const AXIS = 'rgb(232 230 223 / 0.14)';
 const BAR_OFFSET = 3;
-const BAR_THICKNESS = 8;
-const LABEL_FONT = '11px system-ui, -apple-system, "Segoe UI", sans-serif';
+const BAR_THICKNESS = 6;
+/** How far a book's light spreads past its bar, in px. */
+const BAR_GLOW = 6;
+const LABEL_FONT = '500 10.5px system-ui, -apple-system, "Segoe UI", sans-serif';
 const GENRE_FONT = '600 10px system-ui, -apple-system, "Segoe UI", sans-serif';
 
 /**
@@ -73,20 +78,25 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
     layout.baseline + 1,
   );
 
-  // Book bars; alternate books of a genre are dimmer so neighbors stay distinguishable.
+  // The books, as light along the axis: each bar casts a little of its colour around it, and
+  // alternate books of a genre are dimmer so neighbours stay distinguishable.
   for (const book of BOOKS) {
     const range = versification.bookRange(book.id);
     const from = along(range.start);
     const to = along(range.end + 1);
     if (!visible(from, to)) continue;
     const gap = to - from > 4 ? 1 : 0;
-    context.globalAlpha = book.ordinal % 2 === 0 ? 1 : 0.72;
-    context.fillStyle = elementAt(GENRE_HEX, getBookGenre(book.id).ordinal);
+    const color = elementAt(GENRE_HEX, getBookGenre(book.id).ordinal);
+    context.globalAlpha = book.ordinal % 2 === 0 ? 0.95 : 0.7;
+    context.fillStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = BAR_GLOW;
     fillAlong(context, layout, clampAlong(from) + gap, clampAlong(to) - gap, barFrom, barTo);
   }
+  context.shadowBlur = 0;
   context.globalAlpha = 1;
 
-  // Chapter ticks once chapters are wide enough to tell apart.
+  // Chapters, as faint points under the books, once they are wide enough to tell apart.
   const chapterPixels = ((layout.axisEnd - layout.axisStart) / (view.end - view.start)) * 26;
   if (chapterPixels > 10) {
     context.fillStyle = MUTED;
@@ -95,25 +105,29 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
         const start = versification.chapterRange(book.id, chapter)?.start ?? 0;
         const position = along(start);
         if (position >= layout.axisStart && position <= layout.axisEnd) {
-          fillAlong(context, layout, position, position + 1, barTo + 1, barTo + 4);
+          fillAlong(context, layout, position, position + 1.5, barTo + 2, barTo + 3.5);
         }
       }
     }
   }
 
-  const highlight = (range: VerseIndexRange | null, color: string, width: number) => {
+  const highlight = (range: VerseIndexRange | null, color: string, width: number, glow: number) => {
     if (!range) return;
     const from = along(range.start);
     const to = along(range.end + 1);
     if (!visible(from, to)) return;
     context.fillStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = glow;
     const center = (clampAlong(from) + clampAlong(to)) / 2;
     const half = Math.max((clampAlong(to) - clampAlong(from)) / 2, width);
     fillAlong(context, layout, center - half, center + half, barFrom - 2, barTo + 2);
+    context.shadowBlur = 0;
   };
-  highlight(paint.passage, 'rgb(236 235 230 / 0.3)', 1.5);
-  highlight(paint.hover, 'rgb(236 235 230 / 0.45)', 1.5);
-  highlight(paint.focus, TEXT, 2);
+  highlight(paint.passage, 'rgb(232 230 223 / 0.3)', 1.5, 0);
+  highlight(paint.hover, 'rgb(232 230 223 / 0.5)', 1.5, 4);
+  // The focus glows warm: the one light on the axis that is not a genre's.
+  highlight(paint.focus, FOCUS, 2, 14);
 
   paintBookLabels(context, paint, along);
   if (layout.orientation === 'horizontal') {
@@ -132,6 +146,7 @@ function paintBookLabels(
   // Vertical axis: labels sit left of the bar, in the band between the stage edge and the axis.
   const sideRoom = layout.baseline - labelOffset - 8;
   context.font = LABEL_FONT;
+  context.letterSpacing = '0.02em';
   context.textBaseline = 'middle';
   context.textAlign = horizontal ? 'center' : 'right';
   const touches = (range: VerseIndexRange | null, start: number, end: number) =>
@@ -171,6 +186,7 @@ function paintGenreLabels(
   along: (verse: number) => number,
 ): void {
   context.font = GENRE_FONT;
+  context.letterSpacing = '0.08em';
   context.textAlign = 'center';
   const y = layout.baseline + BAR_OFFSET + BAR_THICKNESS + 32;
   for (const genre of GENRES) {
@@ -212,7 +228,7 @@ function paintOverview(
     if (horizontal) context.fillRect(from, 6, to - from, 3);
     else context.fillRect(layout.width - 9, from, 3, to - from);
   }
-  context.strokeStyle = TEXT;
+  context.strokeStyle = FOCUS;
   context.lineWidth = 1;
   const from = position(view.start);
   const to = position(view.end);
@@ -239,8 +255,8 @@ export function paintPulse(
     layout.orientation === 'horizontal' ? [along, across] : [2 * layout.baseline - across, along];
   const radius = 6 + 34 * progress;
   context.save();
-  context.globalAlpha = (1 - progress) * 0.7;
-  context.strokeStyle = TEXT;
+  context.globalAlpha = (1 - progress) * 0.8;
+  context.strokeStyle = FOCUS;
   context.lineWidth = 2;
   context.beginPath();
   context.arc(x, y, radius, 0, Math.PI * 2);

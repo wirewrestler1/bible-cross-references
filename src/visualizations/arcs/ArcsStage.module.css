@@ -31,10 +31,12 @@
   position: absolute;
   z-index: 3;
   max-inline-size: 16rem;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: calc(var(--radius) - 2px);
-  background: rgb(22 22 21 / 0.94);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-hairline);
+  border-radius: 0.75rem;
+  background: var(--color-glass-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   font-size: 0.8125rem;
   pointer-events: none;
   transform-origin: top left;
@@ -62,7 +64,9 @@
 
 .tooltip strong {
   display: block;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .tooltip span {

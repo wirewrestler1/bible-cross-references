@@ -65,7 +65,7 @@ const KEYBOARD_ZOOM = 1.6;
  * of the visible ones, so the ceiling follows the link count and any filter looks balanced.
  */
 export function glowCeiling(arcCount: number): number {
-  return Math.max(arcCount / 250, 20);
+  return Math.max(arcCount / 320, 16);
 }
 
 /** Length of the intro that grows the arcs, in ms: quick, so it never holds anyone up. */

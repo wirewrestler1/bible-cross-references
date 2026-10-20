@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { GENRES } from '../../../core/bible/genres.ts';
 import { LINK_KIND_IDS } from '../../../core/datasets/link-kinds.ts';
+import { GENRE_COLORS } from '../palette.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
-import { CloseIcon, GenresIcon } from '../../../shared/ui/icons.tsx';
+import { CloseIcon } from '../../../shared/ui/icons.tsx';
 import styles from './GenreLegend.module.css';
 import { GenreToggles, type GenreTogglesProps } from './GenreToggles.tsx';
 
@@ -22,8 +24,8 @@ export function LineKinds() {
 }
 
 /**
- * The genre legend as an overlay in the stage's top-left corner. On phones it collapses to an
- * icon button, like the icon-only header menus there.
+ * The genre legend, folded into a strip of the genres' colours in the stage's corner — one dot
+ * each, a hidden genre's dimmed — that opens into the toggles and the kinds of line.
  */
 export function GenreLegend(toggles: GenreTogglesProps) {
   const { t } = useLocalization();
@@ -39,7 +41,20 @@ export function GenreLegend(toggles: GenreTogglesProps) {
           setOpen((value) => !value);
         }}
       >
-        {open ? <CloseIcon /> : <GenresIcon />}
+        {open ? (
+          <CloseIcon />
+        ) : (
+          <span className={styles.dots} aria-hidden="true">
+            {GENRES.map((genre) => (
+              <span
+                key={genre.id}
+                className={styles.dot}
+                data-hidden={toggles.hiddenGenres.has(genre.id)}
+                style={{ background: GENRE_COLORS[genre.id], color: GENRE_COLORS[genre.id] }}
+              />
+            ))}
+          </span>
+        )}
       </button>
       <GenreToggles {...toggles} />
       <LineKinds />
