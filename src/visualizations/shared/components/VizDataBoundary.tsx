@@ -2,7 +2,7 @@ import { Suspense, use, useEffect, useState, type ReactNode } from 'react';
 import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
 import { DatasetUnavailableError } from '../../../shared/lib/fetch-dataset.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
-import { hasArrived, prefersReducedMotion, rememberArrival } from '../../../shared/lib/arrival.ts';
+import { prefersReducedMotion } from '../../../shared/lib/arrival.ts';
 import { ErrorBoundary } from '../../../shared/ui/ErrorBoundary.tsx';
 import { RetryIcon } from '../../../shared/ui/icons.tsx';
 import { resetTranslations, vizCoreLoader, type VizCore } from '../viz-data.ts';
@@ -24,8 +24,8 @@ function Loaded({ children }: VizDataBoundaryProps) {
 const LINK_COUNT = import.meta.env.LINK_COUNT;
 
 /**
- * On a visit's first open the loading screen stays at least this long, whether or not the data
- * is quicker (it usually is, from the cache): time for its spectrum to fill and stand a moment.
+ * The loading screen stays at least this long on every open, whether or not the data is
+ * quicker (it usually is, from the cache): time for its spectrum to fill and stand a moment.
  */
 export const HOLD_MS = RAMP_MS + 600;
 /** Then it fades out over the arriving page for this long. */
@@ -36,21 +36,19 @@ export const LEAVE_MS = 700;
  * translation loads inside (see `Explorer`), and a failure there lands in this boundary too, so
  * retrying forgets both.
  *
- * The loading screen opens the arrival (see `Explorer`, whose reveal plays on every load): on
- * a visit's first open it is held until its picture is full, and leaves with a fade over the
- * page; a return in the same visit, or a reader who prefers reduced motion, gets the page as
- * soon as the data is here.
+ * The loading screen opens the arrival (see `Explorer`), on every load: it is held until its
+ * picture is full, and leaves with a fade over the page. A reader who prefers reduced motion
+ * gets the page as soon as the data is here.
  */
 export function VizDataBoundary({ children }: VizDataBoundaryProps) {
   const { t, n } = useLocalization();
-  const [held, setHeld] = useState(() => !hasArrived() && !prefersReducedMotion());
+  const [held, setHeld] = useState(() => !prefersReducedMotion());
   const [ready, setReady] = useState(false);
   const [gone, setGone] = useState(false);
   useEffect(() => {
     if (!held) {
       return undefined;
     }
-    rememberArrival();
     const timer = setTimeout(() => {
       setHeld(false);
     }, HOLD_MS);

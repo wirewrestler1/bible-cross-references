@@ -142,12 +142,12 @@ dome — has one source, [`src/shared/ui/mark-paths.ts`](src/shared/ui/mark-path
 header, the first frame and the favicon draw from; `node scripts/icons.ts` rasterizes it into
 the app icons.
 
-The app arrives rather than appears. The first time it opens in a visit, arcs of light connect
-verse to verse at random across an empty axis, a few a second and then a flood, until the whole
-spectrum stands (the data is usually quicker, from the cache; the screen stays until the picture
-is full, then fades over the page). Then, on every load, the axis lights up book by book from
-Genesis to Revelation, every arc grows from its source verse to its target, and the chrome
-comes in piece by piece over the next seconds. Each screen keeps a
+The app arrives rather than appears, every time it opens. Arcs of light connect verse to verse
+at random across an empty axis, a few a second and then a flood, until the whole spectrum
+stands (the data is usually quicker, from the cache; the screen stays until the picture is
+full, then fades over the page). Then the axis lights up book by book from Genesis to
+Revelation, every arc grows from its source verse to its target, and the chrome comes in piece
+by piece over the next seconds. Each screen keeps a
 little of that: the Reader's threads draw themselves from the verses to the spine when a
 chapter opens, the verse card's miniature draws its arcs when it opens, and the arcs grow out
 again when you come back to them. Readers who prefer reduced motion get every screen at once.

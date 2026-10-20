@@ -17,7 +17,6 @@ import {
   LEAVE_MS,
   VizDataBoundary,
 } from '../visualizations/shared/components/VizDataBoundary.tsx';
-import { INTRO_SESSION_KEY } from '../shared/lib/preference-keys.ts';
 import { VizPage } from '../visualizations/shared/components/VizPage.tsx';
 import { PHONE_QUERY } from '../shared/lib/use-media-query.ts';
 import { vizCoreLoader, resetTranslations } from '../visualizations/shared/viz-data.ts';
@@ -98,17 +97,18 @@ describe('mount', () => {
 });
 
 describe('VizDataBoundary', () => {
-  // A return, not an arrival: the loading screen is not held (the arrival has its own test).
+  // A reader who prefers reduced motion: the loading screen is not held (the hold has its own
+  // test, which asks for motion).
   beforeEach(() => {
-    sessionStorage.setItem(INTRO_SESSION_KEY, 'arrived');
+    vi.stubGlobal('matchMedia', () => ({ matches: true }) as MediaQueryList);
   });
   afterEach(() => {
-    sessionStorage.clear();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 
-  it('holds the loading screen on arrival until its picture is full, then lets it leave', async () => {
-    sessionStorage.clear();
+  it('holds the loading screen on every open until its picture is full, then lets it leave', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }) as MediaQueryList);
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     serve();
     await renderSuspending(<VizDataBoundary>{() => <p>done</p>}</VizDataBoundary>);
