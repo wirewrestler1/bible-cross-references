@@ -8,6 +8,7 @@ import { offline } from './vite/offline.ts';
 import { writeLocaleEntries } from './vite/locale-entries.ts';
 import { DEPLOY_BASE, PAGES, ROOT_DIR, SITE_NAME, SITE_URL } from './vite/site.ts';
 import { siteHead } from './vite/site-head.ts';
+import { mergedLinkCount } from './vite/link-count.ts';
 
 // Every language that is not the default needs a real HTML file for the bundler to take as an
 // input and for the dev server to serve, and those files are generated from `src/i18n/site-copy.ts`
@@ -24,6 +25,7 @@ export default defineConfig(({ command, isPreview = false }) => ({
   define: {
     'import.meta.env.SITE_NAME': JSON.stringify(SITE_NAME),
     'import.meta.env.SITE_URL': JSON.stringify(SITE_URL),
+    'import.meta.env.LINK_COUNT': JSON.stringify(mergedLinkCount()),
   },
   plugins: [react(), siteHead(), firstFrame(), offline(), analytics()],
   build: {

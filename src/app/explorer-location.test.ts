@@ -41,6 +41,13 @@ function place(url: string, base = '/') {
 const HIDE_LAW_AND_HISTORY: LinkFilter = {
   minVotes: 10,
   hiddenGenres: new Set(['law', 'history'] as const),
+  hiddenKinds: new Set(),
+};
+
+const ONLY_TSK_AND_CURATED: LinkFilter = {
+  minVotes: DEFAULT_LINK_FILTER.minVotes,
+  hiddenGenres: new Set(),
+  hiddenKinds: new Set(['imported', 'computed'] as const),
 };
 
 describe('parseExplorerUrl', () => {
@@ -77,6 +84,18 @@ describe('parseExplorerUrl', () => {
     expect(parse('/').filter).toEqual(DEFAULT_LINK_FILTER);
     expect(parse('/?votes=10&hide=history,law').filter).toEqual(HIDE_LAW_AND_HISTORY);
     expect(parse('/?votes=all').filter.minVotes).toBe(-Infinity);
+  });
+
+  it('reads the kinds shown from ?kinds=, hiding the rest', () => {
+    expect(parse('/?kinds=tsk,curated').filter).toEqual(ONLY_TSK_AND_CURATED);
+    expect(parse('/?kinds=curated,tsk').filter).toEqual(ONLY_TSK_AND_CURATED);
+    // A list naming nothing the app knows shows everything, like no list at all.
+    expect(parse('/?kinds=nope').filter.hiddenKinds.size).toBe(0);
+    expect([...parse('/?kinds=tsk,nope').filter.hiddenKinds]).toEqual([
+      'imported',
+      'curated',
+      'computed',
+    ]);
   });
 
   it('reads the translation from ?t=, falling back to the one the reader chose', () => {
@@ -123,6 +142,19 @@ describe('explorerUrl', () => {
       kjv,
     );
     expect(url).toBe('/?ref=Isa.53&votes=10&hide=law,history');
+    expect(
+      explorerUrl(
+        ROUTES[0],
+        {
+          passage: null,
+          filter: ONLY_TSK_AND_CURATED,
+          translation: DEFAULT_TRANSLATION_ID,
+          locale: 'en',
+        },
+        '/',
+        kjv,
+      ),
+    ).toBe('/?kinds=tsk,curated');
     const all = explorerUrl(
       ROUTES[0],
       {

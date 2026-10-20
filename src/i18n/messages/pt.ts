@@ -30,18 +30,31 @@ export const pt: LocaleMessages = {
   // Plural and masculine, agreeing with "Filtros".
   'menu.filtersChanged': 'Filtros (alterados)',
   'menu.filters': 'Filtros',
-  'menu.filters.votes': 'Votos da comunidade',
+  'menu.filters.votes': 'Peso mínimo',
   'menu.filters.votes.all': 'Todos',
   'menu.filters.votes.atLeast': (votes) => `≥ ${String(votes)}`,
   'menu.filters.note': (shown, total, threshold, hidden) =>
-    `Os votos indicam o quanto os leitores do OpenBible.info acharam uma ligação útil; não ` +
-    `provam que ela esteja certa ou errada. Exibindo ${shown} de ${total} ligações ` +
+    `O peso ordena uma ligação; não prova que ela esteja certa ou errada. Numa do Treasury ` +
+    `são os votos dos leitores do OpenBible.info, numa curada a certeza da conexão, numa ` +
+    `calculada a semelhança das palavras. Exibindo ${shown} de ${total} ligações ` +
     `(${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count) =>
     count === 1 ? ', 1 gênero oculto' : `, ${String(count)} gêneros ocultos`,
   'filter.allLinks': 'todas as ligações',
   'filter.noDownvoted': 'ligações com votos negativos ficam ocultas',
-  'filter.atLeastVotes': (votes, plural) => (plural === 1 ? `≥ ${votes} voto` : `≥ ${votes} votos`),
+  'filter.atLeastVotes': (votes) => `peso ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count) =>
+    count === 1 ? ', 1 tipo de ligação oculto' : `, ${String(count)} tipos de ligação ocultos`,
+  'menu.filters.kinds': 'Tipos de ligação',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'ordenadas pelos votos dos leitores',
+  'kind.imported': 'Bíblia sueca de 1917',
+  'kind.imported.note': 'um aparato impresso de passagens paralelas',
+  'kind.curated': 'Curadas',
+  'kind.curated.note': 'compiladas para os deuterocanônicos, por certeza',
+  'kind.computed': 'Calculadas',
+  'kind.computed.note': 'parecidas nas palavras, não necessariamente relacionadas',
+  'legend.kinds': 'Linhas',
   'menu.filters.tip': 'Dica: toque num gênero na legenda para ocultá-lo ou exibi-lo.',
   'menu.filters.reset': 'Restaurar filtros',
 

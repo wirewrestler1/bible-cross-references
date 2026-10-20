@@ -31,19 +31,31 @@ export const de: LocaleMessages = {
 
   'menu.filtersChanged': 'Filter (geändert)',
   'menu.filters': 'Filter',
-  'menu.filters.votes': 'Stimmen der Leser',
+  'menu.filters.votes': 'Mindestgewicht',
   'menu.filters.votes.all': 'Alle',
   'menu.filters.votes.atLeast': (votes) => `≥ ${String(votes)}`,
   'menu.filters.note': (shown, total, threshold, hidden) =>
-    `Die Stimmen zeigen, wie hilfreich die Leser von OpenBible.info einen Verweis fanden; sie ` +
-    `belegen nicht, ob er zutrifft. Angezeigt werden ${shown} von ${total} Verweisen ` +
-    `(${threshold}${hidden}).`,
+    `Das Gewicht ordnet einen Verweis ein; es belegt nicht, ob er zutrifft. Bei einem Verweis ` +
+    `aus dem Treasury sind es die Stimmen der Leser von OpenBible.info, bei einem kuratierten ` +
+    `die Sicherheit der Verbindung, bei einem berechneten die Ähnlichkeit der Worte. Angezeigt ` +
+    `werden ${shown} von ${total} Verweisen (${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count) =>
     count === 1 ? ', 1 Gattung ausgeblendet' : `, ${String(count)} Gattungen ausgeblendet`,
   'filter.allLinks': 'alle Verweise',
   'filter.noDownvoted': 'abgewertete Verweise ausgeblendet',
-  'filter.atLeastVotes': (votes, plural) =>
-    plural === 1 ? `≥ ${votes} Stimme` : `≥ ${votes} Stimmen`,
+  'filter.atLeastVotes': (votes) => `Gewicht ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count) =>
+    count === 1 ? ', 1 Verweisart ausgeblendet' : `, ${String(count)} Verweisarten ausgeblendet`,
+  'menu.filters.kinds': 'Verweisarten',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'nach den Stimmen der Leser',
+  'kind.imported': 'Schwedische Bibel 1917',
+  'kind.imported.note': 'ein gedruckter Parallelstellenapparat',
+  'kind.curated': 'Kuratiert',
+  'kind.curated.note': 'für die deuterokanonischen Bücher zusammengestellt, nach Sicherheit',
+  'kind.computed': 'Berechnet',
+  'kind.computed.note': 'ähnlich im Wortlaut, nicht unbedingt verwandt',
+  'legend.kinds': 'Linien',
   'menu.filters.tip':
     'Tipp: Tippen Sie in der Legende auf eine Gattung, um sie aus- oder einzublenden.',
   'menu.filters.reset': 'Filter zurücksetzen',

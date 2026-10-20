@@ -67,6 +67,18 @@ const COMMON = /* glsl */ `
   float revealFade() {
     return smoothstep(0.0, 0.5, u_reveal);
   }
+
+  // How much of a link's brightness its kind keeps: a computed link (3) says only that the
+  // words are alike, so it is drawn faint; an imported apparatus link (1) a little under the
+  // Treasury's and the curated ones, which are drawn in full.
+  float kindAlpha(float kind) {
+    return kind > 2.5 ? 0.45 : (kind > 0.5 && kind < 1.5 ? 0.8 : 1.0);
+  }
+
+  // And how wide a ribbon it gets, on the same reasoning.
+  float kindWidth(float kind) {
+    return kind > 2.5 ? 0.6 : 1.0;
+  }
 `;
 
 /** Hairline arcs (GL_LINES), drawn with additive blending so dense regions glow. */
@@ -78,6 +90,7 @@ export const LINE_VERTEX_SHADER = /* glsl */ `
   in vec2 a_ends;
   in vec2 a_genres;
   in float a_weight;
+  in float a_kind;
 
   out vec4 v_color;
 
@@ -85,7 +98,7 @@ export const LINE_VERTEX_SHADER = /* glsl */ `
     float t = revealed(position.x);
     vec2 local = arcLocal(alongOf(a_ends.x), alongOf(a_ends.y), PI * t);
     gl_Position = toClip(toScreen(local));
-    v_color = vec4(arcColor(a_genres, t), u_alpha * a_weight * revealFade());
+    v_color = vec4(arcColor(a_genres, t), u_alpha * a_weight * kindAlpha(a_kind) * revealFade());
   }
 `;
 
@@ -99,6 +112,7 @@ export const RIBBON_VERTEX_SHADER = /* glsl */ `
   in vec2 a_ends;
   in vec2 a_genres;
   in float a_weight;
+  in float a_kind;
 
   out vec4 v_color;
   out float v_side;
@@ -110,8 +124,11 @@ export const RIBBON_VERTEX_SHADER = /* glsl */ `
     vec2 point = toScreen(arcLocal(a, b, PI * t));
     vec2 tangent = toScreenDirection(arcTangent(a, b, PI * t));
     vec2 normal = length(tangent) > 1e-4 ? normalize(vec2(-tangent.y, tangent.x)) : vec2(0.0, 1.0);
-    gl_Position = toClip(point + normal * position.y * u_width * 0.5);
-    v_color = vec4(arcColor(a_genres, t), u_alpha * mix(0.55, 1.0, a_weight) * revealFade());
+    gl_Position = toClip(point + normal * position.y * u_width * kindWidth(a_kind) * 0.5);
+    v_color = vec4(
+      arcColor(a_genres, t),
+      u_alpha * mix(0.55, 1.0, a_weight) * kindAlpha(a_kind) * revealFade()
+    );
     v_side = position.y;
   }
 `;

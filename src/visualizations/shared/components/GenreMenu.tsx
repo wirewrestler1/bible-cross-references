@@ -1,5 +1,6 @@
 import { useLocalization } from '../../../i18n/use-locale.tsx';
 import { GenresIcon } from '../../../shared/ui/icons.tsx';
+import { LineKinds } from './GenreLegend.tsx';
 import { GenreToggles, type GenreTogglesProps } from './GenreToggles.tsx';
 import { MenuButton } from './MenuButton.tsx';
 
@@ -14,6 +15,7 @@ export function GenreMenu(props: GenreTogglesProps) {
       indicator={props.hiddenGenres.size > 0}
     >
       <GenreToggles {...props} />
+      <LineKinds />
     </MenuButton>
   );
 }

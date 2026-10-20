@@ -29,18 +29,33 @@ export const es: LocaleMessages = {
 
   'menu.filtersChanged': 'Filtros (modificados)',
   'menu.filters': 'Filtros',
-  'menu.filters.votes': 'Votos de la comunidad',
+  'menu.filters.votes': 'Peso mínimo',
   'menu.filters.votes.all': 'Todos',
   'menu.filters.votes.atLeast': (votes) => `≥ ${String(votes)}`,
   'menu.filters.note': (shown, total, threshold, hidden) =>
-    `Los votos indican cuán útil les pareció una referencia a los lectores de OpenBible.info; ` +
-    `no demuestran que sea correcta o incorrecta. Se muestran ${shown} de ${total} referencias ` +
-    `(${threshold}${hidden}).`,
+    `El peso ordena una referencia; no demuestra que sea correcta o incorrecta. En una del ` +
+    `Treasury son los votos de los lectores de OpenBible.info, en una curada la certeza de la ` +
+    `conexión, en una calculada la semejanza de las palabras. Se muestran ${shown} de ${total} ` +
+    `referencias (${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count) =>
     count === 1 ? ', 1 género oculto' : `, ${String(count)} géneros ocultos`,
   'filter.allLinks': 'todas las referencias',
   'filter.noDownvoted': 'referencias con votos negativos ocultas',
-  'filter.atLeastVotes': (votes, plural) => (plural === 1 ? `≥ ${votes} voto` : `≥ ${votes} votos`),
+  'filter.atLeastVotes': (votes) => `peso ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count) =>
+    count === 1
+      ? ', 1 tipo de referencia oculto'
+      : `, ${String(count)} tipos de referencia ocultos`,
+  'menu.filters.kinds': 'Tipos de referencia',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'ordenadas por los votos de los lectores',
+  'kind.imported': 'Biblia sueca de 1917',
+  'kind.imported.note': 'un aparato impreso de pasajes paralelos',
+  'kind.curated': 'Curadas',
+  'kind.curated.note': 'compiladas para los deuterocanónicos, por certeza',
+  'kind.computed': 'Calculadas',
+  'kind.computed.note': 'parecidas en las palabras, no necesariamente relacionadas',
+  'legend.kinds': 'Líneas',
   'menu.filters.tip': 'Consejo: toque un género en la leyenda para ocultarlo o mostrarlo.',
   'menu.filters.reset': 'Restablecer los filtros',
 

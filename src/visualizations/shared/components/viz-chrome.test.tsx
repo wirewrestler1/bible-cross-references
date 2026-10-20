@@ -64,9 +64,36 @@ describe('FiltersMenu', () => {
   });
 
   it('counts the hidden genres in the same line', async () => {
-    renderMenu({ minVotes: 4, hiddenGenres: new Set(['law', 'gospels']) });
+    renderMenu({ minVotes: 4, hiddenGenres: new Set(['law', 'gospels']), hiddenKinds: new Set() });
     await openMenu(/Filters/);
     expect(screen.getByText(/2 genres hidden/)).toBeDefined();
+  });
+
+  it('offers a toggle for every kind of link, and hides the one switched off', async () => {
+    const onChange = renderMenu();
+    await openMenu(/Filters/);
+    const boxes = screen.getAllByRole('checkbox');
+    expect(boxes).toHaveLength(4);
+    expect(boxes.every((box) => (box as HTMLInputElement).checked)).toBe(true);
+    await userEvent.click(screen.getByRole('checkbox', { name: /Computed/ }));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ hiddenKinds: new Set(['computed']) }),
+    );
+  });
+
+  it('shows a hidden kind as unchecked, and counts it in the same line', async () => {
+    const onChange = renderMenu({
+      minVotes: 4,
+      hiddenGenres: new Set(),
+      hiddenKinds: new Set(['computed', 'imported']),
+    });
+    await openMenu(/Filters/);
+    expect(screen.getByRole('checkbox', { name: /Computed/ })).toHaveProperty('checked', false);
+    expect(screen.getByText(/2 kinds of link hidden/)).toBeDefined();
+    await userEvent.click(screen.getByRole('checkbox', { name: /Computed/ }));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ hiddenKinds: new Set(['imported']) }),
+    );
   });
 
   it('cannot be reset while nothing has been changed', async () => {
@@ -257,6 +284,13 @@ describe('GenreLegend and GenreMenu', () => {
   it('shows the legend as a strip of genres, with its own collapse button', () => {
     render(<GenreLegend hiddenGenres={new Set()} onToggle={vi.fn()} />);
     expect(screen.getAllByRole('button').length).toBe(GENRES.length + 1);
+  });
+
+  it('keys the line kinds under the genres', () => {
+    render(<GenreLegend hiddenGenres={new Set()} onToggle={vi.fn()} />);
+    const key = screen.getByLabelText('Lines');
+    expect(within(key).getByText('Computed')).toBeDefined();
+    expect(within(key).getByText('Curated')).toBeDefined();
   });
 
   it('folds the legend away on a phone, and brings it back', async () => {

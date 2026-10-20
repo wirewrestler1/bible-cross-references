@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { Testament } from '../../../core/bible/books.ts';
+import { GENRES } from '../../../core/bible/genres.ts';
 import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
 import type { CrossReferenceDataset } from '../../../cross-references/load-cross-references.ts';
 import { formatDecimal, formatInteger, formatShare } from '../../../shared/lib/format.ts';
@@ -169,6 +170,40 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
           ]}
         />
       </div>
+
+      <div className={styles.columns}>
+        <DataTable
+          caption="Links by kind"
+          rows={stats.kinds}
+          rowKey={(row) => row.kind}
+          columns={[
+            { header: 'Kind', render: (row) => row.kind },
+            { header: 'Links', align: 'end', render: (row) => formatInteger(row.count) },
+            {
+              header: 'Share',
+              align: 'end',
+              render: (row) => formatShare(row.count, stats.linkCount),
+            },
+          ]}
+        />
+      </div>
+
+      <details>
+        <summary className={styles.summary}>Links by genre (source → target)</summary>
+        <DataTable
+          rows={GENRES}
+          rowKey={(genre) => genre.id}
+          columns={[
+            { header: 'From \\ to', render: (genre) => genre.name },
+            ...GENRES.map((to) => ({
+              header: to.name,
+              align: 'end' as const,
+              render: (from: (typeof GENRES)[number]) =>
+                formatInteger(stats.genreFlow[from.ordinal]?.[to.ordinal] ?? 0),
+            })),
+          ]}
+        />
+      </details>
 
       <div className={styles.narrow}>
         <DataTable

@@ -10,6 +10,8 @@ export interface CrossReferenceLink {
   readonly targetStart: VerseIndex;
   readonly targetEnd: VerseIndex;
   readonly votes: number;
+  /** An ordinal of `LINK_KIND_IDS`. */
+  readonly kind: number;
 }
 
 export class CrossReferenceIntegrityError extends Error {
@@ -34,6 +36,7 @@ export class CrossReferenceIndex {
   readonly targetStarts: ArrayLike<VerseIndex>;
   readonly targetEnds: ArrayLike<VerseIndex>;
   readonly votes: ArrayLike<number>;
+  readonly kinds: ArrayLike<number>;
 
   readonly #outgoingOffsets: Int32Array;
   readonly #incomingOffsets: Int32Array;
@@ -49,6 +52,7 @@ export class CrossReferenceIndex {
     this.targetStarts = Int32Array.from(columns.targetStart);
     this.targetEnds = Int32Array.from(columns.targetEnd);
     this.votes = Int32Array.from(columns.votes);
+    this.kinds = Uint8Array.from(columns.kinds);
 
     const sources = new Int32Array(linkCount);
     for (let verse = 0; verse < verseCount; verse += 1) {
@@ -87,6 +91,7 @@ export class CrossReferenceIndex {
       targetStart: this.#targetStart(id),
       targetEnd: this.#targetEnd(id),
       votes: elementAt(this.votes, id),
+      kind: elementAt(this.kinds, id),
     };
   }
 
@@ -132,13 +137,13 @@ export class CrossReferenceIndex {
 }
 
 function validateColumns(columns: CrossReferenceColumns, verseCount: number, linkCount: number) {
-  const { offsets, targetStart, targetEnd, votes } = columns;
+  const { offsets, targetStart, targetEnd, votes, kinds } = columns;
   if (offsets.length !== verseCount + 1) {
     throw new CrossReferenceIntegrityError(
       `expected ${verseCount + 1} offsets, got ${offsets.length}.`,
     );
   }
-  if (targetEnd.length !== linkCount || votes.length !== linkCount) {
+  if (targetEnd.length !== linkCount || votes.length !== linkCount || kinds.length !== linkCount) {
     throw new CrossReferenceIntegrityError('link columns have different lengths.');
   }
   if (offsets[0] !== 0 || offsets[verseCount] !== linkCount) {

@@ -11,6 +11,8 @@ export interface ArcInstances {
   readonly genres: Float32Array;
   /** Brightness in [0.2, 1], growing with community votes. */
   readonly weights: Float32Array;
+  /** The kind of each link (an ordinal of `LINK_KIND_IDS`), which sets its line style. */
+  readonly kinds: Float32Array;
 }
 
 export function buildArcInstances(
@@ -22,6 +24,7 @@ export function buildArcInstances(
   const endpoints = new Float32Array(count * 2);
   const genres = new Float32Array(count * 2);
   const weights = new Float32Array(count);
+  const kinds = new Float32Array(count);
   for (let i = 0; i < count; i += 1) {
     const id = elementAt(linkIds, i);
     const source = elementAt(index.sources, id);
@@ -32,6 +35,7 @@ export function buildArcInstances(
     genres[i * 2] = elementAt(verseGenres, source);
     genres[i * 2 + 1] = elementAt(verseGenres, targetStart);
     weights[i] = voteWeight(elementAt(index.votes, id));
+    kinds[i] = elementAt(index.kinds, id);
   }
-  return { count, endpoints, genres, weights };
+  return { count, endpoints, genres, weights, kinds };
 }

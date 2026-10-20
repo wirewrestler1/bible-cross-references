@@ -16,7 +16,13 @@ export const TRANSLATION_IDS = [
 ] as const;
 export type TranslationId = (typeof TRANSLATION_IDS)[number];
 
-export const CROSS_REFERENCE_SOURCE_IDS = ['openbible', 'swe1917', 'curated', 'computed'] as const;
+export const CROSS_REFERENCE_SOURCE_IDS = [
+  'orthodox',
+  'openbible',
+  'swe1917',
+  'curated',
+  'computed',
+] as const;
 export type CrossReferenceSourceId = (typeof CROSS_REFERENCE_SOURCE_IDS)[number];
 
 export const WORD_SOURCE_IDS = ['stepbible'] as const;

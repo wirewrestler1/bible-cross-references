@@ -4,6 +4,26 @@ import type { CrossReferenceSourceManifest } from './source-manifest.ts';
 const CROSS_REFERENCE_SOURCES: Readonly<
   Record<CrossReferenceSourceId, CrossReferenceSourceManifest>
 > = {
+  orthodox: {
+    id: 'orthodox',
+    name: 'Cross-references of the Orthodox canon',
+    description:
+      'Every source merged into one dataset, each link carrying its kind: OpenBible.info’s ' +
+      'Treasury links across the 66 books, the Swedish Bible 1917’s apparatus, the curated ' +
+      'deuterocanon links and the computed similarity links. Where two sources share a link ' +
+      'the Treasury’s is kept, then the curated, then the Swedish, then the computed.',
+    // The strictest licence among the parts: OpenBible's and the curated list's CC BY 4.0.
+    license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+    attribution:
+      'Cross-reference data: OpenBible.info (CC BY 4.0), largely from the public-domain ' +
+      'Treasury of Scripture Knowledge; the apparatus of the Swedish Bible 1917 (public ' +
+      'domain, CrossWire’s Swe1917 module); curated deuterocanon cross-references © 2026 ' +
+      'Andrew Battaglia (CC BY 4.0); and similarity links computed from the World English ' +
+      'Bible (CC0). Modified: re-indexed to this app’s verse numbering and merged.',
+    homepage: 'https://github.com/wirewrestler1/bible-cross-references',
+    versification: 'kjv-dc',
+    enabledByDefault: true,
+  },
   openbible: {
     id: 'openbible',
     name: 'OpenBible.info Cross References',
@@ -16,7 +36,7 @@ const CROSS_REFERENCE_SOURCES: Readonly<
       'Treasury of Scripture Knowledge. Modified: re-indexed to KJV verse numbering.',
     homepage: 'https://www.openbible.info/labs/cross-references/',
     versification: 'kjv-dc',
-    enabledByDefault: true,
+    enabledByDefault: false,
   },
   swe1917: {
     id: 'swe1917',

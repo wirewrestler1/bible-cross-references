@@ -1,4 +1,5 @@
 import type { CrossReferencesFile, DatasetProvenance } from '../../../src/core/datasets/formats.ts';
+import { LINK_KINDS } from '../../../src/core/datasets/link-kinds.ts';
 import { importVerseLinkRows } from './verse-link-rows.ts';
 
 /**
@@ -24,6 +25,7 @@ export function importOpenBibleCrossReferences(
 ): CrossReferencesFile {
   return importVerseLinkRows(text, {
     sourceId: 'openbible',
+    kind: LINK_KINDS.tsk,
     column: 'Votes',
     remaps: VERSE_REMAPS,
     strict: false,

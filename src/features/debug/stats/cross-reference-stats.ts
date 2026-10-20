@@ -1,4 +1,6 @@
 import { BOOKS, type Book, type Testament } from '../../../core/bible/books.ts';
+import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
+import { LINK_KIND_IDS, type LinkKindId } from '../../../core/datasets/link-kinds.ts';
 import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import type { Versification } from '../../../core/bible/versification.ts';
 import { elementAt } from '../../../core/lib/array.ts';
@@ -40,6 +42,11 @@ export interface BookLinkStats {
 
 export type TestamentFlow = Readonly<Record<Testament, Readonly<Record<Testament, number>>>>;
 
+export interface KindCount {
+  readonly kind: LinkKindId;
+  readonly count: number;
+}
+
 export interface CrossReferenceStats {
   readonly linkCount: number;
   /** Verses with at least one outgoing link. */
@@ -61,6 +68,10 @@ export interface CrossReferenceStats {
   readonly votes: VoteStats;
   /** Link counts by source testament (rows) and target testament (columns). */
   readonly testamentFlow: TestamentFlow;
+  /** Link counts by source genre (rows) and target genre (columns), by genre ordinal. */
+  readonly genreFlow: readonly (readonly number[])[];
+  /** Link counts by kind, in the order of `LINK_KIND_IDS`. */
+  readonly kinds: readonly KindCount[];
   readonly topSources: readonly VerseCount[];
   readonly topTargets: readonly VerseCount[];
   readonly topVotedLinkIds: readonly number[];
@@ -125,6 +136,8 @@ export function computeCrossReferenceStats(
     OT: { OT: 0, NT: 0 },
     NT: { OT: 0, NT: 0 },
   };
+  const genreFlow = GENRES.map(() => new Array<number>(GENRES.length).fill(0));
+  const kindCounts = new Array<number>(LINK_KIND_IDS.length).fill(0);
   const directedPairs = new Set<number>();
 
   let rangeLinkCount = 0;
@@ -146,6 +159,13 @@ export function computeCrossReferenceStats(
     bookOutgoing[fromBook.ordinal] = elementAt(bookOutgoing, fromBook.ordinal) + 1;
     bookIncoming[targetBook.ordinal] = elementAt(bookIncoming, targetBook.ordinal) + 1;
     flow[fromBook.testament][targetBook.testament] += 1;
+    const fromGenre = getBookGenre(fromBook.id).ordinal;
+    const targetGenre = getBookGenre(targetBook.id).ordinal;
+    const row = genreFlow[fromGenre];
+    if (row) {
+      row[targetGenre] = (row[targetGenre] ?? 0) + 1;
+    }
+    kindCounts[link.kind] = (kindCounts[link.kind] ?? 0) + 1;
     directedPairs.add(link.from * verseCount + link.targetStart);
 
     if (link.targetStart <= link.from && link.from <= link.targetEnd) {
@@ -217,6 +237,8 @@ export function computeCrossReferenceStats(
     reciprocalPairCount,
     votes: computeVoteStats(index.votes),
     testamentFlow: flow,
+    genreFlow,
+    kinds: LINK_KIND_IDS.map((kind, ordinal) => ({ kind, count: kindCounts[ordinal] ?? 0 })),
     topSources: toVerseCounts(outgoingCounts),
     topTargets: toVerseCounts(incomingCounts),
     topVotedLinkIds: topPositions(index.votes, TOP_COUNT),

@@ -48,6 +48,7 @@ export interface LinkSpec {
   readonly to: VerseIndex;
   readonly toEnd?: VerseIndex;
   readonly votes?: number;
+  readonly kind?: number;
 }
 
 /** Builds CSR columns from links (in any order) for a versification of `verseCount` verses. */
@@ -68,5 +69,6 @@ export function createCrossReferenceColumns(
     targetStart: sorted.map((link) => link.to),
     targetEnd: sorted.map((link) => link.toEnd ?? link.to),
     votes: sorted.map((link) => link.votes ?? 0),
+    kinds: sorted.map((link) => link.kind ?? 0),
   };
 }

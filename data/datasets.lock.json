@@ -1,31 +1,39 @@
 {
   "data/cross-references/computed.json": {
-    "sha256": "14d71d8e53f65aec4e7902cf5c2d7ff0c597484ba9112d413833ce210f318af4",
-    "bytes": 226638,
+    "sha256": "51c5b065440a969a4c2d7cc47ec851fb21ec39a9385208099471528f40a1c5c3",
+    "bytes": 242620,
     "shape": {
       "links": 7986,
       "sourceRows": 7986
     }
   },
   "data/cross-references/curated.json": {
-    "sha256": "3fde529957ae4639a7ed029ec5c321148094d504f060cbaa023cc6afc428c80c",
-    "bytes": 122910,
+    "sha256": "24519a5c110dae46457e948dd9f76a5f0fadb6b397bbd54f7dc3f1169fd7f87b",
+    "bytes": 125296,
     "shape": {
       "links": 1188,
       "sourceRows": 1188
     }
   },
   "data/cross-references/openbible.json": {
-    "sha256": "f1693db60f69558b93c5de7451b1bce1dff153ee7f682d9ea083cffd67e1f1a7",
-    "bytes": 4962091,
+    "sha256": "1ab382d25c679afb18e4e0ecca94c129d265085b5862923263a5e0ca9afe2e1a",
+    "bytes": 5651699,
     "shape": {
       "links": 344799,
       "sourceRows": 344799
     }
   },
+  "data/cross-references/orthodox.json": {
+    "sha256": "06e73ca35834a655795999a0f0abdaea1630855d8f2e1fc6cf3a8b88b9766160",
+    "bytes": 5902505,
+    "shape": {
+      "links": 360777,
+      "sourceRows": 365257
+    }
+  },
   "data/cross-references/swe1917.json": {
-    "sha256": "3362a85512c54577f9614465c640b2b93ac1bffbea65b13533bfb01f1ba24095",
-    "bytes": 323639,
+    "sha256": "9d40c33501dcaa42281831019fad7b088bd823c6c2997a4934a87938b80f1162",
+    "bytes": 345529,
     "shape": {
       "links": 10940,
       "sourceRows": 11284

@@ -41,21 +41,34 @@ export const en = {
 
   'menu.filtersChanged': 'Filters (changed)',
   'menu.filters': 'Filters',
-  'menu.filters.votes': 'Community votes',
+  'menu.filters.votes': 'Minimum weight',
   'menu.filters.votes.all': 'All',
   'menu.filters.votes.atLeast': (votes: number) => `≥ ${String(votes)}`,
   // The parenthesis opens and closes inside the message: a sentence a translator cannot see the
   // end of is one they cannot punctuate, and not every language closes a clause the way English
   // does. `hidden` is the genre clause, or empty.
   'menu.filters.note': (shown: string, total: string, threshold: string, hidden: string) =>
-    `Votes rank how helpful OpenBible.info readers found a link; they don’t prove it right or ` +
-    `wrong. Showing ${shown} of ${total} links (${threshold}${hidden}).`,
+    `Weight ranks a link; it doesn’t prove it right or wrong. For a Treasury link it is the ` +
+    `votes of OpenBible.info’s readers, for a curated one how sure the connection is, for a ` +
+    `computed one how alike the words are. Showing ${shown} of ${total} links ` +
+    `(${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count: number) =>
     count === 1 ? ', 1 genre hidden' : `, ${String(count)} genres hidden`,
   'filter.allLinks': 'all links',
   'filter.noDownvoted': 'links voted down are hidden',
-  'filter.atLeastVotes': (votes: string, plural: number) =>
-    plural === 1 ? `≥ ${votes} vote` : `≥ ${votes} votes`,
+  'filter.atLeastVotes': (votes: string) => `weight ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count: number) =>
+    count === 1 ? ', 1 kind of link hidden' : `, ${String(count)} kinds of link hidden`,
+  'menu.filters.kinds': 'Kinds of link',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'ranked by readers’ votes',
+  'kind.imported': 'Swedish Bible 1917',
+  'kind.imported.note': 'a printed apparatus of parallels',
+  'kind.curated': 'Curated',
+  'kind.curated.note': 'compiled for the deuterocanon, by confidence',
+  'kind.computed': 'Computed',
+  'kind.computed.note': 'alike in wording, not necessarily related',
+  'legend.kinds': 'Lines',
   'menu.filters.tip': 'Tip: tap a genre in the legend to hide or show it.',
   'menu.filters.reset': 'Reset filters',
 

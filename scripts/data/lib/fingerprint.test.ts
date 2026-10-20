@@ -70,7 +70,13 @@ describe('fingerprintDataset', () => {
       notices: [],
       sourceId: 'openbible',
       sourceRowCount: 9,
-      links: { offsets: [0, 2], targetStart: [1, 2], targetEnd: [1, 2], votes: [5, 6] },
+      links: {
+        offsets: [0, 2],
+        targetStart: [1, 2],
+        targetEnd: [1, 2],
+        votes: [5, 6],
+        kinds: [0, 0],
+      },
     };
     expect(fingerprintDataset(dataset, JSON.stringify(dataset)).shape).toEqual({
       links: 2,

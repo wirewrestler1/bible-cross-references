@@ -37,6 +37,8 @@ interface UrlState {
   readonly ref: string | null;
   readonly minVotes: number;
   readonly hidden: readonly string[];
+  /** The kinds of link hidden, sorted. */
+  readonly hiddenKinds: readonly string[];
   readonly translation: string;
   readonly locale: string;
 }
@@ -58,6 +60,7 @@ function read(url: string, base = BASE, preferredLocale: LocaleId = 'en'): UrlSt
     ref: location.passage === null ? null : toPassageOsisId(location.passage, kjv),
     minVotes: location.filter.minVotes,
     hidden: [...location.filter.hiddenGenres].sort(),
+    hiddenKinds: [...location.filter.hiddenKinds].sort(),
     translation: location.translation,
     locale: location.locale,
   };
@@ -69,6 +72,7 @@ const DEFAULTS: UrlState = {
   ref: null,
   minVotes: 4,
   hidden: [],
+  hiddenKinds: [],
   translation: DEFAULT_TRANSLATION_ID,
   locale: 'en',
 };
@@ -114,6 +118,9 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?hide=pauline-epistles', { hidden: ['pauline-epistles'] }],
   ['/bible-cross-references/?hide=general-epistles', { hidden: ['general-epistles'] }],
   ['/bible-cross-references/?hide=revelation', { hidden: ['revelation'] }],
+  ['/bible-cross-references/?kinds=tsk', { hiddenKinds: ['computed', 'curated', 'imported'] }],
+  ['/bible-cross-references/?kinds=tsk,curated', { hiddenKinds: ['computed', 'imported'] }],
+  ['/bible-cross-references/?kinds=tsk,imported,curated,computed', {}],
   [
     // Every genre hidden at once, which the legend lets a reader do.
     '/bible-cross-references/?hide=law,history,poetry,major-prophets,minor-prophets,deuterocanon,gospels,acts,pauline-epistles,general-epistles,revelation',
@@ -364,7 +371,11 @@ describe('the URLs the app emits', () => {
           passage,
           translation: 'kjv',
           locale: 'pt',
-          filter: { minVotes: 10, hiddenGenres: new Set(['law', 'acts'] as const) },
+          filter: {
+            minVotes: 10,
+            hiddenGenres: new Set(['law', 'acts'] as const),
+            hiddenKinds: new Set(),
+          },
         }),
         BASE,
         kjv,

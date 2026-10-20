@@ -1,21 +1,27 @@
 import { GENRES, type GenreId } from '../../core/bible/genres.ts';
 import type { VerseIndex } from '../../core/bible/verse-ref.ts';
 import { elementAt } from '../../core/lib/array.ts';
+import { LINK_KIND_IDS, type LinkKindId } from '../../core/datasets/link-kinds.ts';
 import type { CrossReferenceIndex } from '../../cross-references/cross-reference-index.ts';
 
 /** Which links a visualization shows, set with optional, low-key controls. */
 export interface LinkFilter {
-  /** Minimum community votes; `-Infinity` shows every link, including disputed ones. */
+  /**
+   * Minimum weight: community votes for a Treasury link, a confidence or a similarity for the
+   * others; `-Infinity` shows every link, including disputed ones.
+   */
   readonly minVotes: number;
   /** Genres whose links are hidden (a link is hidden if either end is in such a genre). */
   readonly hiddenGenres: ReadonlySet<GenreId>;
+  /** Kinds of link that are hidden (see `link-kinds.ts`). */
+  readonly hiddenKinds: ReadonlySet<LinkKindId>;
 }
 
 /** Vote thresholds offered by the filter controls. */
 export const VOTE_THRESHOLDS: readonly number[] = [-Infinity, 0, 1, 2, 3, 4, 5, 10, 20, 50, 100];
 
 export function createLinkFilter(minVotes: number): LinkFilter {
-  return { minVotes, hiddenGenres: new Set() };
+  return { minVotes, hiddenGenres: new Set(), hiddenKinds: new Set() };
 }
 
 /**
@@ -27,7 +33,11 @@ export function createLinkFilter(minVotes: number): LinkFilter {
 export const DEFAULT_LINK_FILTER: LinkFilter = createLinkFilter(4);
 
 export function isDefaultFilter(filter: LinkFilter, defaults: LinkFilter): boolean {
-  return filter.minVotes === defaults.minVotes && filter.hiddenGenres.size === 0;
+  return (
+    filter.minVotes === defaults.minVotes &&
+    filter.hiddenGenres.size === 0 &&
+    filter.hiddenKinds.size === 0
+  );
 }
 
 export type ThresholdDescription =
@@ -49,14 +59,19 @@ export function describeThreshold(minVotes: number): ThresholdDescription {
 export function compileLinkFilter(
   filter: LinkFilter,
   verseGenres: Uint8Array,
-): (from: VerseIndex, to: VerseIndex, votes: number) => boolean {
+): (from: VerseIndex, to: VerseIndex, votes: number, kind: number) => boolean {
   const hidden = new Uint8Array(GENRES.length);
   for (const genre of GENRES) {
     hidden[genre.ordinal] = filter.hiddenGenres.has(genre.id) ? 1 : 0;
   }
+  const hiddenKinds = new Uint8Array(LINK_KIND_IDS.length);
+  LINK_KIND_IDS.forEach((id, ordinal) => {
+    hiddenKinds[ordinal] = filter.hiddenKinds.has(id) ? 1 : 0;
+  });
   const { minVotes } = filter;
-  return (from, to, votes) =>
+  return (from, to, votes, kind) =>
     votes >= minVotes &&
+    elementAt(hiddenKinds, kind) === 0 &&
     elementAt(hidden, elementAt(verseGenres, from)) === 0 &&
     elementAt(hidden, elementAt(verseGenres, to)) === 0;
 }
@@ -76,6 +91,7 @@ export function selectLinks(
         elementAt(index.sources, id),
         elementAt(index.targetStarts, id),
         elementAt(index.votes, id),
+        elementAt(index.kinds, id),
       )
     ) {
       ids[count] = id;

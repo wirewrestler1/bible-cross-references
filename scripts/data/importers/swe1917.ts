@@ -11,6 +11,7 @@ import {
   type DatasetProvenance,
   type ImportNotice,
 } from '../../../src/core/datasets/formats.ts';
+import { LINK_KINDS } from '../../../src/core/datasets/link-kinds.ts';
 import { getCrossReferenceSourceManifest } from '../../../src/cross-references/registry.ts';
 import {
   buildCrossReferenceColumns,
@@ -270,7 +271,13 @@ export function importSwe1917CrossReferences(
             // A reference to the verse's own passage says nothing about where it connects.
             continue;
           }
-          const link: VerseLink = { from, targetStart, targetEnd, votes: SWE1917_WEIGHT };
+          const link: VerseLink = {
+            from,
+            targetStart,
+            targetEnd,
+            votes: SWE1917_WEIGHT,
+            kind: LINK_KINDS.imported,
+          };
           const key = linkKey(link);
           if (!seen.has(key)) {
             seen.add(key);

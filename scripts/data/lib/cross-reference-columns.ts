@@ -1,6 +1,7 @@
 import type { VerseIndex } from '../../../src/core/bible/verse-ref.ts';
 import type { Versification } from '../../../src/core/bible/versification.ts';
 import type { CrossReferenceColumns } from '../../../src/core/datasets/formats.ts';
+import type { LinkKind } from '../../../src/core/datasets/link-kinds.ts';
 
 /** One link as an importer collects it, before the columns are laid out. */
 export interface VerseLink {
@@ -9,6 +10,7 @@ export interface VerseLink {
   readonly targetEnd: VerseIndex;
   /** Community votes for OpenBible; a confidence or similarity weight for the other sources. */
   readonly votes: number;
+  readonly kind: LinkKind;
 }
 
 /** Source verse first, then the best-supported link, then the target's position. */
@@ -48,5 +50,6 @@ export function buildCrossReferenceColumns(
     targetStart: links.map((link) => link.targetStart),
     targetEnd: links.map((link) => link.targetEnd),
     votes: links.map((link) => link.votes),
+    kinds: links.map((link) => link.kind),
   };
 }

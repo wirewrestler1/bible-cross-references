@@ -29,8 +29,8 @@ export function createVizData(
     ),
     crossReferences: {
       manifest: {
-        id: 'openbible',
-        name: 'OpenBible.info Cross References',
+        id: 'orthodox',
+        name: 'Cross-references of the Orthodox canon',
         description: 'Fixture',
         license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
         attribution: 'Cross-reference data: OpenBible.info (CC BY 4.0).',

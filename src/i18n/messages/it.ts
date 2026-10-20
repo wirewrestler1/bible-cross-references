@@ -29,18 +29,33 @@ export const it: LocaleMessages = {
 
   'menu.filtersChanged': 'Filtri (modificati)',
   'menu.filters': 'Filtri',
-  'menu.filters.votes': 'Voti della comunità',
+  'menu.filters.votes': 'Peso minimo',
   'menu.filters.votes.all': 'Tutti',
   'menu.filters.votes.atLeast': (votes) => `≥ ${String(votes)}`,
   'menu.filters.note': (shown, total, threshold, hidden) =>
-    `I voti indicano quanto i lettori di OpenBible.info hanno trovato utile un riferimento; non ` +
-    `dimostrano che sia giusto o sbagliato. Mostrati ${shown} riferimenti su ${total} ` +
-    `(${threshold}${hidden}).`,
+    `Il peso ordina un riferimento; non dimostra che sia giusto o sbagliato. Per uno del ` +
+    `Treasury sono i voti dei lettori di OpenBible.info, per uno curato la certezza del ` +
+    `collegamento, per uno calcolato la somiglianza delle parole. Mostrati ${shown} ` +
+    `riferimenti su ${total} (${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count) =>
     count === 1 ? ', 1 genere nascosto' : `, ${String(count)} generi nascosti`,
   'filter.allLinks': 'tutti i riferimenti',
   'filter.noDownvoted': 'riferimenti con voti negativi nascosti',
-  'filter.atLeastVotes': (votes, plural) => (plural === 1 ? `≥ ${votes} voto` : `≥ ${votes} voti`),
+  'filter.atLeastVotes': (votes) => `peso ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count) =>
+    count === 1
+      ? ', 1 tipo di riferimento nascosto'
+      : `, ${String(count)} tipi di riferimento nascosti`,
+  'menu.filters.kinds': 'Tipi di riferimento',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'ordinati dai voti dei lettori',
+  'kind.imported': 'Bibbia svedese del 1917',
+  'kind.imported.note': 'un apparato stampato di passi paralleli',
+  'kind.curated': 'Curati',
+  'kind.curated.note': 'compilati per i deuterocanonici, per certezza',
+  'kind.computed': 'Calcolati',
+  'kind.computed.note': 'simili nelle parole, non per forza collegati',
+  'legend.kinds': 'Linee',
   'menu.filters.tip': 'Suggerimento: tocca un genere nella legenda per nasconderlo o mostrarlo.',
   'menu.filters.reset': 'Reimposta i filtri',
 

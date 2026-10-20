@@ -17,10 +17,10 @@ function Loaded({ children }: VizDataBoundaryProps) {
 }
 
 /**
- * How many links the dataset holds, for the waiting screen. It is a round statement of what is
- * coming rather than a reading of the file, which has not arrived yet.
+ * How many links the dataset holds, for the waiting screen: what the last data build recorded
+ * (see `vite/link-count.ts`), since the file itself has not arrived yet.
  */
-const LINK_COUNT = 344_799;
+const LINK_COUNT = import.meta.env.LINK_COUNT;
 
 /**
  * Loads the shared data with Suspense and shows a retryable error if it fails. The text of a

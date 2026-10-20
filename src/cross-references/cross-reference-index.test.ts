@@ -11,7 +11,7 @@ function createIndex() {
       [
         { from: 0, to: 3, votes: 5 },
         { from: 0, to: 1, toEnd: 3, votes: 2 },
-        { from: 2, to: 0, votes: -1 },
+        { from: 2, to: 0, votes: -1, kind: 0 },
         { from: 5, to: 4, toEnd: 5, votes: 7 },
       ],
       VERSE_COUNT,
@@ -47,6 +47,7 @@ describe('CrossReferenceIndex', () => {
       targetStart: 0,
       targetEnd: 0,
       votes: -1,
+      kind: 0,
     });
   });
 

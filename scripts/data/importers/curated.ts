@@ -1,4 +1,5 @@
 import type { CrossReferencesFile, DatasetProvenance } from '../../../src/core/datasets/formats.ts';
+import { LINK_KINDS } from '../../../src/core/datasets/link-kinds.ts';
 import { importVerseLinkRows } from './verse-link-rows.ts';
 
 /**
@@ -25,6 +26,7 @@ export function importCuratedCrossReferences(
 ): CrossReferencesFile {
   return importVerseLinkRows(text, {
     sourceId: 'curated',
+    kind: LINK_KINDS.curated,
     column: 'Weight',
     allowedValues: new Set(Object.values(CURATED_WEIGHTS)),
     strict: true,

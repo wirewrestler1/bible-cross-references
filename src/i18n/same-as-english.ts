@@ -15,6 +15,8 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
   en: {},
   pt: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.kind.tsk':
+      'The Treasury of Scripture Knowledge and OpenBible.info are names, not words.',
     'messages.menu.filters.votes.atLeast':
       'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
     'install.ios.label': 'iPhone is a product name and is not translated.',
@@ -27,6 +29,8 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
   },
   de: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.kind.tsk':
+      'The Treasury of Scripture Knowledge and OpenBible.info are names, not words.',
     'messages.menu.filters.votes.atLeast':
       'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
     'install.ios.label': 'iPhone is a product name and is not translated.',
@@ -48,6 +52,8 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
   },
   it: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.kind.tsk':
+      'The Treasury of Scripture Knowledge and OpenBible.info are names, not words.',
     'messages.menu.filters.votes.atLeast':
       'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
     'install.ios.label': 'iPhone is a product name and is not translated.',
@@ -56,6 +62,8 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
   },
   es: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.kind.tsk':
+      'The Treasury of Scripture Knowledge and OpenBible.info are names, not words.',
     'messages.menu.filters.votes.atLeast':
       'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
     'install.ios.label': 'iPhone is a product name and is not translated.',
@@ -69,6 +77,8 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
   },
   uk: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.kind.tsk':
+      'The Treasury of Scripture Knowledge and OpenBible.info are names, not words.',
     'messages.menu.filters.votes.atLeast':
       'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
     'install.ios.label': 'iPhone is a product name and is not translated.',

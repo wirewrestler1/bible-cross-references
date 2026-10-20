@@ -11,6 +11,7 @@ import {
 import { formatVerseIndexRange, formatVerseRef } from '../../../core/bible/reference-format.ts';
 import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import type { Versification } from '../../../core/bible/versification.ts';
+import { linkKindId } from '../../../core/datasets/link-kinds.ts';
 import { elementAt } from '../../../core/lib/array.ts';
 import {
   CloseIcon,
@@ -581,6 +582,13 @@ function ConnectionSection({
                         {describeLandingNote(note, versification, localization)}
                       </span>
                     )}
+                    <span
+                      className={styles.kind}
+                      data-kind={linkKindId(connection.link.kind)}
+                      title={t(`kind.${linkKindId(connection.link.kind)}.note`)}
+                    >
+                      {t(`kind.${linkKindId(connection.link.kind)}`)}
+                    </span>
                   </span>
                   <ConnectionText
                     translation={translation}

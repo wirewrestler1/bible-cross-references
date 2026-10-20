@@ -25,7 +25,7 @@ const CROSS_REFERENCES = {
   versification: 'kjv-dc',
   provenance: PROVENANCE,
   notices: [],
-  sourceId: 'openbible',
+  sourceId: 'orthodox',
   sourceRowCount: 1,
   links: createCrossReferenceColumns([{ from: GEN_1_1, to: GEN_1_1 + 1, votes: 5 }]),
 };

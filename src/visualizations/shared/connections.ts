@@ -45,7 +45,7 @@ export function collectConnections(
 
   for (let verse = range.start; verse <= range.end; verse += 1) {
     for (const link of index.outgoing(verse)) {
-      if (passes(link.from, link.targetStart, link.votes)) {
+      if (passes(link.from, link.targetStart, link.votes, link.kind)) {
         outgoing.push({
           link,
           direction: 'outgoing',
@@ -61,7 +61,7 @@ export function collectConnections(
         continue;
       }
       seenIncoming.add(link.id);
-      if (passes(link.from, link.targetStart, link.votes)) {
+      if (passes(link.from, link.targetStart, link.votes, link.kind)) {
         incoming.push({
           link,
           direction: 'incoming',

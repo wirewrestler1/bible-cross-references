@@ -1,4 +1,5 @@
 import type { CrossReferencesFile, DatasetProvenance } from '../../../src/core/datasets/formats.ts';
+import { LINK_KINDS } from '../../../src/core/datasets/link-kinds.ts';
 import { importVerseLinkRows } from './verse-link-rows.ts';
 
 /**
@@ -18,6 +19,7 @@ export function importComputedCrossReferences(
 ): CrossReferencesFile {
   return importVerseLinkRows(text, {
     sourceId: 'computed',
+    kind: LINK_KINDS.computed,
     column: 'Weight',
     allowedValues: COMPUTED_WEIGHTS,
     strict: true,

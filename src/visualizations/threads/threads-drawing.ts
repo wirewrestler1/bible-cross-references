@@ -4,6 +4,7 @@ import type { VerseIndexRange } from '../../core/bible/versification.ts';
 import { elementAt } from '../../core/lib/array.ts';
 import type { Connection } from '../shared/connections.ts';
 import { GENRE_HEX } from '../shared/palette.ts';
+import { LINK_KINDS } from '../../core/datasets/link-kinds.ts';
 import { voteWeight } from '../shared/vote-weight.ts';
 import type { SpineLayout } from './spine-layout.ts';
 import type { BookNames } from '../../i18n/books/types.ts';
@@ -75,6 +76,7 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
     color: string;
     alpha: number;
     emphasized: boolean;
+    kind: number;
   }[] = [];
   for (const anchor of drawing.anchors) {
     for (const connection of drawing.connectionsByVerse.get(anchor.verse) ?? []) {
@@ -83,12 +85,20 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
           ? connection.link.id === emphasizedLink
           : anchor.verse === emphasizedVerse || landsInBook(connection);
       const weight = voteWeight(connection.link.votes);
+      const { kind } = connection.link;
+      // A computed link says only that the words are alike, so it is drawn faint and dashed;
+      // an imported apparatus link a little under the Treasury's and the curated ones.
+      const kindAlpha =
+        kind === LINK_KINDS.computed ? 0.45 : kind === LINK_KINDS.imported ? 0.8 : 1;
       threads.push({
         y: anchor.y,
         target: spine.yOf((connection.otherStart + connection.otherEnd) / 2),
         color: elementAt(GENRE_HEX, elementAt(drawing.verseGenres, connection.otherStart)),
-        alpha: emphasized ? 0.95 : hasEmphasis ? 0.06 + 0.1 * weight : 0.18 + 0.5 * weight,
+        alpha:
+          (emphasized ? 0.95 : hasEmphasis ? 0.06 + 0.1 * weight : 0.18 + 0.5 * weight) *
+          (emphasized ? 1 : kindAlpha),
         emphasized,
+        kind,
       });
     }
   }
@@ -98,7 +108,8 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
   for (const thread of threads) {
     context.globalAlpha = thread.alpha;
     context.strokeStyle = thread.color;
-    context.lineWidth = thread.emphasized ? 1.6 : 1;
+    context.lineWidth = thread.emphasized ? 1.6 : thread.kind === LINK_KINDS.computed ? 0.75 : 1;
+    context.setLineDash(thread.kind === LINK_KINDS.computed ? [3, 3] : []);
     context.beginPath();
     context.moveTo(0, thread.y);
     context.bezierCurveTo(
@@ -114,6 +125,7 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
     context.fillStyle = thread.color;
     context.fillRect(bar.left - 4, thread.target - 0.5, 4, 1);
   }
+  context.setLineDash([]);
   context.globalAlpha = 1;
 }
 

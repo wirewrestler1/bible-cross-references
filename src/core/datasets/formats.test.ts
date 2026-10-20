@@ -56,7 +56,7 @@ describe('dataset file parsing', () => {
           notices: [],
           sourceId: 'openbible',
           sourceRowCount: 0,
-          links: { offsets: [0], targetStart: [], targetEnd: [], votes: ['1'] },
+          links: { offsets: [0], targetStart: [], targetEnd: [], votes: ['1'], kinds: [] },
         },
         { id: 'openbible', versification: 'kjv-dc' },
       ),

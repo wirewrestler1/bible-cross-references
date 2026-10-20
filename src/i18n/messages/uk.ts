@@ -55,19 +55,30 @@ export const uk: LocaleMessages = {
 
   'menu.filtersChanged': 'Фільтри (змінено)',
   'menu.filters': 'Фільтри',
-  'menu.filters.votes': 'Голоси спільноти',
+  'menu.filters.votes': 'Мінімальна вага',
   'menu.filters.votes.all': 'Усі',
   'menu.filters.votes.atLeast': (votes) => `≥ ${String(votes)}`,
   'menu.filters.note': (shown, total, threshold, hidden) =>
-    `Голоси показують, наскільки корисним читачі OpenBible.info вважають посилання; вони не ` +
-    `доводять, що воно правильне чи хибне. Показано ${shown} з ${total} посилань ` +
-    `(${threshold}${hidden}).`,
+    `Вага впорядковує посилання; вона не доводить, що воно правильне чи хибне. Для посилання ` +
+    `з Treasury це голоси читачів OpenBible.info, для дібраного — упевненість у зв’язку, для ` +
+    `обчисленого — схожість слів. Показано ${shown} з ${total} посилань (${threshold}${hidden}).`,
   'menu.filters.hiddenGenres': (count) =>
     `, приховано ${String(count)} ${formOf(count, 'жанр', 'жанри', 'жанрів')}`,
   'filter.allLinks': 'усі посилання',
   'filter.noDownvoted': 'без посилань з негативними голосами',
-  'filter.atLeastVotes': (votes, count) =>
-    `≥ ${votes} ${formOf(count, 'голос', 'голоси', 'голосів')}`,
+  'filter.atLeastVotes': (votes) => `вага ≥ ${votes}`,
+  'menu.filters.hiddenKinds': (count) =>
+    `, приховано ${String(count)} ${formOf(count, 'вид посилань', 'види посилань', 'видів посилань')}`,
+  'menu.filters.kinds': 'Види посилань',
+  'kind.tsk': 'Treasury (OpenBible.info)',
+  'kind.tsk.note': 'за голосами читачів',
+  'kind.imported': 'Шведська Біблія 1917',
+  'kind.imported.note': 'друкований апарат паралельних місць',
+  'kind.curated': 'Дібрані',
+  'kind.curated.note': 'укладені для второканонічних книг, за впевненістю',
+  'kind.computed': 'Обчислені',
+  'kind.computed.note': 'схожі за словами, не обов’язково пов’язані',
+  'legend.kinds': 'Лінії',
   'menu.filters.tip': 'Підказка: торкніться жанру в легенді, щоб приховати або показати його.',
   'menu.filters.reset': 'Скинути фільтри',
 

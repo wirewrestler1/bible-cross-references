@@ -37,6 +37,7 @@ function createGeometry(kind: CurveKind, instances: ArcInstances): InstancedBuff
       a_ends: { array: instances.endpoints, itemSize: 2 },
       a_genres: { array: instances.genres, itemSize: 2 },
       a_weight: { array: instances.weights, itemSize: 1 },
+      a_kind: { array: instances.kinds, itemSize: 1 },
     },
   );
 }
@@ -46,6 +47,7 @@ const EMPTY: ArcInstances = {
   endpoints: new Float32Array(0),
   genres: new Float32Array(0),
   weights: new Float32Array(0),
+  kinds: new Float32Array(0),
 };
 
 type ArcObject =

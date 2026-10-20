@@ -7,6 +7,7 @@ import {
   type ImportNotice,
 } from '../../../src/core/datasets/formats.ts';
 import type { CrossReferenceSourceId } from '../../../src/core/datasets/ids.ts';
+import type { LinkKind } from '../../../src/core/datasets/link-kinds.ts';
 import { getCrossReferenceSourceManifest } from '../../../src/cross-references/registry.ts';
 import {
   buildCrossReferenceColumns,
@@ -32,6 +33,8 @@ import { createNotice } from '../lib/notices.ts';
  */
 export interface VerseLinkRowsOptions {
   readonly sourceId: CrossReferenceSourceId;
+  /** The kind every link of this file is (see `link-kinds.ts`). */
+  readonly kind: LinkKind;
   /** The third column's name in the header, which is also what it means. */
   readonly column: 'Votes' | 'Weight';
   /** Verse ids the source uses that this versification does not have, and where they go. */
@@ -49,7 +52,14 @@ export function importVerseLinkRows(
   text: string,
   options: VerseLinkRowsOptions,
 ): CrossReferencesFile {
-  const { sourceId, column, remaps = new Map<string, string>(), allowedValues, strict } = options;
+  const {
+    sourceId,
+    kind,
+    column,
+    remaps = new Map<string, string>(),
+    allowedValues,
+    strict,
+  } = options;
   const manifest = getCrossReferenceSourceManifest(sourceId);
   const name = manifest.name;
   const versification = CANONICAL_VERSIFICATION;
@@ -105,6 +115,7 @@ export function importVerseLinkRows(
       targetStart: resolveVerse(targetStartId, lineNumber),
       targetEnd: resolveVerse(targetEndId, lineNumber),
       votes: value,
+      kind,
     };
     if (link.targetStart > link.targetEnd) {
       throw new Error(`${name} line ${String(lineNumber)}: reversed range "${targetId}".`);

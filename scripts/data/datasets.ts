@@ -20,6 +20,7 @@ import { importOpenBibleCrossReferences } from './importers/openbible.ts';
 import { importSwe1917CrossReferences } from './importers/swe1917.ts';
 import { importCuratedCrossReferences } from './importers/curated.ts';
 import { importComputedCrossReferences } from './importers/computed.ts';
+import { mergeCrossReferenceFiles } from './lib/merge-cross-references.ts';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { REPO_ROOT } from './lib/paths.ts';
@@ -115,8 +116,32 @@ export const CURATED_FILE = 'data/curated/deuterocanon-cross-references.tsv';
 /** The similarity links `scripts/data/compute-similarity.ts` writes, committed likewise. */
 export const COMPUTED_FILE = 'data/computed/deuterocanon-similarity.tsv';
 
+/** The parts of the merged dataset, in order of precedence. */
+const MERGED_PARTS: readonly Exclude<CrossReferenceSourceId, 'orthodox'>[] = [
+  'openbible',
+  'curated',
+  'swe1917',
+  'computed',
+];
+
 /** One builder per cross-reference source. */
 const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetBuilder>> = {
+  // The one the app loads: every other source, merged. Listed first so the lock file and the
+  // build log lead with it; it runs the other builders itself.
+  orthodox: {
+    outputPath: crossReferencesDatasetPath('orthodox'),
+    build: async (readSource) => {
+      const parts = [];
+      for (const id of MERGED_PARTS) {
+        const part = await CROSS_REFERENCE_BUILDERS[id].build(readSource);
+        if (part.format !== 'cross-references') {
+          throw new Error(`${id} did not build a cross-reference dataset.`);
+        }
+        parts.push(part);
+      }
+      return mergeCrossReferenceFiles('orthodox', parts);
+    },
+  },
   openbible: {
     outputPath: crossReferencesDatasetPath('openbible'),
     build: async (readSource) => {

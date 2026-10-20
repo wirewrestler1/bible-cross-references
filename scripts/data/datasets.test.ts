@@ -182,6 +182,7 @@ describe('DATASET_BUILDERS', () => {
       'data/translations/luther1912.json',
       'data/translations/riveduta1927.json',
       'data/translations/vbl.json',
+      'data/cross-references/orthodox.json',
       'data/cross-references/openbible.json',
       'data/cross-references/swe1917.json',
       'data/cross-references/curated.json',

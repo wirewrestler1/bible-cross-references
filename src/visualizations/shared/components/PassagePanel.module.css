@@ -284,6 +284,22 @@
   font-weight: 600;
 }
 
+/* Which kind of link this is, as a small tag; the Treasury's is the quietest, being most. */
+.kind {
+  margin-inline-start: auto;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.kind[data-kind='computed'] {
+  border-style: dashed;
+}
+
 /* Verses in full: a cut-off verse loses the context that makes the link make sense. */
 .snippet {
   overflow-wrap: break-word;

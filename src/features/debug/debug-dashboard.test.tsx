@@ -270,9 +270,11 @@ describe('CrossReferencesSection', () => {
     expect(screen.getByText('Most incoming links')).toBeDefined();
   });
 
-  it('breaks the links down by testament', () => {
+  it('breaks the links down by testament, by kind and by genre', () => {
     renderSection();
     expect(screen.getByText(/Links by testament/)).toBeDefined();
+    expect(screen.getByText('Links by kind')).toBeDefined();
+    expect(screen.getByText(/Links by genre/)).toBeDefined();
   });
 
   it('lists the verses that no link touches', () => {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { GENRES } from '../../../core/bible/genres.ts';
 import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
 import { CrossReferenceIndex } from '../../../cross-references/cross-reference-index.ts';
 import { createCrossReferenceColumns, verseIndex } from '../../../test-utils/fixtures.ts';
@@ -18,7 +19,13 @@ function computeStats() {
       { from: JOHN_1_1, to: GEN_1_1, votes: 5 },
       { from: GEN_1_1, to: GEN_1_1, toEnd: GEN_1_3, votes: -2 },
       { from: MATT_1_1, to: verseIndex('Luke', 3, 23), toEnd: verseIndex('Luke', 3, 38), votes: 1 },
-      { from: PS_1_1, to: verseIndex('Gen', 50, 26), toEnd: verseIndex('Exod', 1, 1), votes: 0 },
+      {
+        from: PS_1_1,
+        to: verseIndex('Gen', 50, 26),
+        toEnd: verseIndex('Exod', 1, 1),
+        votes: 0,
+        kind: 3,
+      },
     ]),
     CANONICAL_VERSIFICATION.verseCount,
   );
@@ -53,6 +60,26 @@ describe('computeCrossReferenceStats', () => {
     expect(votes).toMatchObject({ min: -2, max: 10, median: 1, mean: 2.8 });
     expect(votes.histogram.find((bucket) => bucket.label === '< 0')?.count).toBe(1);
     expect(votes.thresholds.find((threshold) => threshold.minVotes === 5)?.count).toBe(2);
+  });
+
+  it('breaks links down by kind, and by genre pair', () => {
+    const { stats } = computeStats();
+    expect(stats.kinds).toEqual([
+      { kind: 'tsk', count: 4 },
+      { kind: 'imported', count: 0 },
+      { kind: 'curated', count: 0 },
+      { kind: 'computed', count: 1 },
+    ]);
+    // Law → Gospels (Gen 1:1 → John 1:1), Law → Law, Poetry → Law, Gospels → Law, Gospels → Gospels.
+    const law = 0;
+    const poetry = 2;
+    const gospels = GENRES.findIndex((genre) => genre.id === 'gospels');
+    expect(stats.genreFlow[law]?.[gospels]).toBe(1);
+    expect(stats.genreFlow[law]?.[law]).toBe(1);
+    expect(stats.genreFlow[poetry]?.[law]).toBe(1);
+    expect(stats.genreFlow[gospels]?.[law]).toBe(1);
+    expect(stats.genreFlow[gospels]?.[gospels]).toBe(1);
+    expect(stats.genreFlow.flat().reduce((a, b) => a + b, 0)).toBe(5);
   });
 
   it('breaks links down by testament and book', () => {

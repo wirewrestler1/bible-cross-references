@@ -2,6 +2,7 @@ import { GENRES } from '../core/bible/genres.ts';
 import { parsePassageOsisId, toPassageOsisId, type Passage } from '../core/bible/passage.ts';
 import type { Versification } from '../core/bible/versification.ts';
 import type { TranslationId } from '../core/datasets/ids.ts';
+import { isLinkKindId, LINK_KIND_IDS } from '../core/datasets/link-kinds.ts';
 import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
 import {
   DEFAULT_LINK_FILTER,
@@ -20,6 +21,11 @@ const PASSAGE_PARAM = 'ref';
 const VOTES_PARAM = 'votes';
 /** Hidden genres, comma-separated, e.g. `hide=law,history`. */
 const HIDE_PARAM = 'hide';
+/**
+ * The kinds of link shown, comma-separated, e.g. `kinds=tsk,curated`; absent when all are. Named
+ * for what is shown rather than hidden, because "kinds=computed" reads as the kinds on screen.
+ */
+const KINDS_PARAM = 'kinds';
 
 /** A page of the explorer: which view it shows, and where. */
 export interface ViewRoute<Id extends string> {
@@ -47,12 +53,19 @@ function parseFilter(params: URLSearchParams): LinkFilter {
   const votes = params.get(VOTES_PARAM);
   const minVotes = votes === 'all' ? -Infinity : Number(votes);
   const hidden = new Set((params.get(HIDE_PARAM) ?? '').split(','));
+  const kinds = params.get(KINDS_PARAM);
+  const shownKinds = new Set((kinds ?? '').split(',').filter(isLinkKindId));
   return {
     minVotes:
       votes !== null && VOTE_THRESHOLDS.includes(minVotes)
         ? minVotes
         : DEFAULT_LINK_FILTER.minVotes,
     hiddenGenres: new Set(GENRES.filter(({ id }) => hidden.has(id)).map(({ id }) => id)),
+    // A list naming no kind the app knows is as good as none: every kind stays shown.
+    hiddenKinds:
+      shownKinds.size === 0
+        ? new Set()
+        : new Set(LINK_KIND_IDS.filter((id) => !shownKinds.has(id))),
   };
 }
 
@@ -165,6 +178,10 @@ export function explorerUrl(
   if (filter.hiddenGenres.size > 0) {
     const hidden = GENRES.filter(({ id }) => filter.hiddenGenres.has(id)).map(({ id }) => id);
     params.set(HIDE_PARAM, hidden.join(','));
+  }
+  if (filter.hiddenKinds.size > 0) {
+    const shown = LINK_KIND_IDS.filter((id) => !filter.hiddenKinds.has(id));
+    params.set(KINDS_PARAM, shown.join(','));
   }
   // Commas are fine in a query and far more readable than %2C.
   const query = params.toString().replaceAll('%2C', ',');

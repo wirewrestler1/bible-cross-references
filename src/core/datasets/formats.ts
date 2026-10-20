@@ -77,7 +77,14 @@ export interface CrossReferenceColumns {
   readonly offsets: readonly number[];
   readonly targetStart: readonly number[];
   readonly targetEnd: readonly number[];
+  /**
+   * Community votes for a Treasury link; for the other kinds a weight on the same scale — a
+   * confidence for a curated link, a similarity for a computed one — so one threshold serves
+   * all of them.
+   */
   readonly votes: readonly number[];
+  /** The kind of each link, as an ordinal of `LINK_KIND_IDS`. */
+  readonly kinds: readonly number[];
 }
 
 export interface CrossReferencesFile extends DatasetFileBase<'cross-references'> {
@@ -226,6 +233,7 @@ export function parseCrossReferencesFile(
       targetStart: expectIntegerArray(links['targetStart'], 'links.targetStart'),
       targetEnd: expectIntegerArray(links['targetEnd'], 'links.targetEnd'),
       votes: expectIntegerArray(links['votes'], 'links.votes'),
+      kinds: expectIntegerArray(links['kinds'], 'links.kinds'),
     },
   };
 }
