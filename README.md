@@ -46,13 +46,14 @@ arcs](public/screenshots/arcs.jpg)
 - Zoom from the whole canon down to single verses; hover a passage to see how many connections it
   has.
 - Search for any reference ("John 3:16", "Sir 24", "Susanna 1:5", "Psalm 151") or click a
-  passage to see where its links land.
+  passage to see where its links land. As you type, the box offers the books your typing could
+  become, then the book's chapters, then the chapter's verses, so a verse is three taps away.
 - Read it in seven translations — English (World English Bible with the deuterocanon, Berean
-  Standard Bible, King James Version), Portuguese, German, Italian and Spanish — with the
-  interface in any of six languages. Only the World English Bible carries the deuterocanonical
-  books; the others say so where one would be shown.
-- Filter by weight, hide a genre, or hide a kind of link: the Treasury's, the Swedish 1917
-  apparatus, the curated links, the computed ones.
+  Standard Bible, King James Version), Portuguese, German, Italian and Spanish. Only the World
+  English Bible carries the deuterocanonical books; the others say so where one would be shown.
+- Filter by weight, hide a genre, or hide a kind of link — Classic references (the Treasury's),
+  Swedish Bible notes (the 1917 apparatus), Hand-picked, Similar wording. A guide on the first
+  visit, and behind the "?" after that, says what each of those is and what weight means.
 
 ### Focus a passage
 
@@ -81,12 +82,15 @@ land](public/screenshots/threads.jpg)
 
 ### On your phone
 
-![Both views on a phone: Arcs with Psalm 23:1 focused, and Threads with John
-1](public/screenshots/phone.jpg)
+![The arcs on a phone, with Sirach 24:3 open in the details sheet and the bar along the
+bottom](public/screenshots/phone.jpg)
 
-Both views work on phones. On the arcs, touch and hold, then slide, to preview passages (on the book
-bar, just slide), and pinch to zoom. The details open in a sheet that you drag up to read and pull
-down to close. Every passage has its own link, filters included, e.g.
+The phone is the first screen this is designed for. A bar along the bottom holds the two views,
+the search, the filters and the guide, where a thumb reaches; the search opens as a sheet with
+its suggestions above the keyboard. On the arcs, touch and hold, then slide, to preview passages
+(on the book bar, just slide), and pinch to zoom. The details open in a sheet that rests at three
+heights — the heading alone, the text with the arcs still above it, or the whole screen — and
+closes when pulled down from the lowest. Every passage has its own link, filters included, e.g.
 [`?ref=Sir.24.21`](https://wirewrestler1.github.io/bible-cross-references/?ref=Sir.24.21) or
 [`?ref=Heb.11.35&kinds=curated`](https://wirewrestler1.github.io/bible-cross-references/?ref=Heb.11.35&kinds=curated),
 so you can share exactly what you are looking at.
@@ -113,12 +117,15 @@ Safari's.
 
 ## Languages
 
-The app speaks English, Portuguese, German, Italian, Spanish and Ukrainian. Each has pages of its
-own: English at the root, every other language one path segment down
-([`/pt/`](https://wirewrestler1.github.io/bible-cross-references/pt/?t=blivre)). Which language a
-visit speaks is settled in this order: the page's own path, then the address (`?lang=pt`), then the
-reader's last choice, then what their browser asks for, then English. On a first visit the Bible
-follows the interface, and after that the two are independent. Both are chosen in one menu.
+This release speaks English. The repository still holds the words of five more languages —
+Portuguese, German, Italian, Spanish and Ukrainian — from the project this is a fork of, kept off
+the published list (`LOCALE_IDS` in [`src/i18n/locale-id.ts`](src/i18n/locale-id.ts)) until their
+catalogues have caught up with the words added for the Orthodox canon, the kinds of link and the
+guide. Listing a language again gives it pages of its own, one path segment down (`/pt/`), and
+the rest below applies to it. Which language a visit speaks is settled in this order: the page's
+own path, then the address (`?lang=pt`), then the reader's last choice, then what their browser
+asks for, then English. On a first visit the Bible follows the interface, and after that the two
+are independent. Both are chosen in one menu.
 
 Everything the interface says lives in [`src/i18n/`](src/i18n/):
 

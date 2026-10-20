@@ -41,6 +41,8 @@ try {
     { file: 'screenshots/arcs.jpg', path: '', width: 1440, height: 900 },
     { file: 'screenshots/arcs-verse.jpg', path: '?ref=Heb.11.35', width: 1440, height: 900 },
     { file: 'screenshots/threads.jpg', path: 'threads/?ref=Sir.24', width: 1440, height: 900 },
+    // A phone, at twice its size: the bar along the bottom and the details sheet at half.
+    { file: 'screenshots/phone.jpg', path: '?ref=Sir.24.3', width: 780, height: 1688, scale: 2 },
   ];
   for (const shot of shots) {
     const scale = shot.scale ?? 1;
