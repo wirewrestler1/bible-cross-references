@@ -280,11 +280,15 @@ test.describe('the offline cache', () => {
 });
 
 test.describe('the install guide', () => {
-  test('opens from the footer and shows the steps for a device', async ({ page }) => {
+  test('opens from the guide and shows the steps for a device', async ({ page }) => {
     await page.goto('./');
     await waitForApp(page);
-    await page.locator(`${ACTIVE} footer`).getByRole('button', { name: 'Install the app' }).click();
-    const dialog = page.getByRole('dialog');
+    await page.locator(ACTIVE).getByRole('button', { name: 'How to read this' }).click();
+    await page
+      .getByRole('dialog', { name: 'How to read this' })
+      .getByRole('button', { name: 'Install the app' })
+      .click();
+    const dialog = page.getByRole('dialog', { name: /install/i });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'iPhone', exact: true }).click();
     await expect(dialog).toContainText(/Add to Home Screen/);

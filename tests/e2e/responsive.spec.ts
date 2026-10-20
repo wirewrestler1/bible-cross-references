@@ -39,9 +39,7 @@ test.describe('the layout holds at every width', () => {
   });
 
   for (const width of WIDTHS) {
-    test(`${String(width)}px: the footer is one line and nothing runs off the edge`, async ({
-      page,
-    }) => {
+    test(`${String(width)}px: the chrome fits and nothing runs off the edge`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('./');
       await waitForApp(page);
@@ -49,26 +47,7 @@ test.describe('the layout holds at every width', () => {
         await expectBarFits(page, width, `${String(width)}px`);
         return;
       }
-
-      const measured = await page.locator(`${ACTIVE} footer`).evaluate((footer) => {
-        const rect = footer.getBoundingClientRect();
-        const [owner, credits] = [...footer.children].map((child) => child.getBoundingClientRect());
-        return {
-          height: Math.round(rect.height),
-          right: Math.round(rect.right),
-          ownerTop: Math.round(owner?.top ?? 0),
-          creditsTop: Math.round(credits?.top ?? owner?.top ?? 0),
-          creditsRight: Math.round(credits?.right ?? owner?.right ?? 0),
-        };
-      });
-
-      // One line, two ways: the two halves share a top, and the whole thing is one row tall.
-      expect(Math.abs(measured.creditsTop - measured.ownerTop)).toBeLessThan(4);
-      expect(measured.height).toBeLessThan(34);
-      // Nothing runs past the right edge — and the credit in particular, which is a licence
-      // condition, has to be readable rather than clipped.
-      expect(measured.right).toBeLessThanOrEqual(width);
-      expect(measured.creditsRight).toBeLessThanOrEqual(width);
+      await expectCreditsFit(page, width, `${String(width)}px`);
     });
   }
 
@@ -168,8 +147,8 @@ test.describe('the layout holds at every width', () => {
 
 test.describe('every page loads cleanly', () => {
   for (const [name, path, ready] of [
-    ['the arcs', './', `${ACTIVE} footer`],
-    ['the reading threads', './threads/', `${ACTIVE} footer`],
+    ['the arcs', './', `${ACTIVE} header`],
+    ['the reading threads', './threads/', `${ACTIVE} header`],
     ['the debug page', './debug/', 'table'],
   ] as const) {
     test(`${name} renders with no errors in the console`, async ({ page }) => {
@@ -217,7 +196,7 @@ test.describe('the chrome holds in every language', () => {
         if (width < PHONE_BELOW) {
           await expectBarFits(page, width, where);
         } else {
-          await expectFooterFits(page, width, where);
+          await expectCreditsFit(page, width, where);
         }
         await expectStatsFit(page, width, where);
         await expectPanelDoesNotScroll(page, where);
@@ -230,29 +209,27 @@ test.describe('the chrome holds in every language', () => {
 });
 
 /**
- * The footer, which carries the CC BY credit.
- *
- * English is held to one line further up; a translation cannot be, because the clause that
- * pushes it over is the licence condition itself and not something to drop on a narrow screen.
- * Two lines, and never off the edge.
+ * The credit line in the stage's corner, which carries the CC BY attribution on a wide screen.
+ * One line, never off the edge, and its links readable rather than clipped.
  */
-async function expectFooterFits(page: Page, width: number, where: string): Promise<void> {
-  const measured = await page.locator(`${ACTIVE} footer`).evaluate((footer) => {
-    const rect = footer.getBoundingClientRect();
-    const children = [...footer.children].map((child) => child.getBoundingClientRect());
-    return {
-      height: Math.round(rect.height),
-      right: Math.round(rect.right),
-      rows: new Set(children.map((child) => Math.round(child.top))).size,
-      widest: Math.round(Math.max(...children.map((child) => child.right))),
-    };
-  });
-
-  expect(measured.rows, `${where}: footer rows`).toBeLessThanOrEqual(2);
-  // Two lines of the same 24px row, with a little room for the gap between them.
-  expect(measured.height, `${where}: footer height`).toBeLessThan(64);
-  expect(measured.right, `${where}: footer box`).toBeLessThanOrEqual(width);
-  expect(measured.widest, `${where}: footer contents`).toBeLessThanOrEqual(width);
+async function expectCreditsFit(page: Page, width: number, where: string): Promise<void> {
+  const measured = await page
+    .locator(`${ACTIVE} [class*="credits"]`)
+    .first()
+    .evaluate((line) => {
+      const rect = line.getBoundingClientRect();
+      const links = [...line.querySelectorAll('a')].map((a) => a.getBoundingClientRect());
+      return {
+        height: Math.round(rect.height),
+        right: Math.round(rect.right),
+        left: Math.round(rect.left),
+        widest: Math.round(Math.max(...links.map((link) => link.right))),
+      };
+    });
+  expect(measured.height, `${where}: credit height`).toBeLessThan(40);
+  expect(measured.left, `${where}: credit box`).toBeGreaterThanOrEqual(0);
+  expect(measured.right, `${where}: credit box`).toBeLessThanOrEqual(width);
+  expect(measured.widest, `${where}: credit links`).toBeLessThanOrEqual(width);
 }
 
 /**
@@ -286,25 +263,23 @@ async function expectStatsFit(page: Page, width: number, where: string): Promise
 }
 
 /**
- * The details panel.
+ * The verse card.
  *
- * The band at the top of each section bleeds past the panel's padding on purpose, so it is wider
- * than its own parent. That is fine until a grid item refuses to shrink below it: then the track
- * grows, and the whole panel scrolls sideways with the counts pushed off the right edge.
+ * A grid item refuses to shrink below its content unless told to; a long reference or a kind
+ * tag that will not wrap could widen a row past the card, and the whole card would scroll
+ * sideways with the counts pushed off the right edge.
  */
 async function expectPanelDoesNotScroll(page: Page, where: string): Promise<void> {
   const measured = await page.locator(`${ACTIVE} aside`).evaluate((aside) => {
     const scroller = aside.querySelector('[class*="scroll"]') ?? aside;
-    const bands = [...aside.querySelectorAll('h3 button')];
     const right = scroller.getBoundingClientRect().right;
     return {
       overflow: scroller.scrollWidth - scroller.clientWidth,
-      // Every count has to stay on screen: it is the one thing a returning reader is looking
-      // for, and it sits at the end of the row.
-      countsOffscreen: bands.filter((band) => {
-        const count = band.querySelector('[class*="count"]');
-        return count !== null && count.getBoundingClientRect().right > right + 1;
-      }).length,
+      // Every count and tag has to stay on screen: a chapter's counts are what a returning
+      // reader looks for, and they sit at the end of the row.
+      countsOffscreen: [...aside.querySelectorAll('[class*="count"], [class*="kind"]')].filter(
+        (cell) => cell.getBoundingClientRect().right > right + 1,
+      ).length,
     };
   });
 

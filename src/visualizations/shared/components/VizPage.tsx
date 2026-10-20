@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { SiteFooter } from '../../../shared/ui/SiteFooter.tsx';
 import { SearchIcon } from '../../../shared/ui/icons.tsx';
 import { PHONE_QUERY, useMediaQuery } from '../../../shared/lib/use-media-query.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
@@ -23,7 +22,8 @@ interface VizPageProps {
   readonly panel?: ReactNode;
   /** Closes the panel; on phones, pulling its sheet down from its lowest point calls it. */
   readonly onPanelClose?: () => void;
-  /** Data attribution and inspiration, shown in the footer. */
+  /** Data attribution and inspiration: a faint line at the end of the header on a wide screen;
+   * on a phone it lives in the guide, which the host gives it too. */
   readonly credits: ReactNode;
   /** The visualization itself. */
   readonly children: ReactNode;
@@ -32,11 +32,12 @@ interface VizPageProps {
 /**
  * The shared frame of every visualization page.
  *
- * On wide screens: a header with the name, the switch and every control; the stage with the
- * details beside it; a footer. On phones: a slim header with the name and the view's tools, the
- * stage with the details as a sheet that rests at three heights, and a bar along the bottom —
- * where a thumb is — with the views, the search, the filters and the guide. The footer's links
- * live in the guide there.
+ * On wide screens: the name, the switch and every control float along the top as pills of
+ * glass, the stage fills the rest, and the details are a card beside it with a margin round it.
+ * On phones: a slim header with the name and the view's tools, the stage with the details as a
+ * sheet that rests at three heights, and a bar along the bottom — where a thumb is — with the
+ * views, the search, the filters and the guide. There is no footer: its links live in the
+ * guide, and the data's credit is a faint line in the stage's corner on a wide screen.
  */
 export function VizPage({
   masthead,
@@ -80,6 +81,7 @@ export function VizPage({
           {tools}
           {!phone && menus}
         </div>
+        {!phone && <p className={styles.credits}>{credits}</p>}
       </header>
       <div ref={containerRef} className={styles.body} data-sheet={hasPanel ? position : undefined}>
         <main className={styles.stage}>{children}</main>
@@ -113,7 +115,7 @@ export function VizPage({
           </>
         )}
       </div>
-      {phone ? (
+      {phone && (
         <>
           {searchOpen && (
             <>
@@ -168,8 +170,6 @@ export function VizPage({
             {menus}
           </nav>
         </>
-      ) : (
-        <SiteFooter className={styles.footer}>{credits}</SiteFooter>
       )}
     </div>
   );

@@ -42,9 +42,8 @@ export const ACTIVE = 'div[data-active="true"]';
 /** Waits for the app to have drawn: the data is loaded and the canvas is up. */
 export async function waitForApp(page: Page): Promise<void> {
   await page.locator(`${ACTIVE} canvas`).first().waitFor({ state: 'attached' });
-  // The last thing the frame renders: the footer on a wide screen, the bar on a phone (where
-  // the footer's links live in the guide instead).
-  await page.locator(`${ACTIVE} :is(footer, ${BAR_SELECTOR})`).first().waitFor();
+  // The frame's header, which the page draws only once its data is there.
+  await page.locator(`${ACTIVE} header`).first().waitFor();
 }
 
 /** The bar along the bottom of a phone, where the switch, the search and the menus are. */
