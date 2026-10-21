@@ -88,6 +88,9 @@ export const en = {
   'kind.computed': 'Similar wording',
   'kind.computed.note':
     'verses whose words are alike, found by comparing them; alike is not the same as related',
+  'kind.haydock': 'Haydock’s notes',
+  'kind.haydock.note':
+    'the passages Haydock’s Catholic commentary of 1859 compares, for Wisdom, Baruch and Maccabees',
   'legend.kinds': 'Kinds of link',
 
   // The first-visit guide: what the lines are, what the weight means, which books are new.

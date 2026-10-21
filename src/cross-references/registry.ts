@@ -93,6 +93,24 @@ const CROSS_REFERENCE_SOURCES: Readonly<
     versification: 'kjv-dc',
     enabledByDefault: false,
   },
+  haydock: {
+    id: 'haydock',
+    name: 'Haydock’s Catholic Bible Commentary (1859) references',
+    description:
+      'The scripture references in the notes of Haydock’s Catholic Bible Commentary of 1859, ' +
+      'public domain, read from haydockcommentary.com for Wisdom, Baruch and 1–2 Maccabees, ' +
+      'the deuterocanonical books whose Vulgate numbering agrees with the Greek. Each link ' +
+      'weighs 4. Renumbered to this app’s verses; references whose numbering could not be ' +
+      'placed safely are left out.',
+    license: { name: 'Public domain', url: 'https://haydockcommentary.com/', publicDomain: true },
+    attribution:
+      'Cross-reference data: the scripture references of Haydock’s Catholic Bible Commentary ' +
+      '(1859), public domain, as published at haydockcommentary.com. Modified: re-indexed to ' +
+      'this app’s verse numbering; references that could not be placed safely are left out.',
+    homepage: 'https://haydockcommentary.com/',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
 };
 
 export const CROSS_REFERENCE_SOURCE_MANIFESTS: readonly CrossReferenceSourceManifest[] =

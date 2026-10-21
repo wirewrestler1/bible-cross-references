@@ -209,7 +209,7 @@ rest.
 | Cross-references | [Computed similarity links](data/computed/), from the World English Bible's words                                                                                      | [CC0](https://creativecommons.org/publicdomain/zero/1.0/)                                      |
 | Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge (66 books)                                   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
-### The four kinds of link
+### The five kinds of link
 
 The app loads one merged dataset, and every link in it carries its kind, which is how it is
 drawn and how far to trust it. Each kind has a weight on one scale, so the Filters menu's
@@ -237,6 +237,17 @@ threshold means the same thing for all of them; by default links of weight 4 and
   the parallels between the deuterocanonical books. Weight 10 is a quotation or unmistakable
   allusion, 5 a probable allusion, 2 a thematic parallel. Drawn in full; CC BY 4.0, © 2026
   Andrew Battaglia.
+- **Haydock's notes.** About 440 links read out of the "Ver. N." notes of _Haydock's Catholic
+  Bible Commentary_ (1859, public domain) as [haydockcommentary.com](https://haydockcommentary.com/)
+  serves them, for Wisdom, Baruch and 1–2 Maccabees — the deuterocanonical books whose Vulgate
+  numbering agrees with the Greek; the notes on Tobit, Judith and Sirach follow a different text
+  or numbering and are not read. A note's reference says the commentator set the passage beside
+  the verse, so each link weighs 4, the default floor, and is drawn a little dimmer. Douay book
+  names are mapped to this app's, the Psalms renumbered from the Vulgate's with their titles
+  allowed for, the Greek parts of Daniel sent to Greek Daniel, and a chapter whose Douay verse
+  count differs from the app's is skipped whole; `scripts/data/haydock-notes.ts` writes the file
+  ([`data/haydock/`](data/haydock/README.md)) and reports what it left out. Drawn like the
+  Swedish notes.
 - **Computed.** About 8,000 links from the verses of the deuterocanon to the verses whose words
   are most like theirs, found by TF-IDF cosine similarity over the World English Bible
   ([`scripts/data/compute-similarity.ts`](scripts/data/compute-similarity.ts); the best five per

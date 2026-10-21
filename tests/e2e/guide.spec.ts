@@ -16,12 +16,13 @@ test.describe('the first visit', () => {
     await waitForApp(page);
     const guide = page.getByRole('dialog', { name: 'How to read this' });
     await expect(guide).toBeVisible();
-    // The four kinds, by their plain names, and what weight means.
+    // The five kinds, by their plain names, and what weight means.
     for (const kind of [
       'Classic references',
       'Swedish Bible notes',
       'Hand-picked',
       'Similar wording',
+      'Haydock’s notes',
     ]) {
       await expect(guide.getByText(kind, { exact: true })).toBeVisible();
     }

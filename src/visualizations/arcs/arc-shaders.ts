@@ -69,15 +69,19 @@ const COMMON = /* glsl */ `
   }
 
   // How much of a link's brightness its kind keeps: a computed link (3) says only that the
-  // words are alike, so it is drawn faint; an imported apparatus link (1) a little under the
-  // Treasury's and the curated ones, which are drawn in full.
+  // words are alike, so it is drawn faint; an imported apparatus link (1) or a commentary's
+  // reference (4) a little under the Treasury's and the curated ones, which are drawn in full.
+  bool isComputed(float kind) {
+    return kind > 2.5 && kind < 3.5;
+  }
+
   float kindAlpha(float kind) {
-    return kind > 2.5 ? 0.45 : (kind > 0.5 && kind < 1.5 ? 0.8 : 1.0);
+    return isComputed(kind) ? 0.45 : ((kind > 0.5 && kind < 1.5) || kind > 3.5 ? 0.8 : 1.0);
   }
 
   // And how wide a ribbon it gets, on the same reasoning.
   float kindWidth(float kind) {
-    return kind > 2.5 ? 0.6 : 1.0;
+    return isComputed(kind) ? 0.6 : 1.0;
   }
 `;
 

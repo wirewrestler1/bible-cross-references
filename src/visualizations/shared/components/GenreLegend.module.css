@@ -144,7 +144,8 @@
   border-block-start: 2px solid var(--color-text);
 }
 
-.lineSample[data-kind='imported'] {
+.lineSample[data-kind='imported'],
+.lineSample[data-kind='haydock'] {
   opacity: 0.8;
 }
 

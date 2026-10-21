@@ -20,6 +20,7 @@ import { importOpenBibleCrossReferences } from './importers/openbible.ts';
 import { importSwe1917CrossReferences } from './importers/swe1917.ts';
 import { importCuratedCrossReferences } from './importers/curated.ts';
 import { importComputedCrossReferences } from './importers/computed.ts';
+import { importHaydockCrossReferences } from './importers/haydock.ts';
 import { mergeCrossReferenceFiles } from './lib/merge-cross-references.ts';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -115,12 +116,15 @@ const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
 export const CURATED_FILE = 'data/curated/deuterocanon-cross-references.tsv';
 /** The similarity links `scripts/data/compute-similarity.ts` writes, committed likewise. */
 export const COMPUTED_FILE = 'data/computed/deuterocanon-similarity.tsv';
+/** The links `scripts/data/haydock-notes.ts` reads out of Haydock's commentary, committed likewise. */
+export const HAYDOCK_FILE = 'data/haydock/deuterocanon-cross-references.tsv';
 
 /** The parts of the merged dataset, in order of precedence. */
 const MERGED_PARTS: readonly Exclude<CrossReferenceSourceId, 'orthodox'>[] = [
   'openbible',
   'curated',
   'swe1917',
+  'haydock',
   'computed',
 ];
 
@@ -159,6 +163,7 @@ const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetB
   },
   curated: repositoryRowFile('curated', CURATED_FILE, importCuratedCrossReferences),
   computed: repositoryRowFile('computed', COMPUTED_FILE, importComputedCrossReferences),
+  haydock: repositoryRowFile('haydock', HAYDOCK_FILE, importHaydockCrossReferences),
 };
 
 /**

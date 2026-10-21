@@ -173,3 +173,33 @@ Wis 7:26 / Heb 1:3; Wis 9:13 / Rom 11:34).
 4. Fold in the WEB's own 23 deuterocanon `\x` entries for free.
 5. Revisit later: the Zefania Luther 1912 "mit Apokryphen" file (one manual download to check for `<XREF>`
    inside the Apocrypha), and a transcription of the 1611 Apocrypha margins if a volunteer source appears.
+
+## Follow-up, 2026-10-21
+
+A second pass, asked for because the deuterocanon still had far fewer links than the 66 books.
+Verdicts:
+
+- **United Bible Societies Parallel Passages** (CC BY-SA 4.0, GitHub `ubsicap/ubs-open-license`):
+  downloaded and grepped; no deuterocanonical book codes at all. Reject.
+- **NuBerea intertextuality** (Hugging Face, CC BY 4.0 tables, gated): its card names a
+  "Deuterocanonical" citation arm of ~2,100 rows without naming the books. Not fetched (sign-up);
+  worth a look by hand.
+- **Synodal Bible parallel passages (Russian, 19th century, public domain apparatus).** No
+  machine-readable copy found. azbyka.ru renders them per verse through a websocket, not in the
+  page; bible-center.ru renders them inline (e.g. Sir 24:3 → Gen 1:2, Prov 2:6, Wis 7:25,
+  Heb 1:3) beside the copyrighted Brussels Bible commentary, and says nothing about the
+  apparatus' provenance or its reuse. Russian Wikisource's Synodal text has no parallels. Not
+  scraped; a request for the data and its provenance has been drafted for both sites.
+- **Charles, _Apocrypha and Pseudepigrapha_ (1913):** archive.org and HathiTrust were unreachable
+  from the build machine; English Wikisource has transcribed only the front matter of volume I;
+  CCEL's landing page lists no Apocrypha sections. Deferred until a plain-text copy can be had.
+- **Lopukhin's Explanatory Bible (azbyka.ru, public domain):** static HTML, but the notes on
+  Sirach 24 carry two references in a chapter; too sparse to be worth a parser yet.
+- **Haydock's Catholic Bible Commentary (1859, public domain), haydockcommentary.com:** one page
+  per chapter, Douay text and "Ver. N." notes with references in a regular form. **Adopted** for
+  Wisdom, Baruch and 1–2 Maccabees (Vulgate numbering agrees with the Greek there), 440 links;
+  see `data/haydock/README.md`. Tobit, Judith and Sirach are left out (different text or
+  numbering); 2 Maccabees 6 has no page on the site; fifteen chapters were skipped for a
+  one-verse disagreement in their counts and could be mapped by hand later.
+- **UBS/DBG Nestle-Aland index, Orthodox Study Bible, NABRE, Jerusalem Bible:** copyrighted;
+  permission letters drafted (not sent from here).

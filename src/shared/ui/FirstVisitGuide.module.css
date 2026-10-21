@@ -75,7 +75,8 @@
   border-block-start: 2px solid var(--color-text);
 }
 
-.sample[data-kind='imported'] {
+.sample[data-kind='imported'],
+.sample[data-kind='haydock'] {
   opacity: 0.8;
 }
 

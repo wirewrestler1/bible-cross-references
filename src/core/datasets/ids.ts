@@ -22,6 +22,7 @@ export const CROSS_REFERENCE_SOURCE_IDS = [
   'swe1917',
   'curated',
   'computed',
+  'haydock',
 ] as const;
 export type CrossReferenceSourceId = (typeof CROSS_REFERENCE_SOURCE_IDS)[number];
 

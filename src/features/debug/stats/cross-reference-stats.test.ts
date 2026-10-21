@@ -69,6 +69,7 @@ describe('computeCrossReferenceStats', () => {
       { kind: 'imported', count: 0 },
       { kind: 'curated', count: 0 },
       { kind: 'computed', count: 1 },
+      { kind: 'haydock', count: 0 },
     ]);
     // Law → Gospels (Gen 1:1 → John 1:1), Law → Law, Poetry → Law, Gospels → Law, Gospels → Gospels.
     const law = 0;

@@ -15,6 +15,14 @@
       "sourceRows": 1188
     }
   },
+  "data/cross-references/haydock.json": {
+    "sha256": "07244b4298b96708468851024f6cb077a09b107ceebbec17f1feffe812918d70",
+    "bytes": 106834,
+    "shape": {
+      "links": 440,
+      "sourceRows": 440
+    }
+  },
   "data/cross-references/openbible.json": {
     "sha256": "1ab382d25c679afb18e4e0ecca94c129d265085b5862923263a5e0ca9afe2e1a",
     "bytes": 5651699,
@@ -24,11 +32,11 @@
     }
   },
   "data/cross-references/orthodox.json": {
-    "sha256": "06e73ca35834a655795999a0f0abdaea1630855d8f2e1fc6cf3a8b88b9766160",
-    "bytes": 5902505,
+    "sha256": "f1619a4e87391dc0e7f3d8ddcd44d18b2e1151fc85276c4db20e32b50b4466ed",
+    "bytes": 5908745,
     "shape": {
-      "links": 360777,
-      "sourceRows": 365257
+      "links": 361170,
+      "sourceRows": 365697
     }
   },
   "data/cross-references/swe1917.json": {

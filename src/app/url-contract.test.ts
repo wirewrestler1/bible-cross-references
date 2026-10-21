@@ -223,9 +223,15 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?hide=pauline-epistles', { hidden: ['pauline-epistles'] }],
   ['/bible-cross-references/?hide=general-epistles', { hidden: ['general-epistles'] }],
   ['/bible-cross-references/?hide=revelation', { hidden: ['revelation'] }],
-  ['/bible-cross-references/?kinds=tsk', { hiddenKinds: ['computed', 'curated', 'imported'] }],
-  ['/bible-cross-references/?kinds=tsk,curated', { hiddenKinds: ['computed', 'imported'] }],
-  ['/bible-cross-references/?kinds=tsk,imported,curated,computed', {}],
+  [
+    '/bible-cross-references/?kinds=tsk',
+    { hiddenKinds: ['computed', 'curated', 'haydock', 'imported'] },
+  ],
+  [
+    '/bible-cross-references/?kinds=tsk,curated',
+    { hiddenKinds: ['computed', 'haydock', 'imported'] },
+  ],
+  ['/bible-cross-references/?kinds=tsk,imported,curated,computed,haydock', {}],
   [
     // Every genre hidden at once, which the legend lets a reader do.
     '/bible-cross-references/?hide=law,history,poetry,major-prophets,minor-prophets,deuterocanon,gospels,acts,pauline-epistles,general-epistles,revelation',

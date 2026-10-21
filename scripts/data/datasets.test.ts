@@ -14,6 +14,7 @@ import {
   CURATED_FILE,
   DATASET_BUILDERS,
   type RawSourceContent,
+  HAYDOCK_FILE,
 } from './datasets.ts';
 import { BOOK_CODES as KJV_CODES } from './importers/ebible-vpl.ts';
 import { expectMember, findSource, readSources, type RawSource } from './lib/sources.ts';
@@ -187,6 +188,7 @@ describe('DATASET_BUILDERS', () => {
       'data/cross-references/swe1917.json',
       'data/cross-references/curated.json',
       'data/cross-references/computed.json',
+      'data/cross-references/haydock.json',
       'data/words/stepbible.json',
     ]);
   });
@@ -205,13 +207,16 @@ describe('DATASET_BUILDERS', () => {
       expect(dataset.versification).toBe('kjv-dc');
       expect(dataset.schemaVersion).toBe(2);
       expect(dataset.provenance.sha256).toHaveLength(64);
-      // The curated list is the repository's own file, read from disk rather than a fixture.
+      // The curated, computed and Haydock lists are the repository's own files, read from disk
+      // rather than a fixture.
       expect(dataset.provenance.url).toContain(
         builder.outputPath.includes('curated')
           ? CURATED_FILE
           : builder.outputPath.includes('computed')
             ? COMPUTED_FILE
-            : 'https://example.org/',
+            : builder.outputPath.includes('haydock')
+              ? HAYDOCK_FILE
+              : 'https://example.org/',
       );
       expect(Array.isArray(dataset.notices)).toBe(true);
       if (dataset.format === 'translation-text') {

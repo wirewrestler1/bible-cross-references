@@ -94,9 +94,14 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
       const weight = voteWeight(connection.link.votes);
       const { kind } = connection.link;
       // A computed link says only that the words are alike, so it is drawn faint and dashed;
-      // an imported apparatus link a little under the Treasury's and the curated ones.
+      // an imported apparatus link or a commentary's reference a little under the Treasury's
+      // and the curated ones.
       const kindAlpha =
-        kind === LINK_KINDS.computed ? 0.45 : kind === LINK_KINDS.imported ? 0.8 : 1;
+        kind === LINK_KINDS.computed
+          ? 0.45
+          : kind === LINK_KINDS.imported || kind === LINK_KINDS.haydock
+            ? 0.8
+            : 1;
       threads.push({
         y: anchor.y,
         target: spine.yOf((connection.otherStart + connection.otherEnd) / 2),

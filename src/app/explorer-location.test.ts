@@ -47,7 +47,7 @@ const HIDE_LAW_AND_HISTORY: LinkFilter = {
 const ONLY_TSK_AND_CURATED: LinkFilter = {
   minVotes: DEFAULT_LINK_FILTER.minVotes,
   hiddenGenres: new Set(),
-  hiddenKinds: new Set(['imported', 'computed'] as const),
+  hiddenKinds: new Set(['imported', 'computed', 'haydock'] as const),
 };
 
 describe('parseExplorerUrl', () => {
@@ -95,6 +95,7 @@ describe('parseExplorerUrl', () => {
       'imported',
       'curated',
       'computed',
+      'haydock',
     ]);
   });
 

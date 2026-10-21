@@ -45,7 +45,7 @@ export function GuideButton() {
 
 /**
  * What a first-time reader needs to know, shown once on arrival and again from the "?" button:
- * what the lines are, the four kinds and how far to trust each, what the weight means, and
+ * what the lines are, the five kinds and how far to trust each, what the weight means, and
  * which books are new. Dismissing it is remembered, so it does not come back on its own.
  */
 interface FirstVisitGuideProps {
