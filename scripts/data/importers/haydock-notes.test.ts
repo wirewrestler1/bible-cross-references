@@ -5,6 +5,7 @@ import {
   mapVulgatePsalm,
   parseHaydockPage,
   referencesIn,
+  renumberDouay,
   toAppRef,
   type HaydockPage,
 } from './haydock-notes.ts';
@@ -76,6 +77,22 @@ describe('placing a Douay reference', () => {
     expect(toAppRef('Esth', 4, 16)).toEqual({ book: 'Esth', chapter: 4, verse: 16 });
   });
 
+  it('renumbers the hand-aligned chapters of the source books, and leaves the rest alone', () => {
+    expect(renumberDouay('Wis', 2, 25)).toBe(24);
+    expect(renumberDouay('Wis', 2, 10)).toBe(10);
+    expect(renumberDouay('Wis', 6, 1)).toBeUndefined();
+    expect(renumberDouay('Wis', 6, 2)).toBe(1);
+    expect(renumberDouay('Wis', 6, 27)).toBe(25);
+    expect(renumberDouay('Bar', 6, 1)).toBe(2);
+    expect(renumberDouay('Bar', 6, 43)).toBe(43);
+    expect(renumberDouay('Bar', 6, 72)).toBe(73);
+    expect(renumberDouay('1Macc', 1, 67)).toBe(64);
+    expect(renumberDouay('1Macc', 1, 22)).toBe(20);
+    expect(renumberDouay('1Macc', 7, 5)).toBe(5);
+    expect(toAppRef('Bar', 6, 1)).toEqual({ book: 'Bar', chapter: 6, verse: 2 });
+    expect(toAppRef('Wis', 6, 1)).toBeUndefined();
+  });
+
   it('drops the chapters whose verse numbering is known to differ', () => {
     expect(toAppRef('Exod', 8, 1)).toBeUndefined();
     expect(toAppRef('Exod', 20, 1)).toEqual({ book: 'Exod', chapter: 20, verse: 1 });
@@ -110,18 +127,30 @@ describe('building the rows', () => {
     const pages = new Map<string, HaydockPage>([
       ['Wis.7', parseHaydockPage(PAGE)],
       ['Wis.8', { verseCount: 99, notes: [{ verse: 1, text: 'See Genesis i. 1.' }] }],
+      // A hand-aligned chapter: its notes and the references into it are renumbered.
+      [
+        'Wis.6',
+        {
+          verseCount: 27,
+          notes: [
+            { verse: 1, text: 'See Genesis i. 1.' },
+            { verse: 27, text: 'See Wisdom ii. 25.' },
+          ],
+        },
+      ],
     ]);
     const report = buildHaydockRows(pages);
     expect(report.rows).toEqual([
+      'Wis.6.25\tWis.2.24\t4',
       'Wis.7.7\t1Kgs.9.10\t4',
       'Wis.7.7\tProv.8.10\t4',
-      'Wis.7.7\tWis.6.25\t4',
+      'Wis.7.7\tWis.6.23\t4',
       'Wis.7.7\tWis.7.1\t4',
       'Wis.7.26\tHeb.1.3\t4',
       'Wis.7.26\tPs.119.105-Ps.119.106\t4',
     ]);
     expect(report.skippedChapters).toEqual(['Wis.8 (Douay 99, app 21)']);
-    expect(report.references).toBe(6);
-    expect(report.dropped).toBe(0);
+    expect(report.references).toBe(7);
+    expect(report.dropped).toBe(1);
   });
 });

@@ -14,8 +14,12 @@ them in this app's numbering: Douay book names to this app's ids, the Psalms fro
 numbering to the Hebrew with their titles allowed for, the Greek parts of Daniel to Greek Daniel.
 References into Tobit, Judith and Sirach are dropped (the Vulgate's text or numbering differs
 from the Greek), as are references into the chapters where the Vulgate's verse numbering is
-known to differ from the English Bible's, and any chapter of the four source books whose Douay
-verse count differs from the app's is skipped whole. The script reports what it left out.
+known to differ from the English Bible's. Fifteen chapters of the four source books are
+numbered a verse or two apart from the Greek — the Douay splits one of its verses, merges two,
+or adds a connective line of its own, and prints the Letter of Jeremiah's opening line
+unnumbered — and were aligned by hand against the World English Bible, verse against verse
+(`DOUAY_RENUMBERING` in `scripts/data/importers/haydock-notes.ts`); any other chapter whose Douay
+verse count differs from the app's would be skipped whole. The script reports what it left out.
 
 A note's reference says the commentator thought of the passage beside the verse — a parallel, a
 quotation, sometimes only an illustration — which is why these weigh 4, the app's default floor,

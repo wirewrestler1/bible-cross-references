@@ -15,8 +15,11 @@ import {
  * Only the deuterocanonical books whose Vulgate numbering agrees with the Greek numbering this
  * app uses are read as sources: Wisdom, Baruch and 1–2 Maccabees. Tobit and Judith are a
  * different text in the Vulgate, and Sirach is numbered differently in nearly every chapter;
- * references into those three are dropped too. A chapter whose Douay verse count differs from
- * the app's is skipped whole, as the Swedish importer does, rather than placed a verse away.
+ * references into those three are dropped too. Fifteen chapters of the four books are numbered
+ * a verse or two apart (the Douay splits one of the Greek's verses, merges two, or adds a line
+ * of its own); those were aligned by hand, verse against verse, and are renumbered by
+ * `DOUAY_RENUMBERING`. Any other chapter whose Douay verse count differs from the app's is
+ * skipped whole, as the Swedish importer does, rather than placed a verse away.
  * The Psalms are renumbered from the Vulgate's (Septuagint) numbering to the Hebrew numbering
  * and their titles, which the Vulgate counts as verses, are allowed for; the Greek parts of
  * Daniel go to Greek Daniel; references into the chapters where the Vulgate's verse numbering
@@ -37,6 +40,125 @@ export const HAYDOCK_SOURCE_BOOKS: readonly {
 
 /** The weight every link carries: a reference in a printed commentary, no votes. */
 export const HAYDOCK_WEIGHT = 4;
+
+/**
+ * The chapters of the source books that the Douay numbers differently from the Greek, aligned
+ * by hand against the World English Bible: each segment is `[first Douay verse, last Douay
+ * verse, the app's verse the first maps to]`, the rest of the segment following in step. Two
+ * segments landing on the same verse are a Douay verse the Greek folds into its neighbour
+ * (Wisdom 2:25 is the end of 2:24); a Douay verse in no segment has no counterpart at all
+ * (Wisdom 6:1, which the Greek does not have). The Letter of Jeremiah (Baruch 6) opens with a
+ * line the Douay leaves unnumbered, so its verses sit one later here until the Greek's own
+ * seams at 43 and 52.
+ */
+export const DOUAY_RENUMBERING: Readonly<
+  Record<string, readonly (readonly [number, number, number])[]>
+> = {
+  'Wis.2': [
+    [1, 24, 1],
+    [25, 25, 24],
+  ],
+  'Wis.5': [
+    [1, 13, 1],
+    [14, 14, 13],
+    [15, 24, 14],
+  ],
+  'Wis.6': [
+    [2, 22, 1],
+    [23, 23, 21],
+    [24, 27, 22],
+  ],
+  'Wis.9': [
+    [1, 18, 1],
+    [19, 19, 18],
+  ],
+  'Wis.11': [
+    [1, 5, 1],
+    [6, 6, 5],
+    [7, 27, 6],
+  ],
+  'Wis.17': [
+    [1, 9, 1],
+    [10, 16, 11],
+    [17, 17, 18],
+    [18, 20, 19],
+  ],
+  'Wis.19': [
+    [1, 12, 1],
+    [13, 13, 14],
+    [14, 14, 15],
+    [15, 19, 16],
+    [20, 20, 21],
+  ],
+  'Bar.3': [
+    [1, 34, 1],
+    [35, 35, 34],
+    [36, 38, 35],
+  ],
+  'Bar.6': [
+    [1, 42, 2],
+    [43, 43, 43],
+    [44, 51, 44],
+    [52, 72, 53],
+  ],
+  '1Macc.1': [
+    [1, 4, 1],
+    [5, 5, 4],
+    [6, 21, 5],
+    [22, 22, 20],
+    [23, 23, 21],
+    [24, 31, 23],
+    [32, 32, 30],
+    [33, 35, 31],
+    [36, 36, 34],
+    [37, 37, 35],
+    [38, 47, 36],
+    [48, 48, 45],
+    [49, 51, 46],
+    [52, 53, 50],
+    [54, 54, 51],
+    [55, 67, 52],
+  ],
+  '1Macc.12': [
+    [1, 53, 1],
+    [54, 54, 53],
+  ],
+  '1Macc.13': [
+    [1, 52, 1],
+    [53, 53, 52],
+    [54, 54, 53],
+  ],
+  '2Macc.2': [
+    [1, 18, 1],
+    [19, 19, 18],
+    [20, 33, 19],
+  ],
+  '2Macc.12': [
+    [1, 45, 1],
+    [46, 46, 45],
+  ],
+  '2Macc.15': [
+    [1, 36, 1],
+    [37, 37, 36],
+    [38, 40, 37],
+  ],
+};
+
+/**
+ * A Douay verse of one of the source books as this app numbers it: through the hand-made
+ * table where the chapter is in it, unchanged elsewhere, and nothing for a Douay verse the
+ * Greek does not have.
+ */
+export function renumberDouay(book: BookId, chapter: number, verse: number): number | undefined {
+  const segments = DOUAY_RENUMBERING[`${book}.${String(chapter)}`];
+  if (segments === undefined) {
+    return verse;
+  }
+  const segment = segments.find(([from, to]) => verse >= from && verse <= to);
+  return segment === undefined ? undefined : segment[2] + (verse - segment[0]);
+}
+
+const SOURCE_BOOKS: ReadonlySet<BookId> = new Set(HAYDOCK_SOURCE_BOOKS.map(({ book }) => book));
 
 /** The Douay-Rheims' names, as Haydock abbreviates or spells them, to this app's book ids. */
 const DOUAY_BOOKS: ReadonlyMap<string, BookId | 'dropped'> = new Map<string, BookId | 'dropped'>([
@@ -224,6 +346,10 @@ export function toAppRef(book: BookId, chapter: number, verse: number): VerseRef
   if (SHIFTED_CHAPTERS.has(`${book}.${String(chapter)}`)) {
     return undefined;
   }
+  if (SOURCE_BOOKS.has(book)) {
+    const renumbered = renumberDouay(book, chapter, verse);
+    return renumbered === undefined ? undefined : { book, chapter, verse: renumbered };
+  }
   return { book, chapter, verse };
 }
 
@@ -371,12 +497,17 @@ export function buildHaydockRows(
       const page = pages.get(key);
       if (page === undefined) continue;
       const expected = CANONICAL_CHAPTER_VERSE_COUNTS[book][chapter - 1];
-      if (expected !== page.verseCount) {
+      if (expected !== page.verseCount && DOUAY_RENUMBERING[key] === undefined) {
         skippedChapters.push(`${key} (Douay ${String(page.verseCount)}, app ${String(expected)})`);
         continue;
       }
       for (const note of page.notes) {
-        const from: VerseRef = { book, chapter, verse: note.verse };
+        const sourceVerse = renumberDouay(book, chapter, note.verse);
+        if (sourceVerse === undefined) {
+          dropped += 1;
+          continue;
+        }
+        const from: VerseRef = { book, chapter, verse: sourceVerse };
         if (versification.indexOf(from) === undefined) continue;
         for (const reference of referencesIn(note.text, { book, chapter })) {
           references += 1;

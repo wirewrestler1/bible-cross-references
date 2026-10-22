@@ -198,8 +198,8 @@ Verdicts:
 - **Haydock's Catholic Bible Commentary (1859, public domain), haydockcommentary.com:** one page
   per chapter, Douay text and "Ver. N." notes with references in a regular form. **Adopted** for
   Wisdom, Baruch and 1–2 Maccabees (Vulgate numbering agrees with the Greek there), 440 links;
-  see `data/haydock/README.md`. Tobit, Judith and Sirach are left out (different text or
-  numbering); 2 Maccabees 6 has no page on the site; fifteen chapters were skipped for a
-  one-verse disagreement in their counts and could be mapped by hand later.
+  see `data/haydock/README.md` (624 links once the fifteen chapters the Douay numbers a verse
+  or two apart had been aligned by hand, 2026-10-22). Tobit, Judith and Sirach are left out
+  (different text or numbering); 2 Maccabees 6 has no page on the site.
 - **UBS/DBG Nestle-Aland index, Orthodox Study Bible, NABRE, Jerusalem Bible:** copyrighted;
   permission letters drafted (not sent from here).
