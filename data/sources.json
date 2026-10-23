@@ -15,9 +15,9 @@
       "description": "World English Bible with the deuterocanon, eBible.org edition, verse-per-line text in a ZIP archive",
       "url": "https://ebible.org/Scriptures/eng-web_vpl.zip",
       "fileName": "eng-web_vpl.zip",
-      "sha256": "52b92dc6db45070408ea45e4af0957d02b0f2263319a9ea10de7c8cf9e2cd8c4",
+      "sha256": "1c6283a52413b63f090331ce3a9310a0813875f07bbaeb766f60fa83a145853d",
       "member": "eng-web_vpl.txt",
-      "retrievedAt": "2026-10-19",
+      "retrievedAt": "2026-10-23",
       "license": "Public domain",
       "homepage": "https://ebible.org/Scriptures/details.php?id=eng-web"
     },
