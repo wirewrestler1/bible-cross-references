@@ -76,7 +76,8 @@
 }
 
 .sample[data-kind='imported'],
-.sample[data-kind='haydock'] {
+.sample[data-kind='haydock'],
+.sample[data-kind='french'] {
   opacity: 0.8;
 }
 

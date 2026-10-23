@@ -203,3 +203,25 @@ Verdicts:
   (different text or numbering); 2 Maccabees 6 has no page on the site.
 - **UBS/DBG Nestle-Aland index, Orthodox Study Bible, NABRE, Jerusalem Bible:** copyrighted;
   permission letters drafted (not sent from here).
+
+## Follow-up, 2026-10-23: the French modules, adopted
+
+`FreVulgGlaire` (Glaire's Vulgate, Vigouroux's notes; zText4, `Versification=Vulg`) and
+`FreCrampon` (1923; zText, `Versification=Catholic2`) are now imported by
+`scripts/data/importers/french-notes.ts` as the kind `french`, keeping only the citations that
+touch the deuterocanon: 1,607 such citations in Glaire give 756 links, 474 in Crampon give 343.
+Glaire's numbering is the Vulgate's throughout (its Psalms cite Vulgate numbers; Daniel 3 has
+100 verses; Esther 16 chapters), so it goes through the Haydock machinery: Psalms renumbered,
+Greek Daniel mapped, the hand-aligned Douay chapters renumbered where the module's verse count
+matches the Douay's, Tobit/Judith/Sirach left out — which is where most of its 807 unplaced
+citations fall (Sirach alone had 472 of its deuterocanonical citations). Crampon's Psalms cite
+Hebrew numbers with the titles counted as verses (Ps 51:12 = our 51:10), and its deuterocanon
+is numbered almost as ours (Sirach included), so it is placed as is wherever a chapter's verse
+count matches; eight chapters differ and are skipped. Sefaria's public links dump
+(gs://sefaria-export/links, 708 MB) was scanned the same day: ~60 Apocrypha↔Tanakh links in
+all, not worth an importer. Permission letters went out to bible-center.ru, azbyka.ru, the
+Deutsche Bibelgesellschaft, HarperCollins Christian and the USCCB on 2026-10-23.
+
+Next tier, if wanted: align Sirach's Vulgate numbering by hand (51 chapters) to recover
+Glaire's 472 Sirach citations; Lopukhin's commentary on azbyka (sparse); Charles 1913 when a
+plain-text copy can be fetched.

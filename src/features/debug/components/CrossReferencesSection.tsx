@@ -14,6 +14,12 @@ import { NoticeList } from './NoticeList.tsx';
 import { SourceDetails } from './SourceDetails.tsx';
 import { VerseLink } from './VerseLink.tsx';
 
+/**
+ * How many of the verses without a link are listed: a source that reaches few verses leaves
+ * tens of thousands of them, which is a number to read, not a list to render.
+ */
+const UNCONNECTED_SHOWN = 200;
+
 interface CrossReferencesSectionProps {
   readonly id: string;
   readonly dataset: CrossReferenceDataset;
@@ -264,9 +270,11 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
           Verses without any link ({formatInteger(stats.unconnectedVerses.length)})
         </summary>
         <p className={styles.inlineList}>
-          {stats.unconnectedVerses.map((verse) => (
+          {stats.unconnectedVerses.slice(0, UNCONNECTED_SHOWN).map((verse) => (
             <VerseLink key={verse} verse={verse} />
           ))}
+          {stats.unconnectedVerses.length > UNCONNECTED_SHOWN &&
+            ` … and ${formatInteger(stats.unconnectedVerses.length - UNCONNECTED_SHOWN)} more`}
         </p>
       </details>
 

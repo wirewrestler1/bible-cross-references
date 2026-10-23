@@ -23,6 +23,8 @@ export const CROSS_REFERENCE_SOURCE_IDS = [
   'curated',
   'computed',
   'haydock',
+  'glaire',
+  'crampon',
 ] as const;
 export type CrossReferenceSourceId = (typeof CROSS_REFERENCE_SOURCE_IDS)[number];
 

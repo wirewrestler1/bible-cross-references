@@ -141,6 +141,36 @@ const CONTENT: Readonly<Record<string, string | Uint8Array>> = {
       'I begynnelsen var Ordet',
     ],
   }),
+  // Wisdom 1 in full (sixteen verses, as this app numbers it) so the chapter is placed as is,
+  // with one note citing the 66 books and one cited from them.
+  glaire: createZTextModule(
+    {
+      ot: [
+        '<div type="book" osisID="Gen"/>',
+        '<chapter osisID="Gen.1"/>',
+        'Au commencement<note>Voir <reference osisRef="Wis.1.1">Sagesse, 1, 1</reference></note>',
+        '<div type="book" osisID="Wis"/>',
+        '<chapter osisID="Wis.1"/>',
+        'Aimez la justice<note>Voir <reference osisRef="Ps.32.6">Ps. 32, 6</reference></note>',
+        ...Array.from({ length: 15 }, (_, i) => `Verset ${String(i + 2)}`),
+      ],
+      nt: ['<div type="book" osisID="Matt"/>', '<chapter osisID="Matt.1"/>', 'Livre'],
+    },
+    'modules/texts/ztext4/frevulgglaire',
+    'zText4',
+  ),
+  crampon: createZTextModule(
+    {
+      ot: [
+        '<div type="book" osisID="Wis"/>',
+        '<chapter osisID="Wis.1"/>',
+        'Aimez la justice<note>1. <reference osisRef="Ps.33.6">Ps. xxxiii, 6</reference></note>',
+        ...Array.from({ length: 15 }, (_, i) => `Verset ${String(i + 2)}`),
+      ],
+      nt: ['<div type="book" osisID="Matt"/>', '<chapter osisID="Matt.1"/>', 'Livre'],
+    },
+    'modules/texts/ztext/frecrampon',
+  ),
   'stepbible-tagnt-mat-jhn': 'Mat.1.1#01=NKO\tx\ty\tG0976=N-NSF\tz',
   'stepbible-tagnt-act-rev': '',
   'stepbible-tahot-gen-deu': 'Gen.1.1#01=L\tx\ty\tz\t{H7225G}\tHNcfsa',
@@ -189,6 +219,8 @@ describe('DATASET_BUILDERS', () => {
       'data/cross-references/curated.json',
       'data/cross-references/computed.json',
       'data/cross-references/haydock.json',
+      'data/cross-references/glaire.json',
+      'data/cross-references/crampon.json',
       'data/words/stepbible.json',
     ]);
   });

@@ -111,6 +111,49 @@ const CROSS_REFERENCE_SOURCES: Readonly<
     versification: 'kjv-dc',
     enabledByDefault: false,
   },
+  glaire: {
+    id: 'glaire',
+    name: 'Glaire–Vigouroux (1902) note citations',
+    description:
+      'The passages cited in Vigouroux’s notes to Glaire’s French translation of the Vulgate ' +
+      '(1902), public domain, from CrossWire’s FreVulgGlaire module: the citations that touch ' +
+      'the deuterocanon, each weighing 4. Renumbered from the Vulgate’s numbering; Tobit, ' +
+      'Judith and Sirach, and chapters that could not be placed safely, are left out.',
+    license: {
+      name: 'Public domain',
+      url: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreVulgGlaire',
+      publicDomain: true,
+    },
+    attribution:
+      'Cross-reference data: citations in the notes of La Sainte Bible, trans. J.-B. Glaire, ' +
+      'notes by F. Vigouroux (1902), public domain, from CrossWire’s FreVulgGlaire module ' +
+      '(text from fr.wikisource). Modified: re-indexed to this app’s verse numbering; ' +
+      'citations that could not be placed safely are left out.',
+    homepage: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreVulgGlaire',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
+  crampon: {
+    id: 'crampon',
+    name: 'Crampon (1923) note citations',
+    description:
+      'The passages cited in the notes of the Crampon Bible of 1923, public domain, from ' +
+      'CrossWire’s FreCrampon module: the citations that touch the deuterocanon, each weighing ' +
+      '4. Chapters whose numbering differs from this app’s are left out.',
+    license: {
+      name: 'Public domain',
+      url: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreCrampon',
+      publicDomain: true,
+    },
+    attribution:
+      'Cross-reference data: citations in the notes of La Sainte Bible, trans. A. Crampon ' +
+      '(1923), public domain, from CrossWire’s FreCrampon module (text from fr.wikisource). ' +
+      'Modified: re-indexed to this app’s verse numbering; citations that could not be placed ' +
+      'safely are left out.',
+    homepage: 'https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreCrampon',
+    versification: 'kjv-dc',
+    enabledByDefault: false,
+  },
 };
 
 export const CROSS_REFERENCE_SOURCE_MANIFESTS: readonly CrossReferenceSourceManifest[] =

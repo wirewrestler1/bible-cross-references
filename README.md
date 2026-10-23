@@ -209,7 +209,7 @@ rest.
 | Cross-references | [Computed similarity links](data/computed/), from the World English Bible's words                                                                                      | [CC0](https://creativecommons.org/publicdomain/zero/1.0/)                                      |
 | Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge (66 books)                                   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
-### The five kinds of link
+### The six kinds of link
 
 The app loads one merged dataset, and every link in it carries its kind, which is how it is
 drawn and how far to trust it. Each kind has a weight on one scale, so the Filters menu's
@@ -248,6 +248,18 @@ threshold means the same thing for all of them; by default links of weight 4 and
   Douay numbers a verse or two apart were aligned by hand, verse against verse;
   `scripts/data/haydock-notes.ts` writes the file ([`data/haydock/`](data/haydock/README.md))
   and reports what it left out. Drawn like the Swedish notes.
+- **French Bible notes.** About 1,100 links read out of the notes of two French Catholic Bibles
+  that CrossWire carries as public-domain modules: Glaire's translation of the Vulgate with
+  Vigouroux's notes (1902, `FreVulgGlaire`, about 760 links) and the Crampon Bible of 1923
+  (`FreCrampon`, about 340). Their notes cite passages across the whole Bible — "Tobie 1,2 : Voir
+  4 Rois, 17, 3" — and each citation is tagged with an OSIS reference; only the citations that
+  touch the deuterocanon are kept, since the notes on the 66 books are a commentary's, not an
+  apparatus, and the Treasury covers that ground. Each link weighs 4. Glaire is placed by the
+  Vulgate's numbering (the Psalms renumbered, the Greek parts of Daniel sent to Greek Daniel, the
+  hand-aligned Douay chapters through the same tables as Haydock's; Tobit, Judith and Sirach left
+  out), Crampon by its Catholic numbering, which is nearly the Greek's; a chapter that neither
+  rule can place is skipped whole, and the build reports every citation left out. Drawn like the
+  Swedish notes.
 - **Computed.** About 8,000 links from the verses of the deuterocanon to the verses whose words
   are most like theirs, found by TF-IDF cosine similarity over the World English Bible
   ([`scripts/data/compute-similarity.ts`](scripts/data/compute-similarity.ts); the best five per

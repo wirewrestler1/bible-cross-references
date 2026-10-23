@@ -3,11 +3,18 @@
  * draws it. Stored per link as the ordinal in this list, so the order is part of the file
  * format and a new kind goes at the end.
  */
-export const LINK_KIND_IDS = ['tsk', 'imported', 'curated', 'computed', 'haydock'] as const;
+export const LINK_KIND_IDS = [
+  'tsk',
+  'imported',
+  'curated',
+  'computed',
+  'haydock',
+  'french',
+] as const;
 export type LinkKindId = (typeof LINK_KIND_IDS)[number];
 
 /** The ordinal written in a dataset's `kinds` column. */
-export type LinkKind = 0 | 1 | 2 | 3 | 4;
+export type LinkKind = 0 | 1 | 2 | 3 | 4 | 5;
 
 export const LINK_KINDS: Readonly<Record<LinkKindId, LinkKind>> = {
   /** The Treasury of Scripture Knowledge as OpenBible.info publishes it, ranked by votes. */
@@ -20,6 +27,8 @@ export const LINK_KINDS: Readonly<Record<LinkKindId, LinkKind>> = {
   computed: 3,
   /** The scripture references in Haydock's Catholic Bible Commentary (1859), for the deuterocanon. */
   haydock: 4,
+  /** The citations in the notes of two French Catholic Bibles (Glaire–Vigouroux 1902, Crampon 1923). */
+  french: 5,
 };
 
 export function linkKindId(kind: number): LinkKindId {

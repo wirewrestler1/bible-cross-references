@@ -9,18 +9,24 @@ import { strToU8, zipSync } from 'fflate';
 export function createZTextModule(
   parts: Readonly<Record<'ot' | 'nt', readonly string[]>>,
   path = 'modules/texts/ztext/swe1917',
+  driver: 'zText' | 'zText4' = 'zText',
 ): Uint8Array {
+  const entryBytes = driver === 'zText4' ? 12 : 10;
   const files: Record<string, Uint8Array> = {};
   for (const [part, entries] of Object.entries(parts)) {
     const texts = entries.map((entry) => strToU8(entry));
     const uncompressed = new Uint8Array(texts.reduce((total, text) => total + text.length, 0));
-    const verseIndex = new DataView(new ArrayBuffer(entries.length * 10));
+    const verseIndex = new DataView(new ArrayBuffer(entries.length * entryBytes));
     let offset = 0;
     texts.forEach((text, index) => {
       uncompressed.set(text, offset);
-      verseIndex.setUint32(index * 10, 0, true);
-      verseIndex.setUint32(index * 10 + 4, offset, true);
-      verseIndex.setUint16(index * 10 + 8, text.length, true);
+      verseIndex.setUint32(index * entryBytes, 0, true);
+      verseIndex.setUint32(index * entryBytes + 4, offset, true);
+      if (entryBytes === 12) {
+        verseIndex.setUint32(index * entryBytes + 8, text.length, true);
+      } else {
+        verseIndex.setUint16(index * entryBytes + 8, text.length, true);
+      }
       offset += text.length;
     });
     const block = deflateSync(uncompressed);

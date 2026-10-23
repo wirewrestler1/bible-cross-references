@@ -91,6 +91,9 @@ export const en = {
   'kind.haydock': 'Haydock’s notes',
   'kind.haydock.note':
     'the passages Haydock’s Catholic commentary of 1859 compares, for Wisdom, Baruch and Maccabees',
+  'kind.french': 'French Bible notes',
+  'kind.french.note':
+    'the passages the notes of two French Catholic Bibles cite, Glaire–Vigouroux (1902) and Crampon (1923), where they touch the deuterocanon',
   'legend.kinds': 'Kinds of link',
 
   // The first-visit guide: what the lines are, what the weight means, which books are new.

@@ -21,6 +21,10 @@ import { importSwe1917CrossReferences } from './importers/swe1917.ts';
 import { importCuratedCrossReferences } from './importers/curated.ts';
 import { importComputedCrossReferences } from './importers/computed.ts';
 import { importHaydockCrossReferences } from './importers/haydock.ts';
+import {
+  importCramponCrossReferences,
+  importGlaireCrossReferences,
+} from './importers/french-notes.ts';
 import { mergeCrossReferenceFiles } from './lib/merge-cross-references.ts';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -125,6 +129,8 @@ const MERGED_PARTS: readonly Exclude<CrossReferenceSourceId, 'orthodox'>[] = [
   'curated',
   'swe1917',
   'haydock',
+  'glaire',
+  'crampon',
   'computed',
 ];
 
@@ -164,6 +170,20 @@ const CROSS_REFERENCE_BUILDERS: Readonly<Record<CrossReferenceSourceId, DatasetB
   curated: repositoryRowFile('curated', CURATED_FILE, importCuratedCrossReferences),
   computed: repositoryRowFile('computed', COMPUTED_FILE, importComputedCrossReferences),
   haydock: repositoryRowFile('haydock', HAYDOCK_FILE, importHaydockCrossReferences),
+  glaire: {
+    outputPath: crossReferencesDatasetPath('glaire'),
+    build: async (readSource) => {
+      const { source, content } = await readSource('glaire');
+      return importGlaireCrossReferences(content, provenanceOf(source));
+    },
+  },
+  crampon: {
+    outputPath: crossReferencesDatasetPath('crampon'),
+    build: async (readSource) => {
+      const { source, content } = await readSource('crampon');
+      return importCramponCrossReferences(content, provenanceOf(source));
+    },
+  },
 };
 
 /**

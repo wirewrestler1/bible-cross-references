@@ -96,6 +96,26 @@
       "homepage": "https://crosswire.org/sword/modules/ModInfo.jsp?modName=Swe1917"
     },
     {
+      "id": "glaire",
+      "description": "Glaire's French translation of the Vulgate with Vigouroux's notes (1902), CrossWire SWORD module (zText4) whose notes cite passages across the deuterocanon",
+      "url": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/FreVulgGlaire.zip",
+      "fileName": "FreVulgGlaire.zip",
+      "sha256": "1e2ac0c23e854b806d37f130eff7bad291b53ec043653fe71ff8521cbed7430e",
+      "retrievedAt": "2026-10-23",
+      "license": "Public domain",
+      "homepage": "https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreVulgGlaire"
+    },
+    {
+      "id": "crampon",
+      "description": "The Crampon Bible of 1923, CrossWire SWORD module (zText) whose notes cite passages across the deuterocanon",
+      "url": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/FreCrampon.zip",
+      "fileName": "FreCrampon.zip",
+      "sha256": "b0c9914ea1229a84f5614a84657db9b70214164507b0034872258c344f2a00a7",
+      "retrievedAt": "2026-10-23",
+      "license": "Public domain",
+      "homepage": "https://crosswire.org/sword/modules/ModInfo.jsp?modName=FreCrampon"
+    },
+    {
       "id": "stepbible-tagnt-mat-jhn",
       "description": "Translators Amalgamated Greek NT (Matthew-John), word-per-line with Strongs",
       "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAGNT%20Mat-Jhn%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",

@@ -83,7 +83,7 @@ describe('FiltersMenu', () => {
     const onChange = renderMenu();
     await openMenu(/Filters/);
     const boxes = screen.getAllByRole('checkbox');
-    expect(boxes).toHaveLength(5);
+    expect(boxes).toHaveLength(6);
     expect(boxes.every((box) => (box as HTMLInputElement).checked)).toBe(true);
     await userEvent.click(screen.getByRole('checkbox', { name: /Similar wording/ }));
     expect(onChange).toHaveBeenCalledWith(

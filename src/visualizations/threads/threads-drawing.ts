@@ -99,7 +99,9 @@ function drawConnections(context: CanvasRenderingContext2D, drawing: ThreadsDraw
       const kindAlpha =
         kind === LINK_KINDS.computed
           ? 0.45
-          : kind === LINK_KINDS.imported || kind === LINK_KINDS.haydock
+          : kind === LINK_KINDS.imported ||
+              kind === LINK_KINDS.haydock ||
+              kind === LINK_KINDS.french
             ? 0.8
             : 1;
       threads.push({

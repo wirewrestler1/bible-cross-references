@@ -51,6 +51,25 @@ export const HAYDOCK_WEIGHT = 4;
  * line the Douay leaves unnumbered, so its verses sit one later here until the Greek's own
  * seams at 43 and 52.
  */
+/** How many verses each hand-aligned chapter has in the Douay, as `Book.chapter`. */
+export const DOUAY_VERSE_COUNTS: Readonly<Record<string, number>> = {
+  'Wis.2': 25,
+  'Wis.5': 24,
+  'Wis.6': 27,
+  'Wis.9': 19,
+  'Wis.11': 27,
+  'Wis.17': 20,
+  'Wis.19': 20,
+  'Bar.3': 38,
+  'Bar.6': 72,
+  '1Macc.1': 67,
+  '1Macc.12': 54,
+  '1Macc.13': 54,
+  '2Macc.2': 33,
+  '2Macc.12': 46,
+  '2Macc.15': 40,
+};
+
 export const DOUAY_RENUMBERING: Readonly<
   Record<string, readonly (readonly [number, number, number])[]>
 > = {
@@ -248,7 +267,7 @@ const DOUAY_BOOKS: ReadonlyMap<string, BookId | 'dropped'> = new Map<string, Boo
  * away from its words, so it is dropped. Both neighbours of each seam are listed, since a
  * reference may fall on either side of it.
  */
-const SHIFTED_CHAPTERS: ReadonlySet<string> = new Set(
+export const SHIFTED_CHAPTERS: ReadonlySet<string> = new Set(
   [
     ['Gen', [31, 32]],
     ['Exod', [7, 8, 21, 22]],
@@ -290,6 +309,11 @@ const UNTITLED_PSALMS: ReadonlySet<number> = new Set([
 /** Psalms whose title takes two verses of the Vulgate's numbering. */
 const TWO_VERSE_TITLES: ReadonlySet<number> = new Set([51, 52, 54, 60]);
 
+/** How many verses a psalm's title takes where titles are counted (Hebrew numbering). */
+export function psalmTitleVerses(hebrewPsalm: number): number {
+  return UNTITLED_PSALMS.has(hebrewPsalm) ? 0 : TWO_VERSE_TITLES.has(hebrewPsalm) ? 2 : 1;
+}
+
 /**
  * A Vulgate psalm and verse (Septuagint numbering, titles counted as verses) as the English
  * Bible numbers them, or nothing for a reference to a title.
@@ -320,8 +344,7 @@ export function mapVulgatePsalm(psalm: number, verse: number): VerseRef | undefi
     hebrew = 147;
     hebrewVerse = verse + 11;
   }
-  const titleVerses = UNTITLED_PSALMS.has(hebrew) ? 0 : TWO_VERSE_TITLES.has(hebrew) ? 2 : 1;
-  const english = hebrewVerse - titleVerses;
+  const english = hebrewVerse - psalmTitleVerses(hebrew);
   return english >= 1 ? { book: 'Ps', chapter: hebrew, verse: english } : undefined;
 }
 

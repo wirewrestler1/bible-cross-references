@@ -7,12 +7,28 @@
       "sourceRows": 7986
     }
   },
+  "data/cross-references/crampon.json": {
+    "sha256": "5e53c4f0a71a02a3d0bef55af3142f4a5615872d638139ec6ea5aafd5845c280",
+    "bytes": 107772,
+    "shape": {
+      "links": 343,
+      "sourceRows": 474
+    }
+  },
   "data/cross-references/curated.json": {
     "sha256": "24519a5c110dae46457e948dd9f76a5f0fadb6b397bbd54f7dc3f1169fd7f87b",
     "bytes": 125296,
     "shape": {
       "links": 1188,
       "sourceRows": 1188
+    }
+  },
+  "data/cross-references/glaire.json": {
+    "sha256": "2cbd7238fe25511ea3d37d99ebef64cc36d1cec54a040c20eda884d10956b1a5",
+    "bytes": 138348,
+    "shape": {
+      "links": 756,
+      "sourceRows": 1607
     }
   },
   "data/cross-references/haydock.json": {
@@ -32,11 +48,11 @@
     }
   },
   "data/cross-references/orthodox.json": {
-    "sha256": "d866e4947e2fcd3132aa69409b3c4fa00cecfc64ebabf1940e7d0d9129ed890b",
-    "bytes": 5911360,
+    "sha256": "5ceac815b94aad7a49c4f5155ecd5bf351bfe4e585a71c59def260847c6ad0f3",
+    "bytes": 5925668,
     "shape": {
-      "links": 361339,
-      "sourceRows": 365881
+      "links": 362174,
+      "sourceRows": 367962
     }
   },
   "data/cross-references/swe1917.json": {

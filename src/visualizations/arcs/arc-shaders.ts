@@ -70,7 +70,7 @@ const COMMON = /* glsl */ `
 
   // How much of a link's brightness its kind keeps: a computed link (3) says only that the
   // words are alike, so it is drawn faint; an imported apparatus link (1) or a commentary's
-  // reference (4) a little under the Treasury's and the curated ones, which are drawn in full.
+  // citation (4, 5) a little under the Treasury's and the curated ones, which are drawn in full.
   bool isComputed(float kind) {
     return kind > 2.5 && kind < 3.5;
   }
